@@ -1,0 +1,19 @@
+{
+
+    "name": "cn.capstones.mvc",
+
+    "displayName": "Capstone MVC Framework",
+
+    "version": "0.0.1",
+
+    "unity": "2018.3",
+
+    "description": "Capstone MVC Framework",
+
+    "keywords": [
+        "unity"
+    ],
+
+    "category": "Unity"
+
+}
