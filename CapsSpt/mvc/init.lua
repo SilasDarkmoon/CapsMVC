@@ -1,5 +1,4 @@
 local ResManager = clr.Capstones.UnityEngineEx.ResManager
-local MVCManager = clr.Capstones.UnityEngineEx.MVCManager
 local UIResManager = clr.Capstones.UnityEngineEx.UIResManager
 local UnityEngine = clr.UnityEngine
 -- local LightmapData = UnityEngine.LightmapData
@@ -171,7 +170,7 @@ local function SaveCurrentSceneInfo()
         end
     end
     local dialogObjsArr = clr.array(dialogObjs, GameObject)
-    local pack = MVCManager.PackSceneAndDialogs(dialogObjsArr)
+    local pack = UIResManager.PackSceneAndDialogs(dialogObjsArr)
     local sgos = pack.SceneObjs
     -- local dialogObjs = pack.DialogObjs
     -- local dgos = clr.table(dialogObjs)
@@ -866,7 +865,7 @@ end
 function res.PopSceneWithoutCurrentImmediate(...)
     if #res.ctrlStack == 0 then return end
 
-    local sgos = MVCManager.PackSceneObj()
+    local sgos = UIResManager.PackSceneObj()
     res.DestroyGameObjectList(sgos)
     -- restore old info
     local ctrlInfo = table.remove(res.ctrlStack)
@@ -885,7 +884,7 @@ end
 function res.PopSceneWithoutCurrentAsync(...)
     if #res.ctrlStack == 0 then return end
 
-    local pack = MVCManager.PackSceneAndDialogs()
+    local pack = UIResManager.PackSceneAndDialogs()
     local cacheItem = { pack = pack, objs = pack.SceneObjs }
     -- restore old info
     local ctrlInfo = table.remove(res.ctrlStack)
