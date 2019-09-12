@@ -97,11 +97,5 @@ namespace Capstones.UnityEngineEx
         {
             return ResManager.FindAllGameObject();
         }
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void OnUnityStart()
-        {
-            // This force the appdomain to load this assembly.
-        }
     }
 }
