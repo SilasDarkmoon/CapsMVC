@@ -18,4 +18,5 @@ end
 function Model:Init()
 end
 
-return Model
+_G["Model"] = Model
+-- return Model
