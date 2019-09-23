@@ -97,5 +97,14 @@ namespace Capstones.UnityEngineEx
         {
             return ResManager.FindAllGameObject();
         }
+
+        public static void ChangeGameObjectLayer(GameObject go, int layer)
+        {
+            //遍历当前物体及其所有子物体
+            foreach (Transform tran in go.GetComponentsInChildren<Transform>(true))
+            {
+                tran.gameObject.layer = layer;//更改物体的Layer层
+            }
+        }
     }
 }

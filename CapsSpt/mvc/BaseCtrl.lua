@@ -52,4 +52,5 @@ function BaseCtrl:GetStatusData()
 
 end
 
-return BaseCtrl
+_G["BaseCtrl"] = BaseCtrl
+-- return BaseCtrl
