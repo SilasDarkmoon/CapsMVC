@@ -718,9 +718,9 @@ function res.LoadViewImmediate(name, ...)
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
     if string.sub(name, -6) == '.unity' then
-        cacheItem.view = nil
+        -- cacheItem = nil
         ResManager.LoadScene(name)
-        DisableCachedScene(cacheItem)
+        -- DisableCachedScene(cacheItem)
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -742,7 +742,7 @@ function res.LoadViewAsync(name, ...)
         unity.waitForEndOfFrame()
         local isLoadScene = string.sub(name, -6) == ".unity" 
         if isLoadScene then
-            cacheItem.view = nil
+            cacheItem = nil
             -- MoveToDontDestroy(cacheItem)
             local loadinfo = ResManager.LoadSceneAsync(name)
             if loadinfo then
@@ -778,10 +778,10 @@ function res.LoadView(name, ...)
         local cacheItem = SaveCurrentSceneInfo()
         ClearCurrentSceneInfo()
         if string.sub(name, -6) == ".unity" then
-            cacheItem.view = nil
+            -- cacheItem = nil
             ResManager.LoadScene(name)
             unity.waitForNextEndOfFrame()
-            DisableCachedScene(cacheItem)
+            -- DisableCachedScene(cacheItem)
         else
             local prefab = res.LoadRes(name)
             if prefab then
