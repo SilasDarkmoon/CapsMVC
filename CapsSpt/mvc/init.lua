@@ -141,6 +141,7 @@ local function TrimSceneCache(isNoCollectGarbage)
         table.insert(sceneTable, sceneInfo)
     end
     table.sort(sceneTable, function(a, b) return a.seq > b.seq end)
+
     res.sceneCache = {}
     for i, v in ipairs(sceneTable) do
         if i <= sceneCacheMax then
@@ -328,7 +329,9 @@ local function DisableCachedScene(sceneCacheItem)
         else
             local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
             for i, v in ipairs(sgos) do
-                Object.Destroy(v)
+                if not res.IsClrNull(v) then
+                    Object.Destroy(v)
+                end
             end
         end
     end
@@ -715,8 +718,9 @@ function res.LoadViewImmediate(name, ...)
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
     if string.sub(name, -6) == '.unity' then
+        -- cacheItem = nil
         ResManager.LoadScene(name)
-        DisableCachedScene(cacheItem)
+        -- DisableCachedScene(cacheItem)
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -738,7 +742,8 @@ function res.LoadViewAsync(name, ...)
         unity.waitForEndOfFrame()
         local isLoadScene = string.sub(name, -6) == ".unity" 
         if isLoadScene then
-            MoveToDontDestroy(cacheItem)
+            cacheItem = nil
+            -- MoveToDontDestroy(cacheItem)
             local loadinfo = ResManager.LoadSceneAsync(name)
             if loadinfo then
                 coroutine.yield(loadinfo)
@@ -773,9 +778,10 @@ function res.LoadView(name, ...)
         local cacheItem = SaveCurrentSceneInfo()
         ClearCurrentSceneInfo()
         if string.sub(name, -6) == ".unity" then
+            -- cacheItem = nil
             ResManager.LoadScene(name)
             unity.waitForNextEndOfFrame()
-            DisableCachedScene(cacheItem)
+            -- DisableCachedScene(cacheItem)
         else
             local prefab = res.LoadRes(name)
             if prefab then
