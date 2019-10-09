@@ -19,6 +19,12 @@ local CapsUnityLuaBehav = clr.CapsUnityLuaBehav
 
 local res = require("unity.res")
 
+local unmanagedDialogs = {}
+local unmanagedBlockDialogs =
+{
+    ["Game/UI/Common/Template/Loading/WaitForPost2.prefab"] = true,
+}
+
 --#region Basic and Override
 function res.IsClrNull(obj)
     return obj == nil or obj == clr.null
