@@ -1,7 +1,8 @@
 {
     "name": "CapsMVC",
     "references": [
-        "ResManager"
+        "ResManager",
+        "CapsLua"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
