@@ -1093,10 +1093,10 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
 
     if renderMode and renderMode ~= "overlay" then
         scd, uds = res.GetLastSCDAndUDs(false)
-        dialog, dialogSpt = res.Instantiate("Game/UI/Control/Dialog/CameraDialog.prefab")
+        dialog, dialogSpt = res.Instantiate("Game/UI/Common/Dialog/CameraDialog.prefab")
 
         cache.setGlobalTempData(true, "isDummyDialog")
-        dummydialog = res.Instantiate("Game/UI/Control/Dialog/OverlayDialog.prefab")
+        dummydialog = res.Instantiate("Game/UI/Common/Dialog/OverlayDialog.prefab")
         cache.removeGlobalTempData("isDummyDialog")
         local dummycanvas = dummydialog:GetComponent(Canvas)
         res.GetLuaScript(dummycanvas):setShadow(withShadow)
@@ -1120,7 +1120,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         if overlaySortingOrder then
             cache.setGlobalTempData(overlaySortingOrder, "overlaySortingOrder")
         end
-        dialog = res.Instantiate("Game/UI/Control/Dialog/OverlayDialog.prefab")
+        dialog = res.Instantiate("Game/UI/Common/Dialog/OverlayDialog.prefab")
         cache.removeGlobalTempData("overlaySortingOrder")
         diagcomp = res.GetLuaScript(dialog)
         diagcomp.withCtrl = withCtrl
