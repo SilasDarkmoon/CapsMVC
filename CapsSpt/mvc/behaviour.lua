@@ -89,16 +89,20 @@ function behaviour:_UnregisterEvent()
 end
 
 function behaviour:coroutine(func)
-    return self:BehavCoroutine({
-        co = coroutine.create(func);
-        Resume = function(self, ...)
-            local succ, ret = coroutine.resume(self.co, ...)
-            if succ then
-                return ret
-            end
-            error(ret)
-        end
-    })
+    -- return self:BehavCoroutine({
+    --     co = coroutine.create(func);
+    --     Resume = function(self, ...)
+    --         local succ, ret = coroutine.resume(self.co, ...)
+    --         if succ then
+    --             return ret
+    --         end
+    --         error(ret)
+    --     end
+    -- })
+
+    clr.coroutine(function()
+        func();
+    end)
 end
 
 function behaviour.getmt(base)
