@@ -20,7 +20,7 @@ function behaviour:_onDestroy()
     self:_UnregisterEvent()
 
     self.___ex = nil
-    self.___cs = nil
+    -- self.___cs = nil
 end
 
 function behaviour:RegHandler(actionName, func)
@@ -70,7 +70,7 @@ function behaviour:_RegisterEvent()
     local eventList = self:GetEventList()
     for eventName, func in pairs(eventList) do
         self["_eventFunc_" .. eventName] = function(...)
-            if self.gameObject.activeInHierarchy and self.___cs.enabled then
+            if self.gameObject.activeInHierarchy then
                 func(...)
             end
         end
@@ -105,23 +105,23 @@ function behaviour:coroutine(func)
     end)
 end
 
-function behaviour.getmt(base)
-    return function(table, key)
-        local cs = rawget(table, '___cs')
-        if cs then
-            local v = cs[key]
-            if v then
-                if type(v) == 'function' then
-                    return function(obj, ...)
-                        return v(cs, ...)
-                    end
-                end
-                return v
-            end
-        end
-        return base[key]
-    end
-end
+-- function behaviour.getmt(base)
+--     return function(table, key)
+--         local cs = rawget(table, '___cs')
+--         if cs then
+--             local v = cs[key]
+--             if v then
+--                 if type(v) == 'function' then
+--                     return function(obj, ...)
+--                         return v(cs, ...)
+--                     end
+--                 end
+--                 return v
+--             end
+--         end
+--         return base[key]
+--     end
+-- end
 
 -- *** valid when view call behave's DealVersionVisibleList ***
 -- *** valid when view call behave's DealVersionVisibleList ***
