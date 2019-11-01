@@ -35,17 +35,17 @@ function BaseCtrl:GetEventList()
 end
 
 function BaseCtrl:OnEnterScene()
-    -- local eventList = self:GetEventList()
-    -- for eventName, func in pairs(eventList) do
-    --     require("EventSystem").AddEvent(eventName, self, func)
-    -- end
+    local eventList = self:GetEventList()
+    for eventName, func in pairs(eventList) do
+        require("EventSystem").AddEvent(eventName, self, func)
+    end
 end
 
 function BaseCtrl:OnExitScene()
-    -- local eventList = self:GetEventList()
-    -- for eventName, func in pairs(eventList) do
-    --     require("EventSystem").RemoveEvent(eventName, self, func)
-    -- end
+    local eventList = self:GetEventList()
+    for eventName, func in pairs(eventList) do
+        require("EventSystem").RemoveEvent(eventName, self, func)
+    end
 end
 
 function BaseCtrl:GetStatusData()
