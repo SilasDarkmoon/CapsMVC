@@ -100,9 +100,13 @@ namespace DG.Tweening.Core
                 string s = "REPORT > Max overall simultaneous active Tweeners/Sequences: " + DOTween.maxActiveTweenersReached + "/" + DOTween.maxActiveSequencesReached;
                 Debugger.LogReport(s);
             }
-//            DOTween.initialized = false;
-//            DOTween.instance = null;
-            if (DOTween.instance == this) DOTween.instance = null;
+            // DOTween.initialized = false;
+            // DOTween.instance = null;
+            if (DOTween.instance == this)
+            {
+                DOTween.instance = null;
+                DOTween.initialized = false;
+            }
         }
 
         void OnApplicationQuit()
