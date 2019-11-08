@@ -8,7 +8,7 @@ namespace DG.Tweening.Core
 {
     public class DOTweenSettings : ScriptableObject
     {
-        public const string AssetName = "Assets/CapstonesRes/Game/DOTween/DOTweenSettings.asset";
+        //public const string AssetName = "Assets/CapstonesRes/Game/DOTween/DOTweenSettings.asset";
 
         public bool useSafeMode = true;
         public float timeScale = 1;
