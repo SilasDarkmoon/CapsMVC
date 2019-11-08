@@ -3,13 +3,14 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5017b3fdb1b7014eb07a59c81b95d2a, type: 3}
-  m_Name: DOTweenSettings
+  m_Name: DefaultDOTweenSettings
   m_EditorClassIdentifier: 
   useSafeMode: 1
   timeScale: 1
@@ -22,7 +23,7 @@ MonoBehaviour:
   defaultUpdateType: 0
   defaultTimeScaleIndependent: 1
   defaultEaseType: 6
-  defaultEaseOvershootOrAmplitude: 1.70158005
+  defaultEaseOvershootOrAmplitude: 1.70158
   defaultEasePeriod: 0
   defaultAutoKill: 1
   defaultLoopType: 0
