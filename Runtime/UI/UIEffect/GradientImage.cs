@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace UnityEngine.UI
+namespace Capstones.UnityEngineEx.UI
 {
     public class GradientImage : BaseMeshEffect
     {
