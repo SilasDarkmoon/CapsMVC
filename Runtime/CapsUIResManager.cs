@@ -24,11 +24,14 @@ namespace Capstones.UnityEngineEx
         }
 
         private static GameObject _UICameraAndEventSystemTemplate = null;
+        private static GameObject _UICameraAndEventSystemGo = null;
         public static Camera CreateCameraAndEventSystem()
         {
             if (_UICameraAndEventSystemTemplate == null) _UICameraAndEventSystemTemplate = ResManager.LoadResDeep("UICameraAndEventSystem.prefab") as GameObject;
-            var container = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
-            _UICamera = container.GetComponentInChildren<Camera>();
+            if (_UICameraAndEventSystemGo != null && _UICamera != null) return _UICamera;
+            _UICameraAndEventSystemGo = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
+            _UICamera = _UICameraAndEventSystemGo.GetComponentInChildren<Camera>();
+            Object.DontDestroyOnLoad(_UICameraAndEventSystemGo);
             return _UICamera;
         }
 
