@@ -10,6 +10,7 @@ namespace Capstones.UnityEngineEx
     public static class UIResManager
     {
         private static Camera _UICamera;
+        private const int SceneAndDialogCacheLayer = 17;
         public static Camera GetUICamera()
         {
             return _UICamera;
@@ -50,6 +51,10 @@ namespace Capstones.UnityEngineEx
             var ret = new PackedSceneObjs();
             foreach (var obj in oldObjs)
             {
+                if (obj.layer == SceneAndDialogCacheLayer)
+                {
+                    continue;
+                }
                 var canvas = obj.GetComponent<Canvas>();
                 if (canvas != null && canvas.sortingLayerName == "Dialog")
                 {

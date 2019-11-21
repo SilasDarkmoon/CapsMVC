@@ -25,15 +25,6 @@ local unmanagedBlockDialogs =
     ["Game/UI/Common/Template/Loading/WaitForPost2.prefab"] = true,
 }
 
-local function resprint(msg)
-    dump(nil, msg)
-    dump(res.ctrlStack, "resprint step 1 res.ctrlStack")
-    for k,v in pairs(res.sceneCache) do
-        print("resprint step 2 res.sceneCache = " .. k)
-    end
-    dump(res.curSceneInfo, "resprint step 3 res.curSceneInfo")
-end
-
 --#region Basic and Override
 function res.IsClrNull(obj)
     return obj == nil or obj == clr.null
@@ -127,7 +118,7 @@ local function GetSceneSeq()
     return res.sceneSeq
 end
 
-local sceneCacheMax = 5
+local sceneCacheMax = 2
 
 function res.SetSceneCacheMax(cnt)
     if type(cnt) ~= "number" or cnt < 1 then
@@ -150,9 +141,7 @@ function res.DestroyGameObjectList(objs)
 end
 
 local function TrimSceneCache(isNoCollectGarbage)
-    dump(nil, "TrimSceneCache step 1")
     if table.nums(res.sceneCache) <= sceneCacheMax then return end
-    dump(nil, "TrimSceneCache step 2")
     local sceneTable = {}
     for k, v in pairs(res.sceneCache) do
         local sceneInfo = v
@@ -207,7 +196,6 @@ local function SaveCurrentSceneInfo()
     local sceneCacheItem
     if type(res.curSceneInfo) == "table" and not res.IsClrNull(res.curSceneInfo.view) then
         sceneCacheItem = res.sceneCache[res.curSceneInfo.path]
-        dump(sceneCacheItem, "SaveCurrentSceneInfo step 1 sceneCacheItem")
         if not sceneCacheItem then
             sceneCacheItem = {
                 objs = sgos,
@@ -233,7 +221,6 @@ local function SaveCurrentSceneInfo()
             objs = sgos,
             pack = pack,
         }
-        dump(sceneCacheItem, "SaveCurrentSceneInfo step 2 sceneCacheItem")
     end
 
     for i, dgo in ipairs(dgos) do
@@ -331,7 +318,6 @@ local function MoveToDontDestroy(sceneCacheItem)
         local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
         for i, v in ipairs(sgos) do
             if not res.IsClrNull(v) and not res.IsClrNull(v.transform) then
-                dump(v, "MoveToDontDestroy step 1")
                 v.transform:SetParent(dontDestroyRootForSavedScene.transform, false)
             end
         end
@@ -356,29 +342,20 @@ local function MoveToSceneAndDialogCache(sceneCacheItem)
 end
 
 local function DisableCachedScene(sceneCacheItem)
-    dump(sceneCacheItem, "DisableCachedScene step 1 ***************")
     if sceneCacheItem and sceneCacheItem.pack then
-        dump(nil, "DisableCachedScene step 2")
         if sceneCacheItem.view then
-            dump(nil, "DisableCachedScene step 3")
             -- MoveToDontDestroy(sceneCacheItem)
             MoveToSceneAndDialogCache(sceneCacheItem)
             local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
-            dump(sgos, "DisableCachedScene step 3.1")
             for i, v in ipairs(sgos) do
-                dump(v, "DisableCachedScene step 4")
                 if not res.IsClrNull(v) then
-                    dump(v, "DisableCachedScene step 5")
                     v:SetActive(false)
                 end
             end
         else
-            dump(nil, "DisableCachedScene step 6")
             local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
             for i, v in ipairs(sgos) do
-                dump(nil, "DisableCachedScene step 7")
                 if not res.IsClrNull(v) then
-                    dump(nil, "DisableCachedScene step 8")
                     Object.Destroy(v)
                 end
             end
@@ -460,7 +437,6 @@ local function TrimCtrlStack()
 end
 
 function res.ClearCtrlStack()
-    dump(nil, "res.ClearCtrlStack step 1")
     res.ctrlStack = {}
 end
 
@@ -531,10 +507,8 @@ local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
         path = ctrlPath,
     }
     local cachedSceneInfo = res.sceneCache[ctrlPath]
-    dump(cachedSceneInfo, "LoadPrefabScene step 1")
     res.sceneCache[ctrlPath] = nil
     local ctrlClass = require(ctrlPath)
-    resprint("LoadPrefabScene step 2")
     local args = {...}
     local argc = select('#', ...)
 
@@ -570,7 +544,6 @@ local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
                     local obj = Object.Instantiate(prefab)
-                    dump(nil, "UIResManager.CreateCameraAndEventSystem step 1")
                     local camera = UIResManager.CreateCameraAndEventSystem()
                     res.SetUICamera(obj, camera)
                     res.curSceneInfo.view = res.GetLuaScript(obj)
@@ -643,8 +616,6 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
 
     local waitHandle = {}
 
-    resprint("LoadPrefabSceneAsync step 1")
-
     -- local function CreateDialogs()
     --     if type(dialogData) == "table" then
     --         table.sort(dialogData, function(a, b) return a.order < b.order end)
@@ -696,7 +667,6 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     local prefab = loadinfo.asset
                     if prefab then
                         local obj = Object.Instantiate(prefab)
-                        dump(nil, "UIResManager.CreateCameraAndEventSystem step 2")
                         local camera = UIResManager.CreateCameraAndEventSystem()
                         res.SetUICamera(obj, camera)
                         res.curSceneInfo.view = res.GetLuaScript(obj)
@@ -788,7 +758,6 @@ function res.LoadViewImmediate(name, ...)
         if prefab then
             local obj = Object.Instantiate(prefab)
             DisableCachedScene(cacheItem)
-            dump(nil, "UIResManager.CreateCameraAndEventSystem step 3")
             local camera = UIResManager.CreateCameraAndEventSystem()
             res.SetUICamera(obj, camera)
             return res.GetLuaScript(obj)
@@ -822,7 +791,6 @@ function res.LoadViewAsync(name, ...)
             end
             if prefab then
                 local obj = Object.Instantiate(prefab)
-                dump(nil, "UIResManager.CreateCameraAndEventSystem step 4")
                 local camera = UIResManager.CreateCameraAndEventSystem()
                 res.SetUICamera(obj, camera)
             end
@@ -850,7 +818,6 @@ function res.LoadView(name, ...)
             local prefab = res.LoadRes(name)
             if prefab then
                 local obj = Object.Instantiate(prefab)
-                dump(nil, "UIResManager.CreateCameraAndEventSystem step 5")
                 local camera = UIResManager.CreateCameraAndEventSystem()
                 unity.waitForNextEndOfFrame()
                 DisableCachedScene(cacheItem)
@@ -862,17 +829,10 @@ function res.LoadView(name, ...)
 end
 
 function res.PushSceneImmediate(ctrlPath, ...)
-    dump(ctrlPath, "res.PushSceneImmediate step 1 -----------------")
-    resprint("res.PushSceneImmediate step 2")
     SaveCurrentStatusData()
-    resprint("res.PushSceneImmediate step 3")
     local cacheItem = SaveCurrentSceneInfo()
-    dump(cacheItem, "res.PushSceneImmediate step 3.1 cacheItem")
-    resprint("res.PushSceneImmediate step 4")
     DisableCachedScene(cacheItem)
-    resprint("res.PushSceneImmediate step 5")
     ClearCurrentSceneInfo()
-    resprint("res.PushSceneImmediate step 6")
 
     return LoadPrefabScene(res.LoadType.Push, ctrlPath, nil, ...)
 end
@@ -917,16 +877,11 @@ end
 function res.PopSceneWithCurrentSceneImmediate(...)
     if #res.ctrlStack == 0 then return end
 
-    resprint("res.PopSceneWithCurrentSceneImmediate step 1")
     local cacheItem = SaveCurrentSceneInfo()
-    resprint("res.PopSceneWithCurrentSceneImmediate step 2")
     DisableCachedScene(cacheItem)
-    resprint("res.PopSceneWithCurrentSceneImmediate step 3")
     ClearCurrentSceneInfo()
-    resprint("res.PopSceneWithCurrentSceneImmediate step 4")
     -- restore old info
     local ctrlInfo = table.remove(res.ctrlStack)
-    resprint("res.PopSceneWithCurrentSceneImmediate step 5")
     local ctrlPath = ctrlInfo.path
     local argc = select('#', ...)
     local args = {...}
@@ -1025,14 +980,10 @@ function res.ChangeSceneImmediate(ctrlPath, ...)
 end
 
 function res.ChangeSceneAsync(ctrlPath, ...)
-    resprint("res.ChangeSceneAsync step 1 ctrlPath = " .. ctrlPath)
     SaveCurrentStatusData()
-    resprint("res.ChangeSceneAsync step 2")
     local cacheItem = SaveCurrentSceneInfo()
-    resprint("res.ChangeSceneAsync step 3")
     -- res.ClearSceneCache()
     ClearCurrentSceneInfo()
-    resprint("res.ChangeSceneAsync step 4")
     return LoadPrefabSceneAsync(res.LoadType.Change, ctrlPath, { cacheItem = cacheItem }, ...)
 end
 
