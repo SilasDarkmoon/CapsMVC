@@ -10,6 +10,7 @@ namespace Capstones.UnityEngineEx
     public static class UIResManager
     {
         private static Camera _UICamera;
+        private const int SceneAndDialogCacheLayer = 17;
         public static Camera GetUICamera()
         {
             return _UICamera;
@@ -24,11 +25,14 @@ namespace Capstones.UnityEngineEx
         }
 
         private static GameObject _UICameraAndEventSystemTemplate = null;
+        private static GameObject _UICameraAndEventSystemGo = null;
         public static Camera CreateCameraAndEventSystem()
         {
             if (_UICameraAndEventSystemTemplate == null) _UICameraAndEventSystemTemplate = ResManager.LoadResDeep("UICameraAndEventSystem.prefab") as GameObject;
-            var container = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
-            _UICamera = container.GetComponentInChildren<Camera>();
+            if (_UICameraAndEventSystemGo != null && _UICamera != null) return _UICamera;
+            _UICameraAndEventSystemGo = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
+            _UICamera = _UICameraAndEventSystemGo.GetComponentInChildren<Camera>();
+            Object.DontDestroyOnLoad(_UICameraAndEventSystemGo);
             return _UICamera;
         }
 
@@ -47,6 +51,10 @@ namespace Capstones.UnityEngineEx
             var ret = new PackedSceneObjs();
             foreach (var obj in oldObjs)
             {
+                if (obj.layer == SceneAndDialogCacheLayer)
+                {
+                    continue;
+                }
                 var canvas = obj.GetComponent<Canvas>();
                 if (canvas != null && canvas.sortingLayerName == "Dialog")
                 {
