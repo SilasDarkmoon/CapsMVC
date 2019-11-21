@@ -903,7 +903,6 @@ end
 
 function res.PopSceneWithoutCurrentImmediate(...)
     if #res.ctrlStack == 0 then return end
-
     local sgos = UIResManager.PackSceneObj()
     res.DestroyGameObjectList(sgos)
     -- restore old info
@@ -1038,15 +1037,11 @@ local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
     return dialogInfo.ctrl
 end
 
-
-
--- function res.CacheHandle()
---     SaveCurrentStatusData()
---     local disableOrDestroySceneFunc = SaveCurrentSceneInfo()
---     disableOrDestroySceneFunc()
---     ClearCurrentSceneInfo()
--- end
-
+function res.CacheHandle()
+    SaveCurrentStatusData()
+    local disableOrDestroySceneFunc = SaveCurrentSceneInfo()
+    ClearCurrentSceneInfo()
+end
 
 function res.PushDialogImmediate(ctrlPath, ...)
     return LoadPrefabDialog(res.LoadType.Push, ctrlPath, nil, ...)
@@ -1197,6 +1192,18 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
     end
 
     return dialog, diagcomp
+end
+
+local UILayers = 5
+function res.ChangeCameraDialogToUI(dialog)
+    res.SetUICamera(dialog, UIResManager.FindUICamera())
+    res.ChangeGameObjectLayer(dialog, UILayers)
+end
+
+local DialogLayers = 23
+function res.ChangeCameraDialogToDialog(dialog)
+    res.SetUICamera(dialog, res.GetDialogCamera())
+    res.ChangeGameObjectLayer(dialog, DialogLayers)
 end
 
 function res.AdjustDialogCamera(scd, uds, dialog, withShadow)
