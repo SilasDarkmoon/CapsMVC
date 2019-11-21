@@ -132,6 +132,7 @@ function res.GetSceneCacheMax()
 end
 
 function res.DestroyGameObjectList(objs)
+    if res.IsClrNull(objs) then return end
     local lst = clr.table(objs)
     for i, v in ipairs(lst) do
         if not res.IsClrNull(v) then
