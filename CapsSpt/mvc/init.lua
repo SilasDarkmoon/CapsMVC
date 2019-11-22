@@ -541,6 +541,8 @@ local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
                     until mainManager or waitFrames > 10
                     res.curSceneInfo.view = mainManager
                 end
+
+                res.ClearSceneCache()
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
@@ -870,7 +872,6 @@ end
 
 function res.PopScene(...)
     if not CloseDialog() then
-        print("res.PopScene step 2")
         return res.PopSceneWithCurrentScene(...)
     end
 end
