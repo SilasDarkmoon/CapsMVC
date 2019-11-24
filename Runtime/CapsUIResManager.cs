@@ -32,7 +32,6 @@ namespace Capstones.UnityEngineEx
             if (_UICameraAndEventSystemGo != null && _UICamera != null) return _UICamera;
             _UICameraAndEventSystemGo = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
             _UICamera = _UICameraAndEventSystemGo.GetComponentInChildren<Camera>();
-            Object.DontDestroyOnLoad(_UICameraAndEventSystemGo);
             return _UICamera;
         }
 
