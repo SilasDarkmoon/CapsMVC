@@ -11,16 +11,20 @@ namespace Capstones.UnityEngineEx
     {
         private static Camera _UICamera;
         private const int SceneAndDialogCacheLayer = 17;
-        public static Camera GetUICamera()
-        {
-            return _UICamera;
-        }
+        private const string UICameraName = "UICameraAndEventSystem(Clone)";
+
+        //public static Camera GetUICamera()
+        //{
+        //    return _UICamera;
+        //}
 
         public static Camera FindUICamera()
         {
             if (_UICamera != null && !_UICamera.isActiveAndEnabled) _UICamera = null;
-            if (_UICamera == null) _UICamera = Camera.main;
-            if (_UICamera == null) _UICamera = GameObject.FindObjectOfType<Camera>();
+            //if (_UICamera == null) _UICamera = Camera.main;
+            //if (_UICamera == null) _UICamera = GameObject.FindObjectOfType<Camera>();
+
+            if (_UICamera == null) CreateCameraAndEventSystem();
             return _UICamera;
         }
 
@@ -50,7 +54,8 @@ namespace Capstones.UnityEngineEx
             var ret = new PackedSceneObjs();
             foreach (var obj in oldObjs)
             {
-                if (obj.layer == SceneAndDialogCacheLayer)
+                if ((obj.layer == SceneAndDialogCacheLayer) ||
+                    (UICameraName.Equals(obj.name)))
                 {
                     continue;
                 }
