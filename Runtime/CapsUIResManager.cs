@@ -75,7 +75,7 @@ namespace Capstones.UnityEngineEx
                     if (find)
                     {
                         ret.DialogObjs.Add(obj);
-                        //ret.InitialDialogObjsActive.Add(obj.activeSelf);
+                        ret.InitialDialogObjsActive.Add(obj.activeSelf);
                         continue;
                     }
                     ret.SceneObjs.Add(obj);
