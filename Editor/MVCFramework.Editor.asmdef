@@ -1,0 +1,16 @@
+{
+    "name": "MVCFramework.Editor",
+    "references": [
+        "GUID:72b721494f059a14f9ea84d12ba941ca"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
