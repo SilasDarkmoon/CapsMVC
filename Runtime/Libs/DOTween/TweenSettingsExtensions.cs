@@ -43,6 +43,10 @@ namespace DG.Tweening
             t.autoKill = true;
             return t;
         }
+        public static Tween SetAutoKill(Tween t)
+        {
+            return SetAutoKill<Tween>(t);
+        }
         /// <summary>Sets the autoKill behaviour of the tween. 
         /// Has no effect if the tween has already started</summary>
         /// <param name="autoKillOnCompletion">If TRUE the tween will be automatically killed when complete</param>
@@ -53,6 +57,10 @@ namespace DG.Tweening
             t.autoKill = autoKillOnCompletion;
             return t;
         }
+        public static Tween SetAutoKill(Tween t, bool autoKillOnCompletion)
+        {
+            return SetAutoKill<Tween>(t, autoKillOnCompletion);
+        }
 
         /// <summary>Sets an ID for the tween, which can then be used as a filter with DOTween's static methods.</summary>
         /// <param name="id">The ID to assign to this tween. Can be an int, a string, an object or anything else.</param>
@@ -62,6 +70,10 @@ namespace DG.Tweening
 
             t.id = id;
             return t;
+        }
+        public static Tween SetId(Tween t, object id)
+        {
+            return SetId<Tween>(t, id);
         }
 
         /// <summary>Sets the target for the tween, which can then be used as a filter with DOTween's static methods.
@@ -75,6 +87,10 @@ namespace DG.Tweening
 
             t.target = target;
             return t;
+        }
+        public static Tween SetTarget(Tween t, object target)
+        {
+            return SetTarget<Tween>(t, target);
         }
 
         /// <summary>Sets the looping options for the tween. 
@@ -93,6 +109,10 @@ namespace DG.Tweening
                 else t.fullDuration = Mathf.Infinity;
             }
             return t;
+        }
+        public static Tween SetLoops(Tween t, int loops)
+        {
+            return SetLoops<Tween>(t, loops);
         }
         /// <summary>Sets the looping options for the tween. 
         /// Has no effect if the tween has already started</summary>
@@ -113,6 +133,10 @@ namespace DG.Tweening
             }
             return t;
         }
+        public static Tween SetLoops(Tween t, int loops, LoopType loopType)
+        {
+            return SetLoops<Tween>(t, loops, loopType);
+        }
 
         /// <summary>Sets the ease of the tween.
         /// <para>If applied to Sequences eases the whole sequence animation</para></summary>
@@ -125,6 +149,10 @@ namespace DG.Tweening
             
             t.customEase = null;
             return t;
+        }
+        public static Tween SetEase(Tween t, Ease ease)
+        {
+            return SetEase<Tween>(t, ease);
         }
         /// <summary>Sets the ease of the tween.
         /// <para>If applied to Sequences eases the whole sequence animation</para></summary>
@@ -142,6 +170,10 @@ namespace DG.Tweening
             t.easeOvershootOrAmplitude = overshoot;
             t.customEase = null;
             return t;
+        }
+        public static Tween SetEase(Tween t, Ease ease, float overshoot)
+        {
+            return SetEase<Tween>(t, ease, overshoot);
         }
         /// <summary>Sets the ease of the tween.
         /// <para>If applied to Sequences eases the whole sequence animation</para></summary>
@@ -164,6 +196,10 @@ namespace DG.Tweening
             t.customEase = null;
             return t;
         }
+        public static Tween SetEase(Tween t, Ease ease, float amplitude, float period)
+        {
+            return SetEase<Tween>(t, ease, amplitude, period);
+        }
         /// <summary>Sets the ease of the tween using an AnimationCurve.
         /// <para>If applied to Sequences eases the whole sequence animation</para></summary>
         public static T SetEase<T>(this T t, AnimationCurve animCurve) where T : Tween
@@ -173,6 +209,10 @@ namespace DG.Tweening
             t.easeType = Ease.INTERNAL_Custom;
             t.customEase = new EaseCurve(animCurve).Evaluate;
             return t;
+        }
+        public static Tween SetEase(Tween t, AnimationCurve animCurve)
+        {
+            return SetEase<Tween>(t, animCurve);
         }
         /// <summary>Sets the ease of the tween using a custom ease function (which must return a value between 0 and 1).
         /// <para>If applied to Sequences eases the whole sequence animation</para></summary>
@@ -184,6 +224,10 @@ namespace DG.Tweening
             t.customEase = customEase;
             return t;
         }
+        public static Tween SetEase(Tween t, EaseFunction customEase)
+        {
+            return SetEase<Tween>(t, customEase);
+        }
 
         /// <summary>Allows the tween to be recycled after being killed.</summary>
         public static T SetRecyclable<T>(this T t) where T : Tween
@@ -193,6 +237,10 @@ namespace DG.Tweening
             t.isRecyclable = true;
             return t;
         }
+        public static Tween SetRecyclable(Tween t)
+        {
+            return SetRecyclable<Tween>(t);
+        }
         /// <summary>Sets the recycling behaviour for the tween.</summary>
         /// <param name="recyclable">If TRUE the tween will be recycled after being killed, otherwise it will be destroyed.</param>
         public static T SetRecyclable<T>(this T t, bool recyclable) where T : Tween
@@ -201,6 +249,10 @@ namespace DG.Tweening
 
             t.isRecyclable = recyclable;
             return t;
+        }
+        public static Tween SetRecyclable(Tween t, bool recyclable)
+        {
+            return SetRecyclable<Tween>(t, recyclable);
         }
 
         /// <summary>Sets the update type to UpdateType.Normal and lets you choose if it should be independent from Unity's Time.timeScale</summary>
@@ -212,6 +264,10 @@ namespace DG.Tweening
             TweenManager.SetUpdateType(t, DOTween.defaultUpdateType, isIndependentUpdate);
             return t;
         }
+        public static Tween SetUpdate(Tween t, bool isIndependentUpdate)
+        {
+            return SetUpdate<Tween>(t, isIndependentUpdate);
+        }
         /// <summary>Sets the type of update for the tween</summary>
         /// <param name="updateType">The type of update (defalt: UpdateType.Normal)</param>
         public static T SetUpdate<T>(this T t, UpdateType updateType) where T : Tween
@@ -220,6 +276,10 @@ namespace DG.Tweening
 
             TweenManager.SetUpdateType(t, updateType, DOTween.defaultTimeScaleIndependent);
             return t;
+        }
+        public static Tween SetUpdate(Tween t, UpdateType updateType)
+        {
+            return SetUpdate<Tween>(t, updateType);
         }
         /// <summary>Sets the type of update for the tween and lets you choose if it should be independent from Unity's Time.timeScale</summary>
         /// <param name="updateType">The type of update</param>
@@ -231,6 +291,10 @@ namespace DG.Tweening
             TweenManager.SetUpdateType(t, updateType, isIndependentUpdate);
             return t;
         }
+        public static Tween SetUpdate(Tween t, UpdateType updateType, bool isIndependentUpdate)
+        {
+            return SetUpdate<Tween>(t, updateType, isIndependentUpdate);
+        }
 
         /// <summary>Sets the onStart callback for the tween.
         /// Called the first time the tween is set in a playing state, after any eventual delay</summary>
@@ -240,6 +304,10 @@ namespace DG.Tweening
 
             t.onStart = action;
             return t;
+        }
+        public static Tween OnStart(Tween t, TweenCallback action)
+        {
+            return OnStart<Tween>(t, action);
         }
 
         /// <summary>Sets the onPlay callback for the tween.
@@ -252,6 +320,10 @@ namespace DG.Tweening
             t.onPlay = action;
             return t;
         }
+        public static Tween OnPlay(Tween t, TweenCallback action)
+        {
+            return OnPlay<Tween>(t, action);
+        }
 
         /// <summary>Sets the onPlay callback for the tween.
         /// Called when the tween state changes from playing to paused.
@@ -262,6 +334,10 @@ namespace DG.Tweening
 
             t.onPause = action;
             return t;
+        }
+        public static Tween OnPause(Tween t, TweenCallback action)
+        {
+            return OnPause<Tween>(t, action);
         }
 
         /// <summary>Sets the onRewind callback for the tween.
@@ -275,6 +351,10 @@ namespace DG.Tweening
             t.onRewind = action;
             return t;
         }
+        public static Tween OnRewind(Tween t, TweenCallback action)
+        {
+            return OnRewind<Tween>(t, action);
+        }
 
         /// <summary>Sets the onUpdate callback for the tween.
         /// Called each time the tween updates</summary>
@@ -284,6 +364,10 @@ namespace DG.Tweening
 
             t.onUpdate = action;
             return t;
+        }
+        public static Tween OnUpdate(Tween t, TweenCallback action)
+        {
+            return OnUpdate<Tween>(t, action);
         }
 
         /// <summary>Sets the onStepComplete callback for the tween.
@@ -295,14 +379,23 @@ namespace DG.Tweening
             t.onStepComplete = action;
             return t;
         }
+        public static Tween OnStepComplete(Tween t, TweenCallback action)
+        {
+            return OnStepComplete<Tween>(t, action);
+        }
 
         /// <summary>Sets the onComplete callback for the tween.
         /// Called the moment the tween reaches its final forward position, loops included</summary>
         public static T OnComplete<T>(this T t, TweenCallback action) where T : Tween
         {
             if (t == null || !t.active) return t;
+
             t.onComplete = action;
             return t;
+        }
+        public static Tween OnComplete(Tween t, TweenCallback action)
+        {
+            return OnComplete<Tween>(t, action);
         }
 
         /// <summary>Sets the onKill callback for the tween.
@@ -314,6 +407,10 @@ namespace DG.Tweening
             t.onKill = action;
             return t;
         }
+        public static Tween OnKill(Tween t, TweenCallback action)
+        {
+            return OnKill<Tween>(t, action);
+        }
 
         /// <summary>Sets the onWaypointChange callback for the tween.
         /// Called when a path tween's current waypoint changes</summary>
@@ -323,6 +420,10 @@ namespace DG.Tweening
 
             t.onWaypointChange = action;
             return t;
+        }
+        public static Tween OnWaypointChange(Tween t, TweenCallback<int> action)
+        {
+            return OnWaypointChange<Tween>(t, action);
         }
 
         /// <summary>Sets the parameters of the tween (id, ease, loops, delay, timeScale, callbacks, etc) as the parameters of the given one.
@@ -370,6 +471,10 @@ namespace DG.Tweening
 
             return t;
         }
+        public static Tween SetAs(Tween t, Tween asTween)
+        {
+            return SetAs<Tween>(t, asTween);
+        }
 
         /// <summary>Sets the parameters of the tween (id, ease, loops, delay, timeScale, callbacks, etc) as the parameters of the given TweenParams.
         /// <para>Has no effect if the tween has already started.</para></summary>
@@ -412,6 +517,10 @@ namespace DG.Tweening
             t.easePeriod = tweenParams.easePeriod;
 
             return t;
+        }
+        public static Tween SetAs(Tween t, TweenParams tweenParams)
+        {
+            return SetAs<Tween>(t, tweenParams);
         }
 
         #endregion
@@ -535,6 +644,10 @@ namespace DG.Tweening
             t.SetFrom(false);
             return t;
         }
+        public static Tweener From(Tweener t)
+        {
+            return From<Tweener>(t);
+        }
         /// <summary>Changes a TO tween into a FROM tween: sets the current target's position as the tween's endValue
         /// then immediately sends the target to the previously set endValue.</summary>
         /// <param name="isRelative">If TRUE the FROM value will be calculated as relative to the current one</param>
@@ -546,6 +659,10 @@ namespace DG.Tweening
             if (!isRelative) t.SetFrom(false);
             else t.SetFrom(!t.isBlendable);
             return t;
+        }
+        public static Tweener From(Tweener t, bool isRelative)
+        {
+            return From<Tweener>(t, isRelative);
         }
 
         /// <summary>Sets a delayed startup for the tween.
@@ -562,6 +679,10 @@ namespace DG.Tweening
             }
             return t;
         }
+        public static Tween SetDelay(Tween t, float delay)
+        {
+            return SetDelay<Tween>(t, delay);
+        }
 
         /// <summary>Sets the tween as relative
         /// (the endValue will be calculated as <code>startValue + endValue</code> instead than being used directly).
@@ -573,6 +694,10 @@ namespace DG.Tweening
             t.isRelative = true;
             return t;
         }
+        public static Tween SetRelative(Tween t)
+        {
+            return SetRelative<Tween>(t);
+        }
         /// <summary>If isRelative is TRUE sets the tween as relative
         /// (the endValue will be calculated as <code>startValue + endValue</code> instead than being used directly).
         /// <para>Has no effect on Sequences or if the tween has already started</para></summary>
@@ -582,6 +707,10 @@ namespace DG.Tweening
 
             t.isRelative = isRelative;
             return t;
+        }
+        public static Tween SetRelative(Tween t, bool isRelative)
+        {
+            return SetRelative<Tween>(t, isRelative);
         }
 
         /// <summary>If isSpeedBased is TRUE sets the tween as speed based
@@ -594,6 +723,10 @@ namespace DG.Tweening
             t.isSpeedBased = true;
             return t;
         }
+        public static Tween SetSpeedBased(Tween t)
+        {
+            return SetSpeedBased<Tween>(t);
+        }
         /// <summary>If isSpeedBased is TRUE sets the tween as speed based
         /// (the duration will represent the number of units the tween moves x second).
         /// <para>Has no effect on Sequences, nested tweens, or if the tween has already started</para></summary>
@@ -603,6 +736,10 @@ namespace DG.Tweening
 
             t.isSpeedBased = isSpeedBased;
             return t;
+        }
+        public static Tween SetSpeedBased(Tween t, bool isSpeedBased)
+        {
+            return SetSpeedBased<Tween>(t, isSpeedBased);
         }
 
         #endregion
