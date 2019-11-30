@@ -645,6 +645,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
                 end
 
                 res.ClearSceneCache()
+                res.CollectGarbage()
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
@@ -766,6 +767,8 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
                     waitHandle.ctrl = res.curSceneInfo.ctrl
                 end
+
+                res.CollectGarbage()
             else
                 local loadinfo = ResManager.LoadResAsync(ctrlClass.viewPath)
                 if loadinfo then
@@ -855,6 +858,8 @@ function res.LoadViewImmediate(name, ...)
         -- cacheItem = nil
         ResManager.LoadScene(name)
         -- DisableCachedScene(cacheItem)
+        res.ClearSceneCache()
+        res.CollectGarbage()
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -883,6 +888,9 @@ function res.LoadViewAsync(name, ...)
                 coroutine.yield(loadinfo)
                 unity.waitForNextEndOfFrame()
             end
+
+            res.ClearSceneCache()
+            res.CollectGarbage()
         else
             local prefab
             local loadinfo = ResManager.LoadResAsync(name)
@@ -916,6 +924,8 @@ function res.LoadView(name, ...)
             ResManager.LoadScene(name)
             unity.waitForNextEndOfFrame()
             -- DisableCachedScene(cacheItem)
+            res.ClearSceneCache()
+            res.CollectGarbage()
         else
             local prefab = res.LoadRes(name)
             if prefab then
@@ -1397,20 +1407,11 @@ local delayRunGCTime = 10
 local _currRunGCTime = -1
 function res.CollectGarbage(callfun)
     collectgarbage()
-    local co = coroutine.create(function(...)
-        if _currRunGCTime > 0 and (Time.realtimeSinceStartup - _currRunGCTime) < delayRunGCTime then
-
-        else
-            _currRunGCTime = Time.realtimeSinceStartup
-            coroutine_yield_waitForEndOfFrame()
-            clr.System.GC.Collect()
-            coroutine_yield_waitForEndOfFrame()
-            coroutine_yield(UnityEngine.Resources.UnloadUnusedAssets())
-        end
-
+    clr.coroutine(function()
+        coroutine.yield(unity.waitForNextEndOfFrame())
+        coroutine.yield(ResManager.UnloadUnusedResDeep())
         if callfun ~= nil and type(callfun) == "function" then callfun() end
     end)
-    coroutine.resume(co)
 end
 
 return res
