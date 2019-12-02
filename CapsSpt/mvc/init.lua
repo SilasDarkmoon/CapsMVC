@@ -1407,11 +1407,21 @@ local delayRunGCTime = 10
 local _currRunGCTime = -1
 function res.CollectGarbage(callfun)
     collectgarbage()
-    clr.coroutine(function()
-        coroutine.yield(unity.waitForNextEndOfFrame())
-        coroutine.yield(ResManager.UnloadUnusedResDeep())
+    -- clr.coroutine(function()
+    --     coroutine.yield(unity.waitForNextEndOfFrame())
+    --     coroutine.yield(ResManager.UnloadUnusedResDeep())
+    --     if callfun ~= nil and type(callfun) == "function" then callfun() end
+    -- end)
+
+    if _currRunGCTime > 0 and (Time.realtimeSinceStartup - _currRunGCTime) < delayRunGCTime then
         if callfun ~= nil and type(callfun) == "function" then callfun() end
-    end)
+    else
+        clr.coroutine(function()
+            coroutine.yield(unity.waitForNextEndOfFrame())
+            coroutine.yield(ResManager.UnloadUnusedResDeep())
+            if callfun ~= nil and type(callfun) == "function" then callfun() end
+        end)
+    end
 end
 
 return res
