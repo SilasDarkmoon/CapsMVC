@@ -9,6 +9,18 @@ function behaviour:ctor()
     self:_RegisterEvent()
 end
 
+function behaviour:onDestroy()
+    dump(self.__cname, "behaviour:onDestroy step 0.1")
+    if self.___ex then
+        for k,v in pairs(self.___ex) do
+            dump(k, "behaviour:onDestroy step 1")
+            dump(v, "behaviour:onDestroy step 2")
+            self[k] = nil
+        end
+    end
+    self:_onDestroy()
+end
+
 function behaviour:_onDestroy()
     if self.unityEventListCache then
         for i, unityEvent in ipairs(self.unityEventListCache) do
@@ -18,7 +30,6 @@ function behaviour:_onDestroy()
     end
 
     self:_UnregisterEvent()
-
     self.___ex = nil
     -- self.___cs = nil
 end

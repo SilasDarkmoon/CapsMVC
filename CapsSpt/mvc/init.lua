@@ -145,8 +145,7 @@ function res.DestroyGameObjectList(objs)
     local lst = clr.table(objs)
     for i, v in ipairs(lst) do
         if not res.IsClrNull(v) then
-            -- Object.Destroy(v)
-            Object.DestroyImmediate(v)
+            Object.Destroy(v)
         end
     end
 end
