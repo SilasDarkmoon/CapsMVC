@@ -9,7 +9,7 @@ function behaviour:ctor()
     self:_RegisterEvent()
 end
 
-function behaviour:_onDestroy()
+function behaviour:onDestroy()
     if self.unityEventListCache then
         for i, unityEvent in ipairs(self.unityEventListCache) do
             unityEvent:RemoveAllListeners()
@@ -17,8 +17,13 @@ function behaviour:_onDestroy()
         self.unityEventListCache = nil
     end
 
-    self:_UnregisterEvent()
+    if self.___ex then
+        for k,v in pairs(self.___ex) do
+            self[k] = nil
+        end
+    end
 
+    self:_UnregisterEvent()
     self.___ex = nil
     -- self.___cs = nil
 end

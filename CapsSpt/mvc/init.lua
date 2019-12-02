@@ -645,7 +645,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
                 end
 
                 res.ClearSceneCache()
-                res.CollectGarbage()
+                res.CollectGarbage(nil, true)
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
@@ -768,7 +768,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     waitHandle.ctrl = res.curSceneInfo.ctrl
                 end
 
-                res.CollectGarbage()
+                res.CollectGarbage(nil, true)
             else
                 local loadinfo = ResManager.LoadResAsync(ctrlClass.viewPath)
                 if loadinfo then
@@ -859,7 +859,7 @@ function res.LoadViewImmediate(name, ...)
         ResManager.LoadScene(name)
         -- DisableCachedScene(cacheItem)
         res.ClearSceneCache()
-        res.CollectGarbage()
+        res.CollectGarbage(nil, true)
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -890,7 +890,7 @@ function res.LoadViewAsync(name, ...)
             end
 
             res.ClearSceneCache()
-            res.CollectGarbage()
+            res.CollectGarbage(nil, true)
         else
             local prefab
             local loadinfo = ResManager.LoadResAsync(name)
@@ -925,7 +925,7 @@ function res.LoadView(name, ...)
             unity.waitForNextEndOfFrame()
             -- DisableCachedScene(cacheItem)
             res.ClearSceneCache()
-            res.CollectGarbage()
+            res.CollectGarbage(nil, true)
         else
             local prefab = res.LoadRes(name)
             if prefab then
@@ -1405,13 +1405,18 @@ end
 
 local delayRunGCTime = 10
 local _currRunGCTime = -1
-function res.CollectGarbage(callfun)
+function res.CollectGarbage(callfun, force)
     collectgarbage()
-    clr.coroutine(function()
-        coroutine.yield(unity.waitForNextEndOfFrame())
-        coroutine.yield(ResManager.UnloadUnusedResDeep())
+
+    if _currRunGCTime > 0 and (Time.realtimeSinceStartup - _currRunGCTime) < delayRunGCTime and not force then
         if callfun ~= nil and type(callfun) == "function" then callfun() end
-    end)
+    else
+        clr.coroutine(function()
+            coroutine.yield(unity.waitForNextEndOfFrame())
+            coroutine.yield(ResManager.UnloadUnusedResDeep())
+            if callfun ~= nil and type(callfun) == "function" then callfun() end
+        end)
+    end
 end
 
 return res
