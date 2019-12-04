@@ -172,7 +172,7 @@ local function TrimSceneCache(isNoCollectGarbage)
         end
     end
     if isNoCollectGarbage ~= true and #sceneTable > sceneCacheMax then
-        res.CollectGarbage()
+        res.CollectGarbage(1)
     end
 end
 
@@ -645,7 +645,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
                 end
 
                 res.ClearSceneCache()
-                res.CollectGarbage(nil, true)
+                res.CollectGarbage(1)
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
@@ -768,7 +768,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     waitHandle.ctrl = res.curSceneInfo.ctrl
                 end
 
-                res.CollectGarbage(nil, true)
+                res.CollectGarbage(1)
             else
                 local loadinfo = ResManager.LoadResAsync(ctrlClass.viewPath)
                 if loadinfo then
@@ -859,7 +859,7 @@ function res.LoadViewImmediate(name, ...)
         ResManager.LoadScene(name)
         -- DisableCachedScene(cacheItem)
         res.ClearSceneCache()
-        res.CollectGarbage(nil, true)
+        res.CollectGarbage(1)
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -890,7 +890,7 @@ function res.LoadViewAsync(name, ...)
             end
 
             res.ClearSceneCache()
-            res.CollectGarbage(nil, true)
+            res.CollectGarbage(1)
         else
             local prefab
             local loadinfo = ResManager.LoadResAsync(name)
@@ -925,7 +925,7 @@ function res.LoadView(name, ...)
             unity.waitForNextEndOfFrame()
             -- DisableCachedScene(cacheItem)
             res.ClearSceneCache()
-            res.CollectGarbage(nil, true)
+            res.CollectGarbage(1)
         else
             local prefab = res.LoadRes(name)
             if prefab then
@@ -1397,25 +1397,13 @@ end
 --     rapidBlurEffect.enabled = false
 -- end
 
-function res.CollectGarbageDeep(funcDone)
-    res.CollectGarbage(function()
-        if funcDone ~= nil and type(funcDone) == "function" then funcDone() end
-    end)
-end
-
-local delayRunGCTime = 10
-local _currRunGCTime = -1
-function res.CollectGarbage(callfun, force)
-    collectgarbage()
-
-    if _currRunGCTime > 0 and (Time.realtimeSinceStartup - _currRunGCTime) < delayRunGCTime and not force then
-        if callfun ~= nil and type(callfun) == "function" then callfun() end
+function res.CollectGarbage(level)
+    if level == 0 then
+        ResManager.StartGarbageCollectLite()
+    elseif level == 1 then
+        ResManager.StartGarbageCollectNorm()
     else
-        clr.coroutine(function()
-            coroutine.yield(unity.waitForNextEndOfFrame())
-            coroutine.yield(ResManager.UnloadUnusedResDeep())
-            if callfun ~= nil and type(callfun) == "function" then callfun() end
-        end)
+        ResManager.StartGarbageCollectDeep()
     end
 end
 
