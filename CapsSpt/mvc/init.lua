@@ -645,7 +645,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
                 end
 
                 res.ClearSceneCache()
-                res.CollectGarbage(1)
+                res.CollectGarbage(2)
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
@@ -768,7 +768,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     waitHandle.ctrl = res.curSceneInfo.ctrl
                 end
 
-                res.CollectGarbage(1)
+                res.CollectGarbage(2)
             else
                 local loadinfo = ResManager.LoadResAsync(ctrlClass.viewPath)
                 if loadinfo then
@@ -859,7 +859,7 @@ function res.LoadViewImmediate(name, ...)
         ResManager.LoadScene(name)
         -- DisableCachedScene(cacheItem)
         res.ClearSceneCache()
-        res.CollectGarbage(1)
+        res.CollectGarbage(2)
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -890,7 +890,7 @@ function res.LoadViewAsync(name, ...)
             end
 
             res.ClearSceneCache()
-            res.CollectGarbage(1)
+            res.CollectGarbage(2)
         else
             local prefab
             local loadinfo = ResManager.LoadResAsync(name)
@@ -925,7 +925,7 @@ function res.LoadView(name, ...)
             unity.waitForNextEndOfFrame()
             -- DisableCachedScene(cacheItem)
             res.ClearSceneCache()
-            res.CollectGarbage(1)
+            res.CollectGarbage(2)
         else
             local prefab = res.LoadRes(name)
             if prefab then
