@@ -30,7 +30,6 @@ namespace DG.Tweening
     /// <summary>
     /// Main DOTween class. Contains static methods to create and control tweens in a generic way
     /// </summary>
-    //[XLua.LuaCallCSharp()]
     public class DOTween
     {
         /// <summary>DOTween's version</summary>

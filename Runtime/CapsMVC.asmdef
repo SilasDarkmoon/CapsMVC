@@ -2,7 +2,8 @@
     "name": "CapsMVC",
     "references": [
         "ResManager",
-        "CapsLua"
+        "CapsLua",
+        "DOTween"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

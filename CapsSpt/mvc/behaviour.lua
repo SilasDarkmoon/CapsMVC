@@ -41,8 +41,8 @@ end
 -- 注意继承behavior的类如果有实现onDestroy则需要调用父类的onDestroy
 function behaviour:AddListener(unityEvent, func, sound)
     unityEvent:AddListener(function(...)
-        -- sound = sound or "Scene/Click.mp3"
-        -- clr.UISoundManager.Play(sound)
+        sound = sound or "Scene/Click.mp3"
+        clr.UISoundManager.Play(sound)
         func(...)
     end)
 
