@@ -86,6 +86,17 @@ namespace UnityEngine.UI
             }
         }
 
+        public void UpdateKeyPointColor(int index, Color color)
+        {
+            if (index < m_keyPointsColor.Length)
+            {
+                m_keyPointsColor[index].color = color;
+                if (graphic != null)
+                    graphic.SetVerticesDirty();
+            }
+            
+        }
+
 #if UNITY_5 || UNITY_5_3_OR_NEWER
         public override void ModifyMesh(VertexHelper vh)
         {
