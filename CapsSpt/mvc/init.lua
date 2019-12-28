@@ -1407,4 +1407,12 @@ function res.CollectGarbage(level)
     end
 end
 
+-- 只弹出一个栈帧
+function res.PopCtrlStack()
+    if #res.ctrlStack == 0 then
+        return
+    end
+    table.remove(res.ctrlStack)
+end
+
 return res
