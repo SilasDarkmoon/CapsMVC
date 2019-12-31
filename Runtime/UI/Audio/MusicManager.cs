@@ -68,6 +68,7 @@ public static class MusicManager
     public static void Stop()
     {
         isPlaying = false;
+        if (AudioManager.GetPlayer("music") == null) return;
         AudioManager.GetPlayer("music").Stop();
     }
 
