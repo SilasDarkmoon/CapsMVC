@@ -56,7 +56,13 @@ public class AudioManager
     {
         if (playerMap.ContainsKey(category))
         {
-            return playerMap[category];
+            var player = playerMap[category];
+            if (!player)
+            {
+                playerMap.Remove(category);
+                return null;
+            }
+            return player;
         }
         return null;
     }
@@ -65,8 +71,16 @@ public class AudioManager
     {
         if (playerMap.ContainsKey(category))
         {
-            if (GLog.IsLogWarningEnabled) GLog.LogWarning("Audio Player '"+ category + "' already created! Returning original player!");
-            return false;
+            var player = playerMap[category];
+            if (!player)
+            {
+                playerMap.Remove(category);
+            }
+            else
+            {
+                if (GLog.IsLogWarningEnabled) GLog.LogWarning("Audio Player '" + category + "' already created! Returning original player!");
+                return false;
+            }
         }
 
         // Create new Audio Player
@@ -94,8 +108,12 @@ public class AudioManager
         }
         if (playerMap[category])
         {
-            playerMap[category].Stop();
-            Object.Destroy(playerMap[category]);
+            var player = playerMap[category];
+            if (player)
+            {
+                player.Stop();
+                Object.Destroy(player);
+            }
         }
 
         playerMap.Remove(category);
