@@ -13,17 +13,11 @@ namespace Capstones.UnityEngineEx
         private const int SceneAndDialogCacheLayer = 17;
         private const string UICameraName = "UICameraAndEventSystem(Clone)";
 
-        //public static Camera GetUICamera()
-        //{
-        //    return _UICamera;
-        //}
+        private static AudioListener _UIAudioListener = null;
 
         public static Camera FindUICamera()
         {
             if (_UICamera != null && !_UICamera.isActiveAndEnabled) _UICamera = null;
-            //if (_UICamera == null) _UICamera = Camera.main;
-            //if (_UICamera == null) _UICamera = GameObject.FindObjectOfType<Camera>();
-
             if (_UICamera == null) CreateCameraAndEventSystem();
             return _UICamera;
         }
@@ -36,6 +30,7 @@ namespace Capstones.UnityEngineEx
             if (_UICameraAndEventSystemGo != null && _UICamera != null) return _UICamera;
             _UICameraAndEventSystemGo = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
             _UICamera = _UICameraAndEventSystemGo.GetComponentInChildren<Camera>();
+            _UIAudioListener = _UICameraAndEventSystemGo.GetComponentInChildren<AudioListener>();
             return _UICamera;
         }
 
@@ -110,12 +105,33 @@ namespace Capstones.UnityEngineEx
             return ResManager.FindAllGameObject();
         }
 
-        public static void ChangeGameObjectLayer(GameObject go, int layer)
+        public static void ChangeGameObjectLayer(Object o, int layer)
         {
+            if (o == null) return;
+            Component com = o as Component;
+            GameObject go;
+            if (com == null)
+            {
+                go = o as GameObject;
+            }
+            else
+            {
+                go = com.gameObject;
+            }
             //遍历当前物体及其所有子物体
             foreach (Transform tran in go.GetComponentsInChildren<Transform>(true))
             {
                 tran.gameObject.layer = layer;//更改物体的Layer层
+            }
+        }
+
+        public static void SetUIAudioListener(string path)
+        {
+            int index = path.IndexOf("unity");
+            bool flag = index == -1 ? true : false;
+            if (_UIAudioListener && _UIAudioListener.enabled != flag)
+            {
+                _UIAudioListener.enabled = flag;
             }
         }
     }
