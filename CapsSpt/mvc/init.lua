@@ -667,6 +667,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             --     end
             -- end
             CreateDialogs()
+            res.SetUIAudioListener(ctrlClass.viewPath)
 
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
@@ -695,6 +696,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             -- end
 
             -- CreateDialogs()
+            res.SetUIAudioListener(ctrlClass.viewPath)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
@@ -800,7 +802,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             end
             res.ClearSceneCache()
             CreateDialogs()
-
+            res.SetUIAudioListener(ctrlClass.viewPath)
             waitHandle.done = true
 
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
@@ -834,7 +836,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             -- CreateDialogs()
             waitHandle.done = true
             waitHandle.ctrl = res.curSceneInfo.ctrl
-
+            res.SetUIAudioListener(ctrlClass.viewPath)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
@@ -854,12 +856,14 @@ function res.LoadViewImmediate(name, ...)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
+
     if string.sub(name, -6) == '.unity' then
         -- cacheItem = nil
         ResManager.LoadScene(name)
         -- DisableCachedScene(cacheItem)
         res.ClearSceneCache()
         res.CollectGarbage(2)
+        res.SetUIAudioListener(name)
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -867,6 +871,7 @@ function res.LoadViewImmediate(name, ...)
             DisableCachedScene(cacheItem)
             local camera = UIResManager.CreateCameraAndEventSystem()
             res.SetUICamera(obj, camera)
+            res.SetUIAudioListener(name)
             return res.GetLuaScript(obj)
         end
     end
@@ -876,6 +881,7 @@ function res.LoadViewAsync(name, ...)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
+
     local waitHandle = {}
     clr.coroutine(function()
         unity.waitForEndOfFrame()
@@ -907,6 +913,7 @@ function res.LoadViewAsync(name, ...)
         end
         DisableCachedScene(cacheItem)
         waitHandle.done = true
+        res.SetUIAudioListener(name)
     end)
     return waitHandle
 end
@@ -914,6 +921,7 @@ end
 function res.LoadView(name, ...)
     local args = {...}
     local argc = select('#', ...)
+
     clr.coroutine(function()
         unity.waitForNextEndOfFrame()
         SaveCurrentStatusData()
@@ -926,6 +934,7 @@ function res.LoadView(name, ...)
             -- DisableCachedScene(cacheItem)
             res.ClearSceneCache()
             res.CollectGarbage(2)
+            res.SetUIAudioListener(name)
         else
             local prefab = res.LoadRes(name)
             if prefab then
@@ -934,6 +943,7 @@ function res.LoadView(name, ...)
                 unity.waitForNextEndOfFrame()
                 DisableCachedScene(cacheItem)
                 res.SetUICamera(obj, camera)
+                res.SetUIAudioListener(name)
                 return res.GetLuaScript(obj)
             end
         end
@@ -1413,6 +1423,10 @@ function res.PopCtrlStack()
         return
     end
     table.remove(res.ctrlStack)
+end
+
+function res.SetUIAudioListener(viewPath)
+    UIResManager.SetUIAudioListener(viewPath)
 end
 
 return res
