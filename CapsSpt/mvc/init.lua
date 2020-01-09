@@ -862,7 +862,7 @@ function res.LoadViewImmediate(name, ...)
         ResManager.LoadScene(name)
         -- DisableCachedScene(cacheItem)
         res.ClearSceneCache()
-        res.CollectGarbage(2)
+        res.CollectGarbage(1)
         res.SetUIAudioListener(name)
     else
         local prefab = res.LoadRes(name)
@@ -896,7 +896,7 @@ function res.LoadViewAsync(name, ...)
             end
 
             res.ClearSceneCache()
-            res.CollectGarbage(2)
+            res.CollectGarbage(1)
         else
             local prefab
             local loadinfo = ResManager.LoadResAsync(name)
@@ -933,7 +933,7 @@ function res.LoadView(name, ...)
             unity.waitForNextEndOfFrame()
             -- DisableCachedScene(cacheItem)
             res.ClearSceneCache()
-            res.CollectGarbage(2)
+            res.CollectGarbage(1)
             res.SetUIAudioListener(name)
         else
             local prefab = res.LoadRes(name)
