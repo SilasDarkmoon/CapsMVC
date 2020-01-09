@@ -645,7 +645,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
                 end
 
                 res.ClearSceneCache()
-                res.CollectGarbage(2)
+                res.CollectGarbage(1)
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
@@ -770,7 +770,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     waitHandle.ctrl = res.curSceneInfo.ctrl
                 end
 
-                res.CollectGarbage(2)
+                res.CollectGarbage(1)
             else
                 local loadinfo = ResManager.LoadResAsync(ctrlClass.viewPath)
                 if loadinfo then
