@@ -628,7 +628,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
         local viewPath = ctrlClass.viewPath
         clr.coroutine(function()
             if string.sub(viewPath, -6) == '.unity' then
-                local loadinfo = ResManager.LoadSceneAsync(viewPath)
+                local loadinfo = ResManager.LoadScene(viewPath)
                 if loadinfo then
                     coroutine.yield(loadinfo)
                     unity.waitForNextEndOfFrame()
