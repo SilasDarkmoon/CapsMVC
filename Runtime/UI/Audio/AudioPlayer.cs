@@ -104,6 +104,7 @@ public class AudioPlayer : MonoBehaviour
         if (audioSource != null)
         {
             audioSource.Stop();
+            audioSource.clip = null;
         }
     }
 
