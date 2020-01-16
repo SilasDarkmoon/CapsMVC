@@ -33,6 +33,15 @@ namespace Capstones.UnityEngineEx
             _UIAudioListener = _UICameraAndEventSystemGo.GetComponentInChildren<AudioListener>();
             return _UICamera;
         }
+        public static bool TryChangeToUIScene()
+        {
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "UIScene")
+            {
+                ResManager.LoadScene("Common/UIScene.unity");
+                return true;
+            }
+            return false;
+        }
 
         public class PackedSceneObjs
         {
