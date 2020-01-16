@@ -649,9 +649,9 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
-                    if UIResManager.TryChangeToUIScene() then
-                        coroutine.yield()
-                    end
+                    -- if UIResManager.TryChangeToUIScene() then
+                    --     coroutine.yield()
+                    -- end
                     local obj = Object.Instantiate(prefab)
                     local camera = UIResManager.CreateCameraAndEventSystem()
                     res.SetUICamera(obj, camera)
