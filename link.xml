@@ -1,3 +1,4 @@
 <linker>
   <assembly fullname="CapsMVC" preserve="all"/>
+  <assembly fullname="CapsMVC.PostEffectFix" preserve="all"/>
 </linker>
