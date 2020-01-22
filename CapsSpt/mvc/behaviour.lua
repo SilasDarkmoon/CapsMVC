@@ -9,7 +9,7 @@ function behaviour:ctor()
     self:_RegisterEvent()
 end
 
-function behaviour:_onDestroy()
+function behaviour:onDestroy()
     if self.unityEventListCache then
         for i, unityEvent in ipairs(self.unityEventListCache) do
             unityEvent:RemoveAllListeners()
@@ -17,10 +17,15 @@ function behaviour:_onDestroy()
         self.unityEventListCache = nil
     end
 
-    self:_UnregisterEvent()
+    if self.___ex then
+        for k,v in pairs(self.___ex) do
+            self[k] = nil
+        end
+    end
 
+    self:_UnregisterEvent()
     self.___ex = nil
-    self.___cs = nil
+    -- self.___cs = nil
 end
 
 function behaviour:RegHandler(actionName, func)
@@ -36,8 +41,8 @@ end
 -- 注意继承behavior的类如果有实现onDestroy则需要调用父类的onDestroy
 function behaviour:AddListener(unityEvent, func, sound)
     unityEvent:AddListener(function(...)
-        -- sound = sound or "Scene/Click.mp3"
-        -- clr.UISoundManager.Play(sound)
+        sound = sound or "Scene/Click.mp3"
+        clr.UISoundManager.Play(sound)
         func(...)
     end)
 
@@ -70,7 +75,7 @@ function behaviour:_RegisterEvent()
     local eventList = self:GetEventList()
     for eventName, func in pairs(eventList) do
         self["_eventFunc_" .. eventName] = function(...)
-            if self.gameObject.activeInHierarchy and self.___cs.enabled then
+            if self.gameObject.activeInHierarchy then
                 func(...)
             end
         end
@@ -89,35 +94,39 @@ function behaviour:_UnregisterEvent()
 end
 
 function behaviour:coroutine(func)
-    return self:BehavCoroutine({
-        co = coroutine.create(func);
-        Resume = function(self, ...)
-            local succ, ret = coroutine.resume(self.co, ...)
-            if succ then
-                return ret
-            end
-            error(ret)
-        end
-    })
+    -- return self:BehavCoroutine({
+    --     co = coroutine.create(func);
+    --     Resume = function(self, ...)
+    --         local succ, ret = coroutine.resume(self.co, ...)
+    --         if succ then
+    --             return ret
+    --         end
+    --         error(ret)
+    --     end
+    -- })
+
+    clr.coroutine(function()
+        func();
+    end)
 end
 
-function behaviour.getmt(base)
-    return function(table, key)
-        local cs = rawget(table, '___cs')
-        if cs then
-            local v = cs[key]
-            if v then
-                if type(v) == 'function' then
-                    return function(obj, ...)
-                        return v(cs, ...)
-                    end
-                end
-                return v
-            end
-        end
-        return base[key]
-    end
-end
+-- function behaviour.getmt(base)
+--     return function(table, key)
+--         local cs = rawget(table, '___cs')
+--         if cs then
+--             local v = cs[key]
+--             if v then
+--                 if type(v) == 'function' then
+--                     return function(obj, ...)
+--                         return v(cs, ...)
+--                     end
+--                 end
+--                 return v
+--             end
+--         end
+--         return base[key]
+--     end
+-- end
 
 -- *** valid when view call behave's DealVersionVisibleList ***
 -- *** valid when view call behave's DealVersionVisibleList ***

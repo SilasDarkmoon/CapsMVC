@@ -14,7 +14,7 @@ local Canvas = UnityEngine.Canvas
 -- local Camera = UnityEngine.Camera
 local RenderMode = UnityEngine.RenderMode
 local CapsUnityLuaBehav = clr.CapsUnityLuaBehav
--- local Time = UnityEngine.Time
+local Time = UnityEngine.Time
 -- local StandaloneInputModule = UnityEngine.EventSystems.StandaloneInputModule
 
 local res = require("unity.res")
@@ -33,8 +33,17 @@ end
 function res.SetUICamera(obj, camera)
     if obj then
         local canvas = obj:GetComponent(Canvas)
-        if canvas and canvas ~= clr.null then
+        if not res.IsClrNull(canvas) then
             canvas.worldCamera = camera
+        end
+    end
+end
+
+function res.SetCanvasSortingLayer(obj, layerName)
+    if obj then
+        local canvas = obj:GetComponent(Canvas)
+        if not res.IsClrNull(canvas) and canvas.sortingLayerName ~= layerName then
+            canvas.sortingLayerName = layerName
         end
     end
 end
@@ -118,7 +127,7 @@ local function GetSceneSeq()
     return res.sceneSeq
 end
 
-local sceneCacheMax = 5
+local sceneCacheMax = 2
 
 function res.SetSceneCacheMax(cnt)
     if type(cnt) ~= "number" or cnt < 1 then
@@ -132,9 +141,12 @@ function res.GetSceneCacheMax()
 end
 
 function res.DestroyGameObjectList(objs)
+    if res.IsClrNull(objs) then return end
     local lst = clr.table(objs)
     for i, v in ipairs(lst) do
-        Object.Destroy(v)
+        if not res.IsClrNull(v) then
+            Object.Destroy(v)
+        end
     end
 end
 
@@ -159,9 +171,9 @@ local function TrimSceneCache(isNoCollectGarbage)
             v.view = nil
         end
     end
-    -- if isNoCollectGarbage ~= true and #sceneTable > sceneCacheMax then
-    --     res.CollectGarbage()
-    -- end
+    if isNoCollectGarbage ~= true and #sceneTable > sceneCacheMax then
+        res.CollectGarbage(1)
+    end
 end
 
 function res.ClearSceneCache()
@@ -184,11 +196,13 @@ local function SaveCurrentSceneInfo()
     local dialogObjsArr = clr.array(dialogObjs, GameObject)
     local pack = UIResManager.PackSceneAndDialogs(dialogObjsArr)
     local sgos = pack.SceneObjs
-    -- local dialogObjs = pack.DialogObjs
-    -- local dgos = clr.table(dialogObjs)
-    -- local dgosDisable = {}
-    -- local sgoDisable = true
-    -- local isTrimSceneCache = false
+
+    local dialogObjs = pack.DialogObjs
+    local dgos = clr.table(dialogObjs)
+    local dgosDisable = {}
+    local sgoDisable = true
+    local isTrimSceneCache = false
+
     local sceneCacheItem
     if type(res.curSceneInfo) == "table" and not res.IsClrNull(res.curSceneInfo.view) then
         sceneCacheItem = res.sceneCache[res.curSceneInfo.path]
@@ -201,14 +215,13 @@ local function SaveCurrentSceneInfo()
                 pack = pack,
             }
             res.sceneCache[res.curSceneInfo.path] = sceneCacheItem
-            -- isTrimSceneCache = true
-            TrimSceneCache()
+            isTrimSceneCache = true
         else
             sceneCacheItem.seq = GetSceneSeq()
-            -- if res.IsClrNull(sceneCacheItem.obj) then
-            --     sceneCacheItem.obj = sgos
-            --     sceneCacheItem.ctrl = res.curSceneInfo.ctrl
-            -- end
+            if res.IsClrNull(sceneCacheItem.obj) then
+                sceneCacheItem.obj = sgos
+                sceneCacheItem.ctrl = res.curSceneInfo.ctrl
+            end
         end
         if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnExitScene) == "function" then
             res.curSceneInfo.ctrl:OnExitScene()
@@ -220,72 +233,67 @@ local function SaveCurrentSceneInfo()
         }
     end
 
-    -- for i, dgo in ipairs(dgos) do
-    --     if type(res.curSceneInfo) == "table" and type(res.curSceneInfo.dialogs) == "table" then
-    --         local curDialogInfo = res.curSceneInfo.dialogs[i]
-    --         if type(curDialogInfo) == "table" and curDialogInfo.view ~= clr.null then
-    --             table.insert(dgosDisable, true)
-    --             local dgosItem = res.sceneCache[curDialogInfo.path]
-    --             if not dgosItem then
-    --                 res.sceneCache[curDialogInfo.path] = {
-    --                     obj = dgo,
-    --                     view = curDialogInfo.view,
-    --                     seq = GetSceneSeq(),
-    --                     ctrl = curDialogInfo.ctrl,
-    --                 }
-    --                 isTrimSceneCache = true
-    --             else
-    --                 dgosItem.seq = GetSceneSeq()
-    --                 if res.CacheObjIsClrNull(dgosItem.obj) then
-    --                     dgosItem.obj = dgo
-    --                     dgosItem.ctrl = curDialogInfo.ctrl
-    --                 end
-    --             end
-    --             if curDialogInfo.ctrl and type(curDialogInfo.ctrl.OnExitScene) == "function" then
-    --                 curDialogInfo.ctrl:OnExitScene()
-    --             end
-    --         else
-    --             table.insert(dgosDisable, false)
-    --         end
-    --     else
-    --         table.insert(dgosDisable, false)
-    --     end
-    -- end
+    for i, dgo in ipairs(dgos) do
+        if type(res.curSceneInfo) == "table" and type(res.curSceneInfo.dialogs) == "table" then
+            local curDialogInfo = res.curSceneInfo.dialogs[i]
+            if type(curDialogInfo) == "table" and curDialogInfo.view ~= clr.null then
+                table.insert(dgosDisable, true)
+                local dgosItem = res.sceneCache[curDialogInfo.path]
+                if not dgosItem then
+                    res.sceneCache[curDialogInfo.path] = {
+                        obj = dgo,
+                        view = curDialogInfo.view,
+                        seq = GetSceneSeq(),
+                        ctrl = curDialogInfo.ctrl,
+                    }
+                    isTrimSceneCache = true
+                else
+                    dgosItem.seq = GetSceneSeq()
+                    if res.CacheObjIsClrNull(dgosItem.obj) then
+                        dgosItem.obj = dgo
+                        dgosItem.ctrl = curDialogInfo.ctrl
+                    end
+                end
+                if curDialogInfo.ctrl and type(curDialogInfo.ctrl.OnExitScene) == "function" then
+                    curDialogInfo.ctrl:OnExitScene()
+                end
+            else
+                table.insert(dgosDisable, false)
+            end
+        else
+            table.insert(dgosDisable, false)
+        end
+    end
 
-    -- if isTrimSceneCache == true then
-    --     TrimSceneCache()
-    -- end
+    sceneCacheItem.dgos = dgos
+    sceneCacheItem.dgosDisable = dgosDisable
 
-    -- local isCacheToDontDestroyRoot = false
-    -- local function CacheToDontDestroyRootFun()
-    --     isCacheToDontDestroyRoot = true
-    --     ResManager.CacheToDontDestroyRoot(sgos)
-    --     ResManager.CacheToDontDestroyRoot(dialogObjs)
-    -- end
-
-    -- local function DisableOrDestroyCurrentSceneObj(isLoadScene)
-    --     if not res.CacheObjIsClrNull(sgos) then
-    --         if sgoDisable  then
-    --             ResManager.SetCacheActive(sgos,true,false)
-    --         else
-    --             res.DestroyGameObjectList(sgos)
-    --         end
-    --     end
-    --     if type(dgos) == "table" then
-    --         ResManager.SetCacheActive(dialogObjs,true,false)
-    --         for i, dgo in ipairs(dgos) do
-    --             if not res.IsClrNull(dgo) and not dgosDisable[i] then
-    --                GameUtil.Destroy(dgo)
-    --             end
-    --         end
-    --     end
-    --      if isLoadScene == true then
-    --         res.ClearSceneCache()
-    --     end
-    -- end
-    -- return DisableOrDestroyCurrentSceneObj, CacheToDontDestroyRootFun
+    if isTrimSceneCache == true then
+        TrimSceneCache()
+    end
 
     return sceneCacheItem
+end
+
+local function DisableOrDestroyCurrentSceneObj(isLoadScene, sgos, dialogObjs)
+    if not res.CacheObjIsClrNull(sgos) then
+        if sgoDisable  then
+            ResManager.SetCacheActive(sgos,true,false)
+        else
+            res.DestroyGameObjectList(sgos)
+        end
+    end
+    if type(dgos) == "table" then
+        ResManager.SetCacheActive(dialogObjs,true,false)
+        for i, dgo in ipairs(dgos) do
+            if not res.IsClrNull(dgo) and not dgosDisable[i] then
+               Object.Destroy(dgo)
+            end
+        end
+    end
+     if isLoadScene == true then
+        res.ClearSceneCache()
+    end
 end
 
 local function CloseDialog()
@@ -319,7 +327,36 @@ local function MoveToDontDestroy(sceneCacheItem)
         end
         local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
         for i, v in ipairs(sgos) do
-            v.transform:SetParent(dontDestroyRootForSavedScene.transform, false)
+            if not res.IsClrNull(v) and not res.IsClrNull(v.transform) then
+                v.transform:SetParent(dontDestroyRootForSavedScene.transform, false)
+            end
+        end
+    end
+end
+
+local sceneAndDialogCache
+local SceneAndDialogCacheLayer = 17
+local function MoveToSceneAndDialogCache(sceneCacheItem)
+    if sceneCacheItem and sceneCacheItem.pack then
+        if res.IsClrNull(sceneAndDialogCache) then
+            sceneAndDialogCache = GameObject("SceneAndDialogCache")
+            sceneAndDialogCache:AddComponent(Canvas)
+            sceneAndDialogCache:SetActive(false)
+            res.ChangeGameObjectLayer(sceneAndDialogCache, SceneAndDialogCacheLayer)
+        end
+        local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
+        for i, v in ipairs(sgos) do
+            if not res.IsClrNull(v) and not res.IsClrNull(v.transform) then
+                v.transform:SetParent(sceneAndDialogCache.transform, false)
+                v:SetActive(false)
+            end
+        end
+        local dgos = clr.table(sceneCacheItem.pack.DialogObjs)
+        for i,v in ipairs(dgos) do
+            if not res.IsClrNull(v) and not res.IsClrNull(v.transform) then
+                v.transform:SetParent(sceneAndDialogCache.transform, false)
+                v:SetActive(false)
+            end
         end
     end
 end
@@ -327,14 +364,24 @@ end
 local function DisableCachedScene(sceneCacheItem)
     if sceneCacheItem and sceneCacheItem.pack then
         if sceneCacheItem.view then
-            MoveToDontDestroy(sceneCacheItem)
-            local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
-            for i, v in ipairs(sgos) do
-                v:SetActive(false)
-            end
+            -- MoveToDontDestroy(sceneCacheItem)
+            MoveToSceneAndDialogCache(sceneCacheItem)
+            -- local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
+            -- for i, v in ipairs(sgos) do
+            --     if not res.IsClrNull(v) then
+            --         v:SetActive(false)
+            --     end
+            -- end
         else
-            local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
+            local pack = sceneCacheItem.pack
+            local sgos = clr.table(pack.SceneObjs)
             for i, v in ipairs(sgos) do
+                if not res.IsClrNull(v) then
+                    Object.Destroy(v)
+                end
+            end
+            local dgos = clr.table(pack.DialogObjs)
+            for i,v in ipairs(dgos) do
                 if not res.IsClrNull(v) then
                     Object.Destroy(v)
                 end
@@ -345,11 +392,31 @@ end
 
 local function EnableCachedScene(sceneCacheItem)
     if sceneCacheItem and sceneCacheItem.view and sceneCacheItem.pack then
-        local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
+        local pack = sceneCacheItem.pack
+        local sgos = clr.table(pack.SceneObjs)
+        local sceneObjsActive = clr.table(pack.InitialSceneObjsActive)
         for i, v in ipairs(sgos) do
-            v.transform:SetParent(nil, false)
-            v:SetActive(sceneCacheItem.pack.InitialSceneObjsActive[i])
+            if not res.IsClrNull(v) then
+                v.transform:SetParent(nil, false)
+                v:SetActive(sceneObjsActive[i])
+            end
         end
+
+        local dgos = clr.table(pack.DialogObjs)
+        local dialogObjsActive = clr.table(pack.InitialDialogObjsActive)
+        for i,v in ipairs(dgos) do
+            if not res.IsClrNull(v) then
+                v.transform:SetParent(nil, false)
+                v:SetActive(dialogObjsActive[i])
+            end
+        end
+    end
+end
+
+local function EnableCachedDialog(dialogCacheItem)
+    if dialogCacheItem and dialogCacheItem.obj then
+        dialogCacheItem.obj.transform:SetParent(nil, false)
+        dialogCacheItem.obj:SetActive(true)
     end
 end
 
@@ -476,13 +543,17 @@ local function SaveCurrentStatusData()
 end
 --#endregion Controller Cache Stack
 
---#region Load Prefab/Scene as Scene
-local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
-    --require("ui.control.button.LuaButton").frameCount = clr.UnityEngine.Time.frameCount
-    -- 记录当前场景信息res.curSceneInfo
-    res.curSceneInfo = {
-        path = ctrlPath,
-    }
+local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
+    cache.setGlobalTempData(true, "LoadingPrefabDialog")
+
+    -- 记录当前窗口信息
+    local dialogInfo = {}
+    if type(res.curSceneInfo.dialogs) ~= "table" then
+        res.curSceneInfo.dialogs = {}
+    end
+    table.insert(res.curSceneInfo.dialogs, dialogInfo)
+    dialogInfo.path = ctrlPath
+
     local cachedSceneInfo = res.sceneCache[ctrlPath]
     res.sceneCache[ctrlPath] = nil
     local ctrlClass = require(ctrlPath)
@@ -490,20 +561,74 @@ local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
     local args = {...}
     local argc = select('#', ...)
 
-    -- local function CreateDialogs()
-    --     if type(dialogData) == "table" then
-    --         table.sort(dialogData, function(a, b) return tonumber(a.order) < tonumber(b.order) end)
-    --         for i, v in ipairs(dialogData) do
-    --             LoadPrefabDialog(loadType, v.path, v.order, unpack(v.args, 1, v.argc))
-    --         end
-    --     end
-    -- end
+    local function CreateDialog()
+        local viewPath = ctrlClass.viewPath
+        local dialog, dialogcomp = res.ShowDialog(viewPath, "camera", ctrlClass.dialogStatus.touchClose, ctrlClass.dialogStatus.withShadow, ctrlClass.dialogStatus.unblockRaycast, true)
+        dialogInfo.view = dialogcomp.contentcomp
+        dialogInfo.order = dialog:GetComponent(Canvas).sortingOrder
+        dialogInfo.ctrl = ctrlClass.new(dialogInfo.view, unpack(args, 1, argc))
+        dialogInfo.ctrl.__loadType = loadType
+        dialogInfo.ctrl:Refresh(unpack(args, 1, argc))
+        res.GetLuaScript(dialog).OnExitScene = function ()
+            if type(dialogInfo.ctrl.OnExitScene) == "function" then
+                dialogInfo.ctrl:OnExitScene()
+            end
+        end
+    end
+
+    if type(cachedSceneInfo) == "table" then
+        if not res.IsClrNull(cachedSceneInfo.obj) then
+            dialogInfo.view = cachedSceneInfo.view
+            dialogInfo.ctrl = cachedSceneInfo.ctrl
+            dialogInfo.order = order
+            dialogInfo.view.dialog:setOrder(order)
+            dialogInfo.ctrl.__loadType = loadType
+            dialogInfo.ctrl:Refresh(unpack(args, 1, argc))
+
+            -- ResManager.UnpackSceneObj(cachedSceneInfo.obj,true)
+            -- EnableCachedScene(cachedSceneInfo)
+            EnableCachedDialog(cachedSceneInfo)
+
+            local scd, uds = res.GetLastSCDAndUDs(false)
+            res.AdjustDialogCamera(scd, uds, dialogInfo.view.gameObject, dialogInfo.view.dialog.withShadow)
+        else
+            res.sceneCache[ctrlPath] = nil
+            CreateDialog()
+        end
+    else
+        CreateDialog()
+    end
+
+    cache.removeGlobalTempData("LoadingPrefabDialog")
+    return dialogInfo.ctrl
+end
+
+--#region Load Prefab/Scene as Scene
+local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
+    -- 记录当前场景信息res.curSceneInfo
+    res.curSceneInfo = {
+        path = ctrlPath,
+    }
+    local cachedSceneInfo = res.sceneCache[ctrlPath]
+    res.sceneCache[ctrlPath] = nil
+    local ctrlClass = require(ctrlPath)
+    local args = {...}
+    local argc = select('#', ...)
+
+    local function CreateDialogs()
+        if type(dialogData) == "table" then
+            table.sort(dialogData, function(a, b) return tonumber(a.order) < tonumber(b.order) end)
+            for i, v in ipairs(dialogData) do
+                LoadPrefabDialog(loadType, v.path, v.order, unpack(v.args, 1, v.argc))
+            end
+        end
+    end
 
     local function CreateScene()
         local viewPath = ctrlClass.viewPath
         clr.coroutine(function()
             if string.sub(viewPath, -6) == '.unity' then
-                local loadinfo = ResManager.LoadSceneAsync(viewPath)
+                local loadinfo = ResManager.LoadScene(viewPath)
                 if loadinfo then
                     coroutine.yield(loadinfo)
                     unity.waitForNextEndOfFrame()
@@ -518,12 +643,19 @@ local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
                     until mainManager or waitFrames > 10
                     res.curSceneInfo.view = mainManager
                 end
+
+                res.ClearSceneCache()
+                res.CollectGarbage(1)
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
+                    -- if UIResManager.TryChangeToUIScene() then
+                    --     coroutine.yield()
+                    -- end
                     local obj = Object.Instantiate(prefab)
                     local camera = UIResManager.CreateCameraAndEventSystem()
                     res.SetUICamera(obj, camera)
+                    res.SetCanvasSortingLayer(obj, "UI")
                     res.curSceneInfo.view = res.GetLuaScript(obj)
                 end
             end
@@ -537,7 +669,8 @@ local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
             --         res.SetMainCameraBlur()
             --     end
             -- end
-            -- CreateDialogs()
+            CreateDialogs()
+            res.SetUIAudioListener(ctrlClass.viewPath)
 
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
@@ -551,10 +684,10 @@ local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
             res.curSceneInfo.ctrl.__loadType = loadType
             EnableCachedScene(cachedSceneInfo)
             res.curSceneInfo.view = cachedSceneInfo.view
+            res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
 
             -- local isDialogData = res.IsClrNull(res.GetLastSCDAndUDs()) and type(dialogData) == "table" and #dialogData > 0
             -- res.curSceneInfo.ctrl.IsCheckCurrUIDialog = isDialogData
-            -- res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
             -- res.curSceneInfo.ctrl.IsCheckCurrUIDialog = false
             
             -- if res.NeedDialogCameraBlur() then
@@ -566,6 +699,7 @@ local function LoadPrefabScene(loadType, ctrlPath, extra, ...)
             -- end
 
             -- CreateDialogs()
+            res.SetUIAudioListener(ctrlClass.viewPath)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
@@ -594,14 +728,15 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
 
     local waitHandle = {}
 
-    -- local function CreateDialogs()
-    --     if type(dialogData) == "table" then
-    --         table.sort(dialogData, function(a, b) return a.order < b.order end)
-    --         for i, v in ipairs(dialogData) do
-    --             LoadPrefabDialog(loadType, v.path, v.order, unpack(v.args, 1, v.argc))
-    --         end
-    --     end
-    -- end
+    local function CreateDialogs()
+        local dialogData = extra.dialogs
+        if type(dialogData) == "table" then
+            table.sort(dialogData, function(a, b) return a.order < b.order end)
+            for i, v in ipairs(dialogData) do
+                LoadPrefabDialog(loadType, v.path, v.order, unpack(v.args, 1, v.argc))
+            end
+        end
+    end
 
     local function CreateScene()
         clr.coroutine(function()
@@ -609,9 +744,10 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             local viewPath = ctrlClass.viewPath
             local isLoadScene = string.sub(viewPath, -6) == ".unity" 
             if isLoadScene then
-                if extra and extra.cacheItem then
-                    MoveToDontDestroy(extra.cacheItem)
-                end
+                -- 直接在下面DisableCachedScene
+                -- if extra and extra.cacheItem then
+                --     MoveToDontDestroy(extra.cacheItem)
+                -- end
                 local loadinfo = ResManager.LoadSceneAsync(viewPath)
                 if loadinfo then
                     coroutine.yield(loadinfo)
@@ -636,6 +772,8 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
                     waitHandle.ctrl = res.curSceneInfo.ctrl
                 end
+
+                res.CollectGarbage(1)
             else
                 local loadinfo = ResManager.LoadResAsync(ctrlClass.viewPath)
                 if loadinfo then
@@ -665,16 +803,14 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             if extra and extra.cacheItem then
                 DisableCachedScene(extra.cacheItem)
             end
-
-            -- CreateDialogs()
-
+            res.ClearSceneCache()
+            CreateDialogs()
+            res.SetUIAudioListener(ctrlClass.viewPath)
             waitHandle.done = true
 
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
-
-            -- require("ui.control.button.LuaButton").frameCount = clr.UnityEngine.Time.frameCount
         end)
     end
 
@@ -687,10 +823,10 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             res.curSceneInfo.view = cachedSceneInfo.view
             res.curSceneInfo.ctrl = cachedSceneInfo.ctrl
             res.curSceneInfo.ctrl.__loadType = loadType
+            res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
 
             -- local isDialogData = res.IsClrNull(res.GetLastSCDAndUDs()) and type(dialogData) == "table" and #dialogData > 0
             -- res.curSceneInfo.ctrl.IsCheckCurrUIDialog = isDialogData
-            -- res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
             -- res.curSceneInfo.ctrl.IsCheckCurrUIDialog = false
 
             -- if res.NeedDialogCameraBlur() then
@@ -703,7 +839,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             -- CreateDialogs()
             waitHandle.done = true
             waitHandle.ctrl = res.curSceneInfo.ctrl
-
+            res.SetUIAudioListener(ctrlClass.viewPath)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
@@ -723,10 +859,14 @@ function res.LoadViewImmediate(name, ...)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
+
     if string.sub(name, -6) == '.unity' then
         -- cacheItem = nil
         ResManager.LoadScene(name)
         -- DisableCachedScene(cacheItem)
+        res.ClearSceneCache()
+        res.CollectGarbage(1)
+        res.SetUIAudioListener(name)
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -734,6 +874,7 @@ function res.LoadViewImmediate(name, ...)
             DisableCachedScene(cacheItem)
             local camera = UIResManager.CreateCameraAndEventSystem()
             res.SetUICamera(obj, camera)
+            res.SetUIAudioListener(name)
             return res.GetLuaScript(obj)
         end
     end
@@ -743,6 +884,7 @@ function res.LoadViewAsync(name, ...)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
+
     local waitHandle = {}
     clr.coroutine(function()
         unity.waitForEndOfFrame()
@@ -755,6 +897,9 @@ function res.LoadViewAsync(name, ...)
                 coroutine.yield(loadinfo)
                 unity.waitForNextEndOfFrame()
             end
+
+            res.ClearSceneCache()
+            res.CollectGarbage(1)
         else
             local prefab
             local loadinfo = ResManager.LoadResAsync(name)
@@ -771,6 +916,7 @@ function res.LoadViewAsync(name, ...)
         end
         DisableCachedScene(cacheItem)
         waitHandle.done = true
+        res.SetUIAudioListener(name)
     end)
     return waitHandle
 end
@@ -778,6 +924,7 @@ end
 function res.LoadView(name, ...)
     local args = {...}
     local argc = select('#', ...)
+
     clr.coroutine(function()
         unity.waitForNextEndOfFrame()
         SaveCurrentStatusData()
@@ -788,6 +935,9 @@ function res.LoadView(name, ...)
             ResManager.LoadScene(name)
             unity.waitForNextEndOfFrame()
             -- DisableCachedScene(cacheItem)
+            res.ClearSceneCache()
+            res.CollectGarbage(1)
+            res.SetUIAudioListener(name)
         else
             local prefab = res.LoadRes(name)
             if prefab then
@@ -796,6 +946,7 @@ function res.LoadView(name, ...)
                 unity.waitForNextEndOfFrame()
                 DisableCachedScene(cacheItem)
                 res.SetUICamera(obj, camera)
+                res.SetUIAudioListener(name)
                 return res.GetLuaScript(obj)
             end
         end
@@ -843,7 +994,6 @@ end
 
 function res.PopScene(...)
     if not CloseDialog() then
-        print("res.PopScene step 2")
         return res.PopSceneWithCurrentScene(...)
     end
 end
@@ -853,10 +1003,7 @@ function res.PopSceneWithCurrentSceneImmediate(...)
 
     local cacheItem = SaveCurrentSceneInfo()
     DisableCachedScene(cacheItem)
-
     ClearCurrentSceneInfo()
-
-
     -- restore old info
     local ctrlInfo = table.remove(res.ctrlStack)
     local ctrlPath = ctrlInfo.path
@@ -868,7 +1015,7 @@ function res.PopSceneWithCurrentSceneImmediate(...)
     end
     --local isBlur = ctrlInfo.blur
 
-    return LoadPrefabScene(res.LoadType.Pop, ctrlPath, nil, unpack(args, 1, argc))
+    return LoadPrefabScene(res.LoadType.Pop, ctrlPath, ctrlInfo.dialogs, unpack(args, 1, argc))
 end
 
 function res.PopSceneWithCurrentSceneAsync(...)
@@ -889,7 +1036,11 @@ function res.PopSceneWithCurrentSceneAsync(...)
     end
     --local isBlur = ctrlInfo.blur
 
-    return LoadPrefabSceneAsync(res.LoadType.Pop, ctrlPath, { cacheItem = cacheItem }, unpack(args, 1, argc))
+    local extra = {
+        cacheItem = cacheItem,
+        dialogs = ctrlInfo.dialogs,
+    }
+    return LoadPrefabSceneAsync(res.LoadType.Pop, ctrlPath, extra, unpack(args, 1, argc))
 end
 
 function res.PopSceneWithCurrentScene(...)
@@ -903,7 +1054,6 @@ end
 
 function res.PopSceneWithoutCurrentImmediate(...)
     if #res.ctrlStack == 0 then return end
-
     local sgos = UIResManager.PackSceneObj()
     res.DestroyGameObjectList(sgos)
     -- restore old info
@@ -934,9 +1084,12 @@ function res.PopSceneWithoutCurrentAsync(...)
         args = ctrlInfo.args
         argc = ctrlInfo.argc
     end
-    -- local isBlur = ctrlInfo.blur
 
-    return LoadPrefabSceneAsync(res.LoadType.Pop, ctrlPath, { cacheItem = cacheItem }, unpack(args, 1, argc))
+    local extra = {
+        cacheItem = cacheItem,
+        dialogs = ctrlInfo.dialogs,
+    }
+    return LoadPrefabSceneAsync(res.LoadType.Pop, ctrlPath, extra, unpack(args, 1, argc))
 end
 
 function res.PopSceneWithoutCurrent(...)
@@ -960,9 +1113,7 @@ end
 function res.ChangeSceneAsync(ctrlPath, ...)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
-    res.ClearSceneCache()
     ClearCurrentSceneInfo()
-
     return LoadPrefabSceneAsync(res.LoadType.Change, ctrlPath, { cacheItem = cacheItem }, ...)
 end
 
@@ -976,77 +1127,11 @@ function res.ChangeScene(ctrlPath, ...)
 end
 --#endregion Push/Pop Scenes
 
-
-
-
-local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
-    cache.setGlobalTempData(true, "LoadingPrefabDialog")
-
-    -- 记录当前窗口信息
-    local dialogInfo = {}
-    if type(res.curSceneInfo.dialogs) ~= "table" then
-        res.curSceneInfo.dialogs = {}
-    end
-    table.insert(res.curSceneInfo.dialogs, dialogInfo)
-    dialogInfo.path = ctrlPath
-
-    local cachedSceneInfo = res.sceneCache[ctrlPath]
-    res.sceneCache[ctrlPath] = nil
-    local ctrlClass = require(ctrlPath)
-
-    local args = {...}
-    local argc = select('#', ...)
-
-    local function CreateDialog()
-        local viewPath = ctrlClass.viewPath
-        local dialog, dialogcomp = res.ShowDialog(viewPath, "camera", ctrlClass.dialogStatus.touchClose, ctrlClass.dialogStatus.withShadow, ctrlClass.dialogStatus.unblockRaycast, true)
-        dialogInfo.view = dialogcomp.contentcomp
-        dialogInfo.order = dialog:GetComponent(Canvas).sortingOrder
-        dialogInfo.ctrl = ctrlClass.new(dialogInfo.view, unpack(args, 1, argc))
-        dialogInfo.ctrl.__loadType = loadType
-        dialogInfo.ctrl:Refresh(unpack(args, 1, argc))
-        res.GetLuaScript(dialog).OnExitScene = function ()
-            if type(dialogInfo.ctrl.OnExitScene) == "function" then
-                dialogInfo.ctrl:OnExitScene()
-            end
-        end
-    end
-
-    if type(cachedSceneInfo) == "table" then
-        if not res.CacheObjIsClrNull(cachedSceneInfo.obj) then
-            dialogInfo.view = cachedSceneInfo.view
-            dialogInfo.ctrl = cachedSceneInfo.ctrl
-            dialogInfo.order = order
-            dialogInfo.view.dialog:setOrder(order)
-            dialogInfo.ctrl.__loadType = loadType
-            dialogInfo.ctrl:Refresh(unpack(args, 1, argc))
-
-            local scd, uds = res.GetLastSCDAndUDs(false)
-
-            ResManager.UnpackSceneObj(cachedSceneInfo.obj,true)
-            
-            res.AdjustDialogCamera(scd, uds, dialogInfo.view.gameObject, dialogInfo.view.dialog.withShadow)
-        else
-            res.sceneCache[ctrlPath] = nil
-            CreateDialog()
-        end
-    else
-        CreateDialog()
-    end
-
-    cache.removeGlobalTempData("LoadingPrefabDialog")
-    return dialogInfo.ctrl
+function res.CacheHandle()
+    SaveCurrentStatusData()
+    local disableOrDestroySceneFunc = SaveCurrentSceneInfo()
+    ClearCurrentSceneInfo()
 end
-
-
-
--- function res.CacheHandle()
---     SaveCurrentStatusData()
---     local disableOrDestroySceneFunc = SaveCurrentSceneInfo()
---     disableOrDestroySceneFunc()
---     ClearCurrentSceneInfo()
--- end
-
 
 function res.PushDialogImmediate(ctrlPath, ...)
     return LoadPrefabDialog(res.LoadType.Push, ctrlPath, nil, ...)
@@ -1092,11 +1177,12 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
     local dialog, dialogSpt, dummydialog, blockdialog, diagcomp, dummycomp, scd, uds
 
     if renderMode and renderMode ~= "overlay" then
+        -- print("res.ShowDialog step 2")
         scd, uds = res.GetLastSCDAndUDs(false)
-        dialog, dialogSpt = res.Instantiate("Game/UI/Control/Dialog/CameraDialog.prefab")
+        dialog, dialogSpt = res.Instantiate("Game/UI/Common/Dialog/CameraDialog.prefab")
 
         cache.setGlobalTempData(true, "isDummyDialog")
-        dummydialog = res.Instantiate("Game/UI/Control/Dialog/OverlayDialog.prefab")
+        dummydialog = res.Instantiate("Game/UI/Common/Dialog/OverlayDialog.prefab")
         cache.removeGlobalTempData("isDummyDialog")
         local dummycanvas = dummydialog:GetComponent(Canvas)
         res.GetLuaScript(dummycanvas):setShadow(withShadow)
@@ -1120,7 +1206,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         if overlaySortingOrder then
             cache.setGlobalTempData(overlaySortingOrder, "overlaySortingOrder")
         end
-        dialog = res.Instantiate("Game/UI/Control/Dialog/OverlayDialog.prefab")
+        dialog = res.Instantiate("Game/UI/Common/Dialog/OverlayDialog.prefab")
         cache.removeGlobalTempData("overlaySortingOrder")
         diagcomp = res.GetLuaScript(dialog)
         diagcomp.withCtrl = withCtrl
@@ -1165,9 +1251,9 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
                     res.AdjustDialogCamera(scd, uds, dialog, withShadow)
                 end
             else
-                clr.GameUtil.Destroy(objcontent)
+                Object.Destroy(objcontent)
             end
-            clr.GameUtil.Destroy(dummydialog)
+            Object.Destroy(dummydialog)
         end)
     end
 
@@ -1197,6 +1283,18 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
     end
 
     return dialog, diagcomp
+end
+
+local UILayers = 5
+function res.ChangeCameraDialogToUI(dialog)
+    res.SetUICamera(dialog, UIResManager.FindUICamera())
+    res.ChangeGameObjectLayer(dialog, UILayers)
+end
+
+local DialogLayers = 23
+function res.ChangeCameraDialogToDialog(dialog)
+    res.SetUICamera(dialog, res.GetDialogCamera())
+    res.ChangeGameObjectLayer(dialog, DialogLayers)
 end
 
 function res.AdjustDialogCamera(scd, uds, dialog, withShadow)
@@ -1243,7 +1341,6 @@ function res.GetLastSCDAndUDs(withoutCurrent)
     end
 
     table.sort(cameraCanvas, function(a, b) return a.sortingOrder > b.sortingOrder end)
-
     local scd = nil
     local uds = {}
     local startIndex = withoutCurrent and 2 or 1
@@ -1263,7 +1360,7 @@ end
 function res.ChangeCameraDialogToDialog(dialog)
     res.SetUICamera(dialog, res.GetDialogCamera())
     -- set object to Dialog Layer
-    res.ChangeGameObjectLayer(dialog, 23)
+    res.ChangeGameObjectLayer(dialog, DialogLayers)
 end
 
 -- 是否需要开启弹出窗口背景模糊效果
@@ -1312,5 +1409,27 @@ end
 
 --     rapidBlurEffect.enabled = false
 -- end
+
+function res.CollectGarbage(level)
+    if level == 0 then
+        ResManager.StartGarbageCollectLite()
+    elseif level == 1 then
+        ResManager.StartGarbageCollectNorm()
+    else
+        ResManager.StartGarbageCollectDeep()
+    end
+end
+
+-- 只弹出一个栈帧
+function res.PopCtrlStack()
+    if #res.ctrlStack == 0 then
+        return
+    end
+    table.remove(res.ctrlStack)
+end
+
+function res.SetUIAudioListener(viewPath)
+    UIResManager.SetUIAudioListener(viewPath)
+end
 
 return res

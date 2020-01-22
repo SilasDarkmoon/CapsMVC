@@ -10,26 +10,37 @@ namespace Capstones.UnityEngineEx
     public static class UIResManager
     {
         private static Camera _UICamera;
-        public static Camera GetUICamera()
-        {
-            return _UICamera;
-        }
+        private const int SceneAndDialogCacheLayer = 17;
+        private const string UICameraName = "UICameraAndEventSystem(Clone)";
+
+        private static AudioListener _UIAudioListener = null;
 
         public static Camera FindUICamera()
         {
             if (_UICamera != null && !_UICamera.isActiveAndEnabled) _UICamera = null;
-            if (_UICamera == null) _UICamera = Camera.main;
-            if (_UICamera == null) _UICamera = GameObject.FindObjectOfType<Camera>();
+            if (_UICamera == null) CreateCameraAndEventSystem();
             return _UICamera;
         }
 
         private static GameObject _UICameraAndEventSystemTemplate = null;
+        private static GameObject _UICameraAndEventSystemGo = null;
         public static Camera CreateCameraAndEventSystem()
         {
             if (_UICameraAndEventSystemTemplate == null) _UICameraAndEventSystemTemplate = ResManager.LoadResDeep("UICameraAndEventSystem.prefab") as GameObject;
-            var container = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
-            _UICamera = container.GetComponentInChildren<Camera>();
+            if (_UICameraAndEventSystemGo != null && _UICamera != null) return _UICamera;
+            _UICameraAndEventSystemGo = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
+            _UICamera = _UICameraAndEventSystemGo.GetComponentInChildren<Camera>();
+            _UIAudioListener = _UICameraAndEventSystemGo.GetComponentInChildren<AudioListener>();
             return _UICamera;
+        }
+        public static bool TryChangeToUIScene()
+        {
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "UIScene")
+            {
+                ResManager.LoadScene("Common/UIScene.unity");
+                return true;
+            }
+            return false;
         }
 
         public class PackedSceneObjs
@@ -47,6 +58,11 @@ namespace Capstones.UnityEngineEx
             var ret = new PackedSceneObjs();
             foreach (var obj in oldObjs)
             {
+                if ((obj.layer == SceneAndDialogCacheLayer) ||
+                    (UICameraName.Equals(obj.name)))
+                {
+                    continue;
+                }
                 var canvas = obj.GetComponent<Canvas>();
                 if (canvas != null && canvas.sortingLayerName == "Dialog")
                 {
@@ -63,7 +79,7 @@ namespace Capstones.UnityEngineEx
                     if (find)
                     {
                         ret.DialogObjs.Add(obj);
-                        //ret.InitialDialogObjsActive.Add(obj.activeSelf);
+                        ret.InitialDialogObjsActive.Add(obj.activeSelf);
                         continue;
                     }
                     ret.SceneObjs.Add(obj);
@@ -98,12 +114,33 @@ namespace Capstones.UnityEngineEx
             return ResManager.FindAllGameObject();
         }
 
-        public static void ChangeGameObjectLayer(GameObject go, int layer)
+        public static void ChangeGameObjectLayer(Object o, int layer)
         {
+            if (o == null) return;
+            Component com = o as Component;
+            GameObject go;
+            if (com == null)
+            {
+                go = o as GameObject;
+            }
+            else
+            {
+                go = com.gameObject;
+            }
             //遍历当前物体及其所有子物体
             foreach (Transform tran in go.GetComponentsInChildren<Transform>(true))
             {
                 tran.gameObject.layer = layer;//更改物体的Layer层
+            }
+        }
+
+        public static void SetUIAudioListener(string path)
+        {
+            int index = path.IndexOf("unity");
+            bool flag = index == -1 ? true : false;
+            if (_UIAudioListener && _UIAudioListener.enabled != flag)
+            {
+                _UIAudioListener.enabled = flag;
             }
         }
     }
