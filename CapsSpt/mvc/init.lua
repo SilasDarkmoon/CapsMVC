@@ -563,7 +563,7 @@ local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
 
     local function CreateDialog()
         local viewPath = ctrlClass.viewPath
-        local dialog, dialogcomp = res.ShowDialog(viewPath, "camera", ctrlClass.dialogStatus.touchClose, ctrlClass.dialogStatus.withShadow, ctrlClass.dialogStatus.unblockRaycast, true)
+        local dialog, dialogcomp = res.ShowDialog(viewPath, "camera", ctrlClass.dialogStatus.touchClose, ctrlClass.dialogStatus.withShadow, ctrlClass.dialogStatus.unblockRaycast, true, nil, ctrlClass.dialogStatus.noNeedSafeArea)
         dialogInfo.view = dialogcomp.contentcomp
         dialogInfo.order = dialog:GetComponent(Canvas).sortingOrder
         dialogInfo.ctrl = ctrlClass.new(dialogInfo.view, unpack(args, 1, argc))
@@ -1157,7 +1157,7 @@ function res.ChangeGameObjectLayer(dialog, layer)
     UIResManager.ChangeGameObjectLayer(dialog, layer)
 end
 
-function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRaycast, withCtrl, overlaySortingOrder)
+function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRaycast, withCtrl, overlaySortingOrder, noNeedSafeArea)
     local loadingType = cache.getGlobalTempData("LoadingPrefabDialog")
     local loadingInfo = { dialog = {} }
     if not loadingType then
@@ -1177,7 +1177,6 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
     local dialog, dialogSpt, dummydialog, blockdialog, diagcomp, dummycomp, scd, uds
 
     if renderMode and renderMode ~= "overlay" then
-        -- print("res.ShowDialog step 2")
         scd, uds = res.GetLastSCDAndUDs(false)
         dialog, dialogSpt = res.Instantiate("Game/UI/Common/Dialog/CameraDialog.prefab")
 
@@ -1201,6 +1200,9 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
             end
         else
             diagcomp:setShadow(false)
+        end
+        if noNeedSafeArea then
+            diagcomp:SetSafeAreaEnabled(false)
         end
     else
         if overlaySortingOrder then

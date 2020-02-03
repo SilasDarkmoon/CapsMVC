@@ -6,6 +6,7 @@ BaseCtrl.dialogStatus = {
     touchClose = true,
     withShadow = true,
     unblockRaycast = false,
+    noNeedSafeArea = false,
 }
 
 BaseCtrl.withoutPop = false
