@@ -19,20 +19,20 @@ namespace DG.Tweening.Core
 
         public static void Log(object message)
         {
-            if (GLog.IsLogInfoEnabled) GLog.LogInfo("DOTWEEN :: " + message);
+            Debug.Log("DOTWEEN :: " + message);
         }
         public static void LogWarning(object message)
         {
-            if (GLog.IsLogWarningEnabled) GLog.LogWarning("DOTWEEN :: " + message);
+            Debug.LogWarning("DOTWEEN :: " + message);
         }
         public static void LogError(object message)
         {
-            if(GLog.IsLogErrorEnabled) GLog.LogError("DOTWEEN :: " + message);
+            Debug.LogError("DOTWEEN :: " + message);
         }
 
         public static void LogReport(object message)
         {
-            if (GLog.IsLogInfoEnabled) GLog.LogInfo("<color=#00B500FF>DOTWEEN :: " + message + "</color>");
+            Debug.Log("<color=#00B500FF>DOTWEEN :: " + message + "</color>");
         }
 
         public static void LogInvalidTween(Tween t)

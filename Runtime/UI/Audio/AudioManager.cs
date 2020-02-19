@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Capstones.UnityEngineEx;
 
 public class AudioManager
 {
@@ -78,7 +79,7 @@ public class AudioManager
             }
             else
             {
-                if (GLog.IsLogWarningEnabled) GLog.LogWarning("Audio Player '" + category + "' already created! Returning original player!");
+                PlatDependant.LogWarning("Audio Player '" + category + "' already created! Returning original player!");
                 return false;
             }
         }
@@ -103,7 +104,7 @@ public class AudioManager
     {
         if (!playerMap.ContainsKey(category))
         {
-            if (GLog.IsLogWarningEnabled) GLog.LogWarning("Audio Player '"+ category + "' not exist!");
+            PlatDependant.LogWarning("Audio Player '"+ category + "' not exist!");
             return;
         }
         if (playerMap[category])

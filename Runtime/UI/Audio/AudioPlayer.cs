@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using Capstones.UnityEngineEx;
 using UnityEngine;
+using Capstones.UnityEngineEx;
 
 [RequireComponent(typeof(AudioSource))]
 public class AudioPlayer : MonoBehaviour
@@ -90,7 +90,7 @@ public class AudioPlayer : MonoBehaviour
         }
         else
         {
-            if (GLog.IsLogErrorEnabled) GLog.LogError("Audio clip not found, path :" + path);
+            PlatDependant.LogError("Audio clip not found, path :" + path);
         }
     }
 

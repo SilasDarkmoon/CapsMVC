@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Capstones.UnityEngineEx;
 
 namespace Lua.UI
 {
@@ -615,7 +616,7 @@ namespace Lua.UI
         /// <param name="itemCount">元素数量</param>
         public void RefreshWithItemCount(int itemCount)
         {
-            if (itemCount < 0) { if(GLog.IsLogErrorEnabled) GLog.LogError("Item Count cann't be negative!"); }
+            if (itemCount < 0) { PlatDependant.LogError("Item Count cann't be negative!"); }
 
             InitConfig(itemCount);
 
@@ -642,12 +643,12 @@ namespace Lua.UI
         {
             if (count <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("Count should be positive");
+                PlatDependant.LogInfo("Count should be positive");
                 return;
             }
             if (index >= m_ItemList.Count)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("Wrong Index To Remove");
+                PlatDependant.LogInfo("Wrong Index To Remove");
                 return;
             }
             count = Mathf.Min(count, m_ItemList.Count - index);
@@ -695,7 +696,7 @@ namespace Lua.UI
         {
             if (count <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("Count should be positive");
+                PlatDependant.LogInfo("Count should be positive");
                 return;
             }
 
@@ -722,7 +723,7 @@ namespace Lua.UI
         {
             if (count <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("Count should be positive");
+                PlatDependant.LogInfo("Count should be positive");
                 return;
             }
 
@@ -1638,7 +1639,7 @@ namespace Lua.UI
         {
             if (index < 0 || index >= m_ItemList.Count)
             {
-                if(GLog.IsLogErrorEnabled) GLog.LogError("判断元素是否是显示状态时索引错误");
+                PlatDependant.LogError("判断元素是否是显示状态时索引错误");
                 return false;
             }
 
@@ -2122,7 +2123,7 @@ namespace Lua.UI
         {
             if (index < 0 || index >= m_ItemList.Count)
             {
-                if(GLog.IsLogErrorEnabled) GLog.LogError("Wrong Index To Scroll");
+                PlatDependant.LogError("Wrong Index To Scroll");
                 return 0;
             }
             CreateTo(index);
@@ -2166,13 +2167,13 @@ namespace Lua.UI
                 }
                 else
                 {
-                    if(GLog.IsLogErrorEnabled) GLog.LogError("Item Already Created!");
+                    PlatDependant.LogError("Item Already Created!");
                     return null;
                 }
             }
             else
             {
-                if(GLog.IsLogErrorEnabled) GLog.LogError("Wrong Index To Create Item!");
+                PlatDependant.LogError("Wrong Index To Create Item!");
                 return null;
             }
         }
@@ -2263,7 +2264,7 @@ namespace Lua.UI
             }
             else
             {
-                if(GLog.IsLogErrorEnabled) GLog.LogError("Wrong Index To Drop Item!");
+                PlatDependant.LogError("Wrong Index To Drop Item!");
             }
         }
         /// <summary>

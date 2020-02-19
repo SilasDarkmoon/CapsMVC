@@ -2,8 +2,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Capstones.UnityEngineEx;
 
-namespace Lua.UI
+namespace Lua.UI // TODO: change to Capstones.UnityEngineEx(.UI?)
 {
     public class ScorllItemData
     {
@@ -87,7 +88,7 @@ namespace Lua.UI
         {
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return;
             }
             currentPageIndex = index;
@@ -120,7 +121,7 @@ namespace Lua.UI
         {
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return;
             }
             if (index >= 0 && index < totalCount)
@@ -146,7 +147,7 @@ namespace Lua.UI
             }
             else
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("input page error index =" + index + ",current pageTotalCount = " + totalCount);
+                PlatDependant.LogInfo("input page error index =" + index + ",current pageTotalCount = " + totalCount);
             }
         }
 
@@ -155,7 +156,7 @@ namespace Lua.UI
         {
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return;
             }
             if (index >= 0 && index < totalCount)
@@ -181,14 +182,14 @@ namespace Lua.UI
             }
             else
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("input page error index =" + index + ",current pageTotalCount = " + totalCount);
+                PlatDependant.LogInfo("input page error index =" + index + ",current pageTotalCount = " + totalCount);
             }
         }
         public void ScrollToNextGroup()
         { // 不能用itemIndex 会有小数点偏差，改用Round精确判断
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return;
             }
             int pos = 0;
@@ -213,7 +214,7 @@ namespace Lua.UI
         {
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return;
             }
             int pos = 0;
@@ -233,7 +234,7 @@ namespace Lua.UI
             }
             if (index > totalCount)
             {
-                if(GLog.IsLogErrorEnabled) GLog.LogError("add error:" + index);
+                PlatDependant.LogError("add error:" + index);
                 return;
             }
             totalCount += 1;
@@ -248,7 +249,7 @@ namespace Lua.UI
 
             if (index < 0 || index > totalCount - 1)
             {
-                if(GLog.IsLogErrorEnabled) GLog.LogError("删除错误:" + index);
+                PlatDependant.LogError("删除错误:" + index);
                 return;
             }
             totalCount = totalCount - 1;
@@ -381,7 +382,7 @@ namespace Lua.UI
         {
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return;
             }
             float dst = (normalizedPos * otherDirectionAxisIndex + (1 - normalizedPos) * directionAxisIndex) * contentTransform.sizeDelta[directionAxisIndex];
@@ -806,7 +807,7 @@ namespace Lua.UI
         {
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return false;
             }
             var maxRoll = totalLines;
@@ -856,7 +857,7 @@ namespace Lua.UI
         {
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return;
             }
             internalIndex = Mathf.FloorToInt((float)internalIndex / maxPerLine);
@@ -874,7 +875,7 @@ namespace Lua.UI
         {
             if (totalCount <= 0)
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("error element Count =" + totalCount);
+                PlatDependant.LogInfo("error element Count =" + totalCount);
                 return;
             }
             internalIndex = Mathf.FloorToInt((float)internalIndex / maxPerLine);
@@ -984,7 +985,7 @@ namespace Lua.UI
                 var obj = CreateItemLuaFunc(adjustIndex);
                 if (obj == null)
                 {
-                    if(GLog.IsLogErrorEnabled) GLog.LogError("Expected to find obj of type gameObject,but found none" + obj);
+                    PlatDependant.LogError("Expected to find obj of type gameObject,but found none" + obj);
                 }
                 itemData = new ScorllItemData();
                 itemData.index = index;
@@ -1031,7 +1032,7 @@ namespace Lua.UI
             }
             else
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("index is more than totalCount : " + adjustIndex);
+                PlatDependant.LogInfo("index is more than totalCount : " + adjustIndex);
             }
         }
         private void CreateLine(int index)
@@ -1047,7 +1048,7 @@ namespace Lua.UI
                 var lineObject = CreateLineLuaFunc(index);
                 if (lineObject == null)
                 {
-                    if(GLog.IsLogErrorEnabled) GLog.LogError("Expected to find obj of type gameObject,but found none" + lineObject);
+                    PlatDependant.LogError("Expected to find obj of type gameObject,but found none" + lineObject);
                 }
                 var rectTransf = lineObject.GetComponent<RectTransform>();
                 rectTransf.SetParent(contentTransform, false);
@@ -1078,7 +1079,7 @@ namespace Lua.UI
             }
             else
             {
-                if (GLog.IsLogInfoEnabled) GLog.LogInfo("ResetLine error ,m_UnUsedLineQueue less then 1 !, index = " + index);
+                PlatDependant.LogInfo("ResetLine error ,m_UnUsedLineQueue less then 1 !, index = " + index);
             }
         }
         private void ResetBaseLineData(int index, ScorllItemData lineBase)
