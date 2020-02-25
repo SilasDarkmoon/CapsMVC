@@ -29,6 +29,8 @@ namespace Capstones.UnityEngineEx.UI
         {
             base.Awake();
 
+            luaBehav = gameObject.GetComponent<CapsUnityLuaBehav>();
+
             if (ButtonGroupType == ButtonGroupType.Dynamic)
             {
                 Toggles = new List<GameObject>();
@@ -80,7 +82,7 @@ namespace Capstones.UnityEngineEx.UI
                                 m_cache_tag = tag;
 
                             luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onToggleSelected", btnLua2, tag);
-                            luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onTagSwitched", btnLua2, tag);
+                            luaBehav.CallLuaFunc<int>("onTagSwitched", tag);
                         }
                         else
                         {
@@ -104,7 +106,7 @@ namespace Capstones.UnityEngineEx.UI
                 {
                     obj.GetComponent<Toggle>().isOn = true;
                     luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onToggleSelected", btnLua, tag);
-                    luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onTagSwitched", btnLua, tag);
+                    luaBehav.CallLuaFunc<int>("onTagSwitched", tag);
                 }
                 else
                 {
