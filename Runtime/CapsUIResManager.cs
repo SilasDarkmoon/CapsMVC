@@ -31,6 +31,8 @@ namespace Capstones.UnityEngineEx
             _UICameraAndEventSystemGo = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
             _UICamera = _UICameraAndEventSystemGo.GetComponentInChildren<Camera>();
             _UIAudioListener = _UICameraAndEventSystemGo.GetComponentInChildren<AudioListener>();
+
+            Object.DontDestroyOnLoad(_UICameraAndEventSystemGo);
             return _UICamera;
         }
         public static bool TryChangeToUIScene()
@@ -134,10 +136,23 @@ namespace Capstones.UnityEngineEx
             }
         }
 
+        /// <summary>
+        /// 如果进入的场景是.unity场景，就使用场景自带的audiolistener，
+        /// 如果进入的是prefab的scene，就使用UICameraAndEventSystem里的
+        /// </summary>
+        /// <param name="path"></param>
         public static void SetUIAudioListener(string path)
         {
             int index = path.IndexOf("unity");
             bool flag = index == -1 ? true : false;
+            if (_UIAudioListener && _UIAudioListener.enabled != flag)
+            {
+                _UIAudioListener.enabled = flag;
+            }
+        }
+
+        public static void SetUIAudioListenerEnable(bool flag)
+        {
             if (_UIAudioListener && _UIAudioListener.enabled != flag)
             {
                 _UIAudioListener.enabled = flag;
