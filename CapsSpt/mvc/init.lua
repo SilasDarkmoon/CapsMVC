@@ -363,7 +363,7 @@ end
 
 local function DisableCachedScene(sceneCacheItem)
     if sceneCacheItem and sceneCacheItem.pack then
-        if sceneCacheItem.view then
+        if sceneCacheItem.view and sceneCacheItem.ctrl.needSceneCache then
             -- MoveToDontDestroy(sceneCacheItem)
             MoveToSceneAndDialogCache(sceneCacheItem)
             -- local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
