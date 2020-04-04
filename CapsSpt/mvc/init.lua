@@ -1434,4 +1434,21 @@ function res.SetUIAudioListener(viewPath)
     UIResManager.SetUIAudioListener(viewPath)
 end
 
+--- 只是把ctrlPath推进场景栈里，并不加载Prefab
+function res.ChangeSceneImmediateAndDoNotInstantiatePrefab(ctrlPath, ...)
+    SaveCurrentStatusData()
+    -- local disableOrDestroySceneFunc = SaveCurrentSceneInfo()
+    -- disableOrDestroySceneFunc()
+    res.ClearSceneCache()
+    ClearCurrentSceneInfo()
+
+    res.curSceneInfo = {}
+    local ctrl = require(ctrlPath)
+    res.curSceneInfo.ctrl = ctrl.new()
+    res.curSceneInfo.path = ctrlPath
+    res.curSceneInfo.args = {...}
+    res.curSceneInfo.argc = select("#", ...)
+    res.curSceneInfo.blur = false
+end
+
 return res
