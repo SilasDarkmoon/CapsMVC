@@ -266,7 +266,7 @@ namespace DG.Tweening
                 try {
                     callback();
                 } catch (Exception e) {
-                    Debugger.LogWarning("An error inside a tween callback was silently taken care of > " + e.Message + "\n\n" + e.StackTrace + "\n\n");
+                    Debugger.LogError("An error inside a tween callback was silently taken care of > " + e.Message + "\n\n" + e.StackTrace + "\n\n");
                     return false; // Callback error
                 }
             } else callback();
@@ -278,7 +278,7 @@ namespace DG.Tweening
                 try {
                     callback(param);
                 } catch (Exception e) {
-                    Debugger.LogWarning("An error inside a tween callback was silently taken care of > " + e.Message);
+                    Debugger.LogError("An error inside a tween callback was silently taken care of > " + e.Message);
                     return false; // Callback error
                 }
             } else callback(param);
