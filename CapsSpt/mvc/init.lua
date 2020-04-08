@@ -223,14 +223,16 @@ local function SaveCurrentSceneInfo()
                 sceneCacheItem.ctrl = res.curSceneInfo.ctrl
             end
         end
-        if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnExitScene) == "function" then
-            res.curSceneInfo.ctrl:OnExitScene()
-        end
     else
         sceneCacheItem = {
             objs = sgos,
             pack = pack,
         }
+    end
+    if type(res.curSceneInfo) == "table" and res.curSceneInfo.ctrl then
+        if type(res.curSceneInfo.ctrl.OnExitScene) == "function" then
+            res.curSceneInfo.ctrl:OnExitScene()
+        end
     end
 
     for i, dgo in ipairs(dgos) do
@@ -254,11 +256,13 @@ local function SaveCurrentSceneInfo()
                         dgosItem.ctrl = curDialogInfo.ctrl
                     end
                 end
-                if curDialogInfo.ctrl and type(curDialogInfo.ctrl.OnExitScene) == "function" then
-                    curDialogInfo.ctrl:OnExitScene()
-                end
             else
                 table.insert(dgosDisable, false)
+            end
+            if type(curDialogInfo) == "table" and curDialogInfo.ctrl then
+                if type(curDialogInfo.ctrl.OnExitScene) == "function" then
+                    curDialogInfo.ctrl:OnExitScene()
+                end
             end
         else
             table.insert(dgosDisable, false)
