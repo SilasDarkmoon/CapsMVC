@@ -609,6 +609,7 @@ end
 
 --#region Load Prefab/Scene as Scene
 local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
+    res.SetCurrentEventSystemEnabled(false)
     -- 记录当前场景信息res.curSceneInfo
     res.curSceneInfo = {
         path = ctrlPath,
@@ -679,6 +680,8 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
+
+            res.SetCurrentEventSystemEnabled(true)
         end)
     end
 
@@ -707,6 +710,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
+            res.SetCurrentEventSystemEnabled(true)
         else
             CreateScene()
         end
@@ -718,6 +722,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
 end
 
 local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
+    res.SetCurrentEventSystemEnabled(false)
     -- require("ui.control.button.LuaButton").frameCount = math.max_int32 - 3
     -- 记录当前场景信息res.curSceneInfo
     res.curSceneInfo = {
@@ -815,6 +820,8 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
+
+            res.SetCurrentEventSystemEnabled(true)
         end)
     end
 
@@ -847,6 +854,8 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
             end
+
+            res.SetCurrentEventSystemEnabled(true)
         else
             CreateScene()
         end
