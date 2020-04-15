@@ -19,6 +19,12 @@
         _StencilWriteMask("Stencil Write Mask", Float) = 255
         _StencilReadMask("Stencil Read Mask", Float) = 255
 
+        _BlendOp("BlendOp", Float) = 0
+        _BlendFactorSrcColor("BlendFactorSrcColor", Float) = 5
+        _BlendFactorDestColor("BlendFactorDestColor", Float) = 10
+        _BlendFactorSrcAlpha("BlendFactorSrcAlpha", Float) = 5
+        _BlendFactorDestAlpha("BlendFactorDestAlpha", Float) = 10
+
         _ColorMask("Color Mask", Float) = 15
 
         [Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip("Use Alpha Clip", Float) = 0
@@ -48,7 +54,8 @@
         Lighting Off
         ZWrite Off
         ZTest[unity_GUIZTestMode]
-        Blend SrcAlpha OneMinusSrcAlpha
+        BlendOp[_BlendOp]
+        Blend[_BlendFactorSrcColor][_BlendFactorDestColor],[_BlendFactorSrcAlpha][_BlendFactorDestAlpha]
         ColorMask[_ColorMask]
 
         Pass
