@@ -729,42 +729,7 @@ namespace SoftMasking {
                     ? new Material(defaultReplacementShader)
                     : null;
                 if (replacement && original)
-                {
-                    bool copyBlendFactorSrcColor = false, copyBlendFactorDestColor = false, copyBlendFactorSrcAlpha = false, copyBlendFactorDestAlpha = false;
-                    if (!original.HasProperty(MaterialParameters.Ids.BlendFactorSrcColor) && replacement.HasProperty(MaterialParameters.Ids.BlendFactorSrcColor))
-                    {
-                        copyBlendFactorSrcColor = true;
-                    }
-                    if (!original.HasProperty(MaterialParameters.Ids.BlendFactorDestColor) && replacement.HasProperty(MaterialParameters.Ids.BlendFactorDestColor))
-                    {
-                        copyBlendFactorDestColor = true;
-                    }
-                    if (!original.HasProperty(MaterialParameters.Ids.BlendFactorSrcAlpha) && replacement.HasProperty(MaterialParameters.Ids.BlendFactorSrcAlpha))
-                    {
-                        copyBlendFactorSrcAlpha = true;
-                    }
-                    if (!original.HasProperty(MaterialParameters.Ids.BlendFactorDestAlpha) && replacement.HasProperty(MaterialParameters.Ids.BlendFactorDestAlpha))
-                    {
-                        copyBlendFactorDestAlpha = true;
-                    }
                     replacement.CopyPropertiesFromMaterial(original);
-                    if (copyBlendFactorSrcColor)
-                    {
-                        replacement.SetFloat(MaterialParameters.Ids.BlendFactorSrcColor, 5.0f);
-                    }
-                    if (copyBlendFactorDestColor)
-                    {
-                        replacement.SetFloat(MaterialParameters.Ids.BlendFactorDestColor, 10.0f);
-                    }
-                    if (copyBlendFactorSrcAlpha)
-                    {
-                        replacement.SetFloat(MaterialParameters.Ids.BlendFactorSrcAlpha, 5.0f);
-                    }
-                    if (copyBlendFactorDestAlpha)
-                    {
-                        replacement.SetFloat(MaterialParameters.Ids.BlendFactorDestAlpha, 10.0f);
-                    }
-                }
                 return replacement;
             }
         }
@@ -897,7 +862,7 @@ namespace SoftMasking {
                 return value.a + value.r + value.g + value.b;
             }
 
-            public static class Ids {
+            static class Ids {
                 public static readonly int SoftMask = Shader.PropertyToID("_SoftMask");
                 public static readonly int SoftMask_Rect = Shader.PropertyToID("_SoftMask_Rect");
                 public static readonly int SoftMask_UVRect = Shader.PropertyToID("_SoftMask_UVRect");
@@ -906,11 +871,6 @@ namespace SoftMasking {
                 public static readonly int SoftMask_BorderRect = Shader.PropertyToID("_SoftMask_BorderRect");
                 public static readonly int SoftMask_UVBorderRect = Shader.PropertyToID("_SoftMask_UVBorderRect");
                 public static readonly int SoftMask_TileRepeat = Shader.PropertyToID("_SoftMask_TileRepeat");
-                public static readonly int BlendOp = Shader.PropertyToID("_BlendOp");
-                public static readonly int BlendFactorSrcColor = Shader.PropertyToID("_BlendFactorSrcColor");
-                public static readonly int BlendFactorDestColor = Shader.PropertyToID("_BlendFactorDestColor");
-                public static readonly int BlendFactorSrcAlpha = Shader.PropertyToID("_BlendFactorSrcAlpha");
-                public static readonly int BlendFactorDestAlpha = Shader.PropertyToID("_BlendFactorDestAlpha");
             }
         }
 
