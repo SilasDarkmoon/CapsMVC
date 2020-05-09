@@ -32,9 +32,41 @@ namespace Capstones.UnityEngineEx
             _UICamera = _UICameraAndEventSystemGo.GetComponentInChildren<Camera>();
             _UIAudioListener = _UICameraAndEventSystemGo.GetComponentInChildren<AudioListener>();
 
+#if UNITY_EDITOR
+            if (UnityEditor.EditorApplication.isPlaying)
+            {
+                UnityEditor.EditorApplication.playModeStateChanged += UnloadCameraAndEventSystemTemplateOnPlayModeStateChanged;
+            }
+            else
+            {
+                UnloadCameraAndEventSystemTemplate();
+            }
+
+            if (UnityEditor.EditorApplication.isPlaying)
+#endif
             Object.DontDestroyOnLoad(_UICameraAndEventSystemGo);
             return _UICamera;
         }
+
+#if UNITY_EDITOR
+        private static void UnloadCameraAndEventSystemTemplateOnPlayModeStateChanged(UnityEditor.PlayModeStateChange reason)
+        {
+            //if (reason == UnityEditor.PlayModeStateChange.EnteredEditMode)
+            {
+                UnloadCameraAndEventSystemTemplate();
+                UnityEditor.EditorApplication.playModeStateChanged -= UnloadCameraAndEventSystemTemplateOnPlayModeStateChanged;
+            }
+        }
+        public static void UnloadCameraAndEventSystemTemplate()
+        {
+            if (_UICameraAndEventSystemTemplate)
+            {
+                _UICameraAndEventSystemTemplate = null;
+                UnityEditor.EditorUtility.UnloadUnusedAssetsImmediate();
+            }
+        }
+#endif
+
         public static bool TryChangeToUIScene()
         {
             if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "UIScene")
