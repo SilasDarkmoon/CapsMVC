@@ -6,6 +6,7 @@ public class StackingMainCamera : MonoBehaviour
 {
     private Camera _Camera;
     private UniversalAdditionalCameraData _CameraEx;
+    private Camera _FirstCameraInStack;
 
     private void Awake()
     {
@@ -61,6 +62,24 @@ public class StackingMainCamera : MonoBehaviour
                     else if (cam1.depth > cam2.depth) return 1;
                     else return -1;
                 });
+            }
+
+            Camera first = null;
+            if (stack.Count > 0)
+            {
+                first = stack[0];
+            }
+            if (first != _FirstCameraInStack)
+            {
+                _FirstCameraInStack = first;
+                if (_FirstCameraInStack.clearFlags == CameraClearFlags.Skybox)
+                {
+                    _Camera.clearFlags = CameraClearFlags.Skybox;
+                }
+                else
+                {
+                    _Camera.clearFlags = CameraClearFlags.SolidColor;
+                }
             }
         }
     }
