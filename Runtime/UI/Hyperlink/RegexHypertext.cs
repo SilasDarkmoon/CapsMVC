@@ -33,7 +33,7 @@ namespace Hypertext
 
         void Start()
         {
-            OnClick(RegexUrl, url => Debug.Log(url));
+            OnClick(RegexUrl, url => Application.OpenURL(url));
         }
 
         /// <summary>
