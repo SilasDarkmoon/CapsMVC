@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
+[DisallowMultipleComponent]
+[RequireComponent(typeof(Camera))]
 public class StackingMainCamera : MonoBehaviour
 {
     private Camera _Camera;
@@ -17,28 +19,45 @@ public class StackingMainCamera : MonoBehaviour
             _CameraEx = gameObject.AddComponent<UniversalAdditionalCameraData>();
         }
         _CameraEx.renderType = CameraRenderType.Base;
+        _Instance = this;
+        ManageCameraStackRaw();
+    }
+    //private void Update()
+    //{
+    //    if (_Camera)
+    //    {
+    //        GetSceneCameras();
+    //        ManageCameraStackRaw();
+    //    }
+    //}
+    private void OnDestroy()
+    {
+        if (_Instance == this)
+        {
+            _Instance = null;
+        }
     }
 
-    private void Update()
+    private void ManageCameraStackRaw()
     {
         if (_Camera)
         {
+            var cameras = _SceneCameras;
             var stack = _CameraEx.cameraStack;
             for (int i = stack.Count - 1; i >= 0; --i)
             {
                 var old = stack[i];
-                if (!old)
+                if (!old || !cameras.Contains(old))
                 {
                     stack.RemoveAt(i);
                 }
             }
 
-            var cameras = GetSceneCameras();
+            var oldcameras = new HashSet<Camera>(stack);
             bool newcam = false;
-            for (int i = 0; i < cameras.Count; ++i)
+            foreach (var cam in cameras)
             {
-                var cam = cameras[i];
-                if (cam != _Camera && !stack.Contains(cam))
+                if (cam != _Camera && !oldcameras.Contains(cam))
                 {
                     if (cam.targetTexture == null)
                     {
@@ -83,13 +102,35 @@ public class StackingMainCamera : MonoBehaviour
             }
         }
     }
+    public static void ManageCameraStack()
+    {
+        if (_Instance)
+        {
+            _Instance.ManageCameraStackRaw();
+        }
+    }
 
-    private static List<Camera> _SceneCameras = new List<Camera>();
-    public static List<Camera> GetSceneCameras()
+    private static StackingMainCamera _Instance;
+
+    private static HashSet<Camera> _SceneCameras = new HashSet<Camera>();
+    public static HashSet<Camera> GetSceneCameras()
     {
         var cams = _SceneCameras;
         cams.Clear();
-        cams.AddRange(Object.FindObjectsOfType<Camera>());
+        cams.UnionWith(Object.FindObjectsOfType<Camera>());
         return cams;
+    }
+    public static void RegSceneCamera(Camera cam)
+    {
+        if (cam)
+        {
+            _SceneCameras.Add(cam);
+            ManageCameraStack();
+        }
+    }
+    public static void UnregSceneCamera(Camera cam)
+    {
+        _SceneCameras.Remove(cam);
+        ManageCameraStack();
     }
 }

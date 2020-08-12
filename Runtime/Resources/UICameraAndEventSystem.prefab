@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: 3859768208033521291}
   - component: {fileID: 8839412182097207656}
   - component: {fileID: 5890671717636331853}
+  - component: {fileID: 891976756660316393}
   m_Layer: 0
   m_Name: UI Camera
   m_TagString: UIDialogCamera
@@ -301,3 +302,15 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9212045279653130852}
   m_Enabled: 0
+--- !u!114 &891976756660316393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9212045279653130852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c353665a87d41d34195e53d2293f3577, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
