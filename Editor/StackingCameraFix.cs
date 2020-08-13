@@ -30,7 +30,7 @@ namespace Capstones.UnityEngineEx
                 var root = roots[j];
                 if (PrefabUtility.GetPrefabInstanceStatus(root) == PrefabInstanceStatus.NotAPrefab)
                 {
-                    var cams = root.GetComponentsInChildren<Camera>();
+                    var cams = root.GetComponentsInChildren<Camera>(true);
                     for (int k = 0; k < cams.Length; ++k)
                     {
                         var cam = cams[k];
@@ -53,7 +53,7 @@ namespace Capstones.UnityEngineEx
         private static bool FixPrefab(GameObject root)
         {
             bool changed = false;
-            var cams = root.GetComponentsInChildren<Camera>();
+            var cams = root.GetComponentsInChildren<Camera>(true);
             for (int k = 0; k < cams.Length; ++k)
             {
                 var cam = cams[k];
@@ -84,8 +84,58 @@ namespace Capstones.UnityEngineEx
             }
             return false;
         }
+        private static bool DeleteMissingReference(GameObject root)
+        {
+            if (PrefabUtility.GetPrefabInstanceStatus(root) != PrefabInstanceStatus.NotAPrefab)
+            {
+                return false;
+            }
 
-        [MenuItem("Mods/Client Update Fix - Stacking Camera", priority = 100020)]
+            bool changed = GameObjectUtility.RemoveMonoBehavioursWithMissingScript(root) > 0;
+
+            var roottrans = root.transform;
+            for (int i = 0; i < roottrans.childCount; ++i)
+            {
+                var child = roottrans.GetChild(i);
+                changed |= DeleteMissingReference(child.gameObject);
+            }
+
+            return changed;
+        }
+        private static bool FixMissingReferenceInPrefab(GameObject root)
+        {
+            bool changed = DeleteMissingReference(root);
+            if (changed)
+            {
+                PrefabUtility.SavePrefabAsset(root);
+            }
+            return changed;
+        }
+        public static bool FixMissingReferenceInPrefab(string path)
+        {
+            var prefab = AssetDatabase.LoadMainAssetAtPath(path) as GameObject;
+            if (prefab)
+            {
+                return FixMissingReferenceInPrefab(prefab);
+            }
+            return false;
+        }
+
+        [MenuItem("Mods/Client Update Fix - Delete Missing Reference In Prefabs", priority = 100020)]
+        private static void DeleteMissingReferenceInPrefabs()
+        {
+            var allassets = AssetDatabase.GetAllAssetPaths();
+            for (int i = 0; i < allassets.Length; ++i)
+            {
+                var path = allassets[i];
+                if (path.EndsWith(".prefab", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    FixMissingReferenceInPrefab(path);
+                }
+            }
+        }
+
+        [MenuItem("Mods/Client Update Fix - Stacking Camera", priority = 100030)]
         private static void UpdateFixStackingCamera()
         {
             var allassets = AssetDatabase.GetAllAssetPaths();
@@ -132,6 +182,7 @@ namespace Capstones.UnityEngineEx
                         var asset = importedAssets[i];
                         if (asset.EndsWith(".prefab"))
                         {
+                            //FixMissingReferenceInPrefab(asset); // This is mainly for newly created prefab. When it has MissingReference, it cannot be saved.
                             FixPrefab(asset);
                         }
                     }
