@@ -1426,13 +1426,14 @@ end
 -- end
 
 function res.CollectGarbage(level)
-    if level == 0 then
-        ResManager.StartGarbageCollectLite()
-    elseif level == 1 then
-        ResManager.StartGarbageCollectNorm()
-    else
-        ResManager.StartGarbageCollectDeep()
-    end
+    -- if level == 0 then
+    --     ResManager.StartGarbageCollectLite()
+    -- elseif level == 1 then
+    --     ResManager.StartGarbageCollectNorm()
+    -- else
+    --     ResManager.StartGarbageCollectDeep()
+    -- end
+    ResManager.GarbageCollector.StartGarbageCollect(level)
 end
 
 -- 只弹出一个栈帧
