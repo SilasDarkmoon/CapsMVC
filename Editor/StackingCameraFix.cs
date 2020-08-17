@@ -84,12 +84,45 @@ namespace Capstones.UnityEngineEx
             }
             return false;
         }
+        private static bool HasBadComponents(GameObject root)
+        {
+            var comps = root.GetComponents(typeof(Component));
+            for (int i = 0; i < comps.Length; ++i)
+            {
+                var comp = comps[i];
+                if (!comp)
+                {
+                    return true;
+                }
+            }
+
+            var roottrans = root.transform;
+            for (int i = 0; i < roottrans.childCount; ++i)
+            {
+                var child = roottrans.GetChild(i);
+                if (HasBadComponents(child.gameObject))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        private static bool HasBadComponents(string path)
+        {
+            var prefab = AssetDatabase.LoadMainAssetAtPath(path) as GameObject;
+            if (prefab)
+            {
+                return HasBadComponents(prefab);
+            }
+            return false;
+        }
         private static bool DeleteMissingReference(GameObject root)
         {
-            if (PrefabUtility.GetPrefabInstanceStatus(root) != PrefabInstanceStatus.NotAPrefab)
-            {
-                return false;
-            }
+            //if (PrefabUtility.GetPrefabInstanceStatus(root) != PrefabInstanceStatus.NotAPrefab)
+            //{
+            //    return false;
+            //}
 
             bool changed = GameObjectUtility.RemoveMonoBehavioursWithMissingScript(root) > 0;
 
@@ -116,7 +149,14 @@ namespace Capstones.UnityEngineEx
             var prefab = AssetDatabase.LoadMainAssetAtPath(path) as GameObject;
             if (prefab)
             {
-                return FixMissingReferenceInPrefab(prefab);
+                var changed = FixMissingReferenceInPrefab(prefab);
+                //if (changed)
+                //{
+                //    var clone = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+                //    PrefabUtility.SaveAsPrefabAsset(clone, path);
+                //    Object.DestroyImmediate(clone);
+                //}
+                return changed;
             }
             return false;
         }
@@ -124,14 +164,31 @@ namespace Capstones.UnityEngineEx
         [MenuItem("Mods/Client Update Fix - Delete Missing Reference In Prefabs", priority = 100020)]
         private static void DeleteMissingReferenceInPrefabs()
         {
+            bool changed = false;
             var allassets = AssetDatabase.GetAllAssetPaths();
             for (int i = 0; i < allassets.Length; ++i)
             {
                 var path = allassets[i];
                 if (path.EndsWith(".prefab", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    FixMissingReferenceInPrefab(path);
+                    if (HasBadComponents(path))
+                    {
+                        Debug.LogError("Fixing (Missing Script): " + path);
+                        var prefab = AssetDatabase.LoadMainAssetAtPath(path) as GameObject;
+                        var clone = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+                        DeleteMissingReference(clone);
+                        PrefabUtility.SaveAsPrefabAsset(clone, path);
+                        Object.DestroyImmediate(clone);
+                    }
+                    //if (FixMissingReferenceInPrefab(path))
+                    //{
+                    //    changed = true;
+                    //}
                 }
+            }
+            if (changed)
+            {
+                AssetDatabase.SaveAssets();
             }
         }
 
