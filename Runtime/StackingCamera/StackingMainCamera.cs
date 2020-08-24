@@ -113,17 +113,16 @@ public class StackingMainCamera : MonoBehaviour
     }
 
     private static StackingMainCamera _Instance;
+    private static bool _IsInstanceCreating;
     public static StackingMainCamera Instance
     {
         get
         {
-            if (!_Instance)
+            if (!_Instance && !_IsInstanceCreating)
             {
-                var cam = UIResManager.FindUICamera();
-                if (cam)
-                {
-                    _Instance = cam.GetComponent<StackingMainCamera>();
-                }
+                _IsInstanceCreating = true;
+                UIResManager.FindUICamera();
+                _IsInstanceCreating = false;
             }
             return _Instance;
         }
