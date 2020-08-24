@@ -658,7 +658,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
                     --     coroutine.yield()
                     -- end
                     local obj = Object.Instantiate(prefab)
-                    local camera = UIResManager.CreateCameraAndEventSystem()
+                    local camera = UIResManager.FindUICamera()
                     res.SetUICamera(obj, camera)
                     res.SetCanvasSortingLayer(obj, "UI")
                     res.curSceneInfo.view = res.GetLuaScript(obj)
@@ -791,7 +791,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     local prefab = loadinfo.asset
                     if prefab then
                         local obj = Object.Instantiate(prefab)
-                        local camera = UIResManager.CreateCameraAndEventSystem()
+                        local camera = UIResManager.FindUICamera()
                         res.SetUICamera(obj, camera)
                         res.curSceneInfo.view = res.GetLuaScript(obj)
                         res.curSceneInfo.ctrl = ctrlClass.new(res.curSceneInfo.view, unpack(args, 1, argc))
@@ -885,7 +885,7 @@ function res.LoadViewImmediate(name, ...)
         if prefab then
             local obj = Object.Instantiate(prefab)
             DisableCachedScene(cacheItem)
-            local camera = UIResManager.CreateCameraAndEventSystem()
+            local camera = UIResManager.FindUICamera()
             res.SetUICamera(obj, camera)
             res.SetUIAudioListener(name)
             return res.GetLuaScript(obj)
@@ -923,7 +923,7 @@ function res.LoadViewAsync(name, ...)
             end
             if prefab then
                 local obj = Object.Instantiate(prefab)
-                local camera = UIResManager.CreateCameraAndEventSystem()
+                local camera = UIResManager.FindUICamera()
                 res.SetUICamera(obj, camera)
             end
         end
@@ -955,7 +955,7 @@ function res.LoadView(name, ...)
             local prefab = res.LoadRes(name)
             if prefab then
                 local obj = Object.Instantiate(prefab)
-                local camera = UIResManager.CreateCameraAndEventSystem()
+                local camera = UIResManager.FindUICamera()
                 unity.waitForNextEndOfFrame()
                 DisableCachedScene(cacheItem)
                 res.SetUICamera(obj, camera)

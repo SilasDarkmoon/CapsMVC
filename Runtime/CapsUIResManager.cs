@@ -10,6 +10,7 @@ namespace Capstones.UnityEngineEx
     public static class UIResManager
     {
         private static Camera _UICamera;
+        private static bool _UICameraLoading;
         private const int SceneAndDialogCacheLayer = 17;
         private const string UICameraName = "UICameraAndEventSystem(Clone)";
 
@@ -17,8 +18,16 @@ namespace Capstones.UnityEngineEx
 
         public static Camera FindUICamera()
         {
-            if (_UICamera != null && !_UICamera.isActiveAndEnabled) _UICamera = null;
-            if (_UICamera == null) CreateCameraAndEventSystem();
+            if (!_UICameraLoading)
+            {
+                if (_UICamera != null && !_UICamera.isActiveAndEnabled) _UICamera = null;
+                if (_UICamera == null)
+                {
+                    _UICameraLoading = true;
+                    CreateCameraAndEventSystem();
+                    _UICameraLoading = false;
+                }
+            }
             return _UICamera;
         }
 
