@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using Capstones.UnityEngineEx;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Camera))]
@@ -118,13 +119,7 @@ public class StackingMainCamera : MonoBehaviour
         {
             if (!_Instance)
             {
-                var go = new GameObject("StackingMainCamera");
-                go.AddComponent<Camera>();
-                go.AddComponent<UniversalAdditionalCameraData>();
-                //go.AddComponent<AudioListener>();
-                _Instance = go.AddComponent<StackingMainCamera>();
-                DontDestroyOnLoad(go);
-
+                UIResManager.CreateCameraAndEventSystem();
             }
             return _Instance;
         }
