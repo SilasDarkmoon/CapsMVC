@@ -104,13 +104,31 @@ public class StackingMainCamera : MonoBehaviour
     }
     public static void ManageCameraStack()
     {
-        if (_Instance)
+        var instance = Instance;
+        if (instance)
         {
-            _Instance.ManageCameraStackRaw();
+            instance.ManageCameraStackRaw();
         }
     }
 
     private static StackingMainCamera _Instance;
+    public static StackingMainCamera Instance
+    {
+        get
+        {
+            if (!_Instance)
+            {
+                var go = new GameObject("StackingMainCamera");
+                go.AddComponent<Camera>();
+                go.AddComponent<UniversalAdditionalCameraData>();
+                //go.AddComponent<AudioListener>();
+                _Instance = go.AddComponent<StackingMainCamera>();
+                DontDestroyOnLoad(go);
+
+            }
+            return _Instance;
+        }
+    }
 
     private static HashSet<Camera> _SceneCameras = new HashSet<Camera>();
     public static HashSet<Camera> GetSceneCameras()
