@@ -43,6 +43,7 @@ public class StackingMainCamera : MonoBehaviour
     {
         if (_Camera)
         {
+            _SceneCameras.RemoveWhere(scenecam => !scenecam);
             var cameras = _SceneCameras;
             var stack = _CameraEx.cameraStack;
             for (int i = stack.Count - 1; i >= 0; --i)
