@@ -9,6 +9,7 @@ public class StackingMainCamera : MonoBehaviour
 {
     private Camera _Camera;
     private UniversalAdditionalCameraData _CameraEx;
+    private List<Camera> _CameraStack;
     private Camera _FirstCameraInStack;
 
     private void Awake()
@@ -45,7 +46,11 @@ public class StackingMainCamera : MonoBehaviour
         {
             _SceneCameras.RemoveWhere(scenecam => !scenecam);
             var cameras = _SceneCameras;
-            var stack = _CameraEx.cameraStack;
+            if (_CameraStack == null)
+            {
+                _CameraStack = _CameraEx.cameraStack;
+            }
+            var stack = _CameraStack;
             for (int i = stack.Count - 1; i >= 0; --i)
             {
                 var old = stack[i];
@@ -93,13 +98,16 @@ public class StackingMainCamera : MonoBehaviour
             if (first != _FirstCameraInStack)
             {
                 _FirstCameraInStack = first;
-                if (_FirstCameraInStack.clearFlags == CameraClearFlags.Skybox)
+                if (first != null)
                 {
-                    _Camera.clearFlags = CameraClearFlags.Skybox;
-                }
-                else
-                {
-                    _Camera.clearFlags = CameraClearFlags.SolidColor;
+                    if (first.clearFlags == CameraClearFlags.Skybox)
+                    {
+                        _Camera.clearFlags = CameraClearFlags.Skybox;
+                    }
+                    else
+                    {
+                        _Camera.clearFlags = CameraClearFlags.SolidColor;
+                    }
                 }
             }
         }
