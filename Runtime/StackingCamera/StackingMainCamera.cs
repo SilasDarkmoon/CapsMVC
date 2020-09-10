@@ -5,6 +5,7 @@ using Capstones.UnityEngineEx;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(UniversalAdditionalCameraData))]
 public class StackingMainCamera : MonoBehaviour
 {
     private Camera _Camera;
