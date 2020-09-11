@@ -36,7 +36,7 @@ namespace Capstones.UnityEngineEx
                         var cam = cams[k];
                         if (PrefabUtility.GetPrefabInstanceStatus(cam) == PrefabInstanceStatus.NotAPrefab)
                         {
-                            if (!cam.GetComponent<StackingMainCamera>() && !cam.GetComponent<StackingDynamicCamera>() && !cam.GetComponent<StackingIgnoreCamera>())
+                            if (!cam.GetComponent<StackingMainCamera>() && !cam.GetComponent<StackingDynamicCamera>() && !cam.GetComponent<StackingIgnoreCamera>() && !cam.GetComponent<DynamicRenderTextureCamera>())
                             {
                                 if (cam.targetTexture == null)
                                 {
@@ -59,7 +59,7 @@ namespace Capstones.UnityEngineEx
                 var cam = cams[k];
                 if (PrefabUtility.GetPrefabInstanceStatus(cam) == PrefabInstanceStatus.NotAPrefab)
                 {
-                    if (!cam.GetComponent<StackingMainCamera>() && !cam.GetComponent<StackingDynamicCamera>() && !cam.GetComponent<StackingIgnoreCamera>())
+                    if (!cam.GetComponent<StackingMainCamera>() && !cam.GetComponent<StackingDynamicCamera>() && !cam.GetComponent<StackingIgnoreCamera>() && !cam.GetComponent<DynamicRenderTextureCamera>())
                     {
                         if (cam.targetTexture == null)
                         {
