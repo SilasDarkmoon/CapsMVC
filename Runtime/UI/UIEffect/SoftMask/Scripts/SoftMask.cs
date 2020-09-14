@@ -599,7 +599,16 @@ namespace SoftMasking {
             var spriteRect = Mathr.Move(Mathr.ToVector(sprite.rect), sprite.textureRect.position - sprite.rect.position - sprite.textureRectOffset);
             var textureRect = Mathr.ToVector(sprite.textureRect);
             var textureBorder = Mathr.BorderOf(spriteRect, textureRect);
-            var textureSize = new Vector2(sprite.texture.width, sprite.texture.height);
+            Vector2 textureSize;
+            if (sprite.texture == null)
+            {
+                textureSize = Vector2.zero;
+                Debug.LogError("SoftMask sprite texture is null.", this);
+            }
+            else
+            {
+                textureSize = new Vector2(sprite.texture.width, sprite.texture.height);
+            }
             var fullMaskRect = LocalMaskRect(Vector4.zero);
             _parameters.maskRectUV = Mathr.Div(textureRect, textureSize);
             if (borderMode == BorderMode.Simple) {
