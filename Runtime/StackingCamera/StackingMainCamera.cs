@@ -131,11 +131,23 @@ public class StackingMainCamera : StackingCamera
             if (!_Instance && !_IsInstanceCreating)
             {
                 _IsInstanceCreating = true;
-                UIResManager.FindUICamera();
+                CreateStackingMainCamera();
                 _IsInstanceCreating = false;
             }
             return _Instance;
         }
+    }
+
+    private static void CreateStackingMainCamera()
+    {
+        var go = new GameObject("StackingMainCamera");
+        DontDestroyOnLoad(go);
+        var cam = go.AddComponent<Camera>();
+        var camex = go.AddComponent<UniversalAdditionalCameraData>();
+        var maincam = go.AddComponent<StackingMainCamera>();
+
+        cam.cullingMask = 0;
+        cam.depth = -100;
     }
 
     private static HashSet<Camera> _SceneCameras = new HashSet<Camera>();
