@@ -5,7 +5,7 @@ using UnityEngine.Rendering.Universal;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(UniversalAdditionalCameraData))]
-public class StackingDynamicCamera : MonoBehaviour
+public class StackingDynamicCamera : StackingCamera
 {
     private Camera _Camera;
     private UniversalAdditionalCameraData _CameraEx;

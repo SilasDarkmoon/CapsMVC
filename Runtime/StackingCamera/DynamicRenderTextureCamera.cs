@@ -6,7 +6,7 @@ using Capstones.UnityEngineEx;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(UniversalAdditionalCameraData))]
-public class DynamicRenderTextureCamera : MonoBehaviour
+public class DynamicRenderTextureCamera : StackingCamera
 {
     public string RenderTexturePath;
 
