@@ -9,12 +9,28 @@ function behaviour:ctor()
     self:_RegisterEvent()
 end
 
+-- function behaviour:OnEnterScene()
+--     self.actions = {}
+--     local list = self.GetActionList()
+--     for i, v in ipairs(list) do
+--         self.actions[v] = action.new()
+--     end
+--     self:_RegisterEvent()
+-- end
+
 function behaviour:onDestroy()
     if self.unityEventListCache then
         for i, unityEvent in ipairs(self.unityEventListCache) do
             unityEvent:RemoveAllListeners()
         end
         self.unityEventListCache = nil
+    end
+
+    if self.actions then
+        for i,v in ipairs(self.actions) do
+            v:RemoveAllHandler()
+        end
+        self.actions = nil
     end
 
     if self.___ex then
@@ -25,8 +41,18 @@ function behaviour:onDestroy()
 
     self:_UnregisterEvent()
     self.___ex = nil
-    -- self.___cs = nil
 end
+
+-- function behaviour:OnExitScene()
+--     if res.IsClrNull(self) then return end
+--     if self.actions then
+--         for i,v in ipairs(self.actions) do
+--             v:RemoveAllHandler()
+--         end
+--         self.actions = nil
+--     end
+--     self:_UnregisterEvent()
+-- end
 
 function behaviour:RegHandler(actionName, func)
     self.actions[actionName]:AddHandler(func)
