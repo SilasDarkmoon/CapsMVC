@@ -169,6 +169,9 @@ public class StackingMainCamera : StackingCamera
     public static void UnregSceneCamera(Camera cam)
     {
         _SceneCameras.Remove(cam);
-        ManageCameraStack();
+        if (_Instance)
+        {
+            ManageCameraStack();
+        }
     }
 }
