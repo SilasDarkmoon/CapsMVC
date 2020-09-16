@@ -229,6 +229,7 @@ local function SaveCurrentSceneInfo()
             pack = pack,
         }
     end
+
     if type(res.curSceneInfo) == "table" and res.curSceneInfo.ctrl then
         if type(res.curSceneInfo.ctrl.OnExitScene) == "function" then
             res.curSceneInfo.ctrl:OnExitScene()
@@ -259,8 +260,8 @@ local function SaveCurrentSceneInfo()
             else
                 table.insert(dgosDisable, false)
             end
-            if type(curDialogInfo) == "table" and curDialogInfo.ctrl then
-                if type(curDialogInfo.ctrl.OnExitScene) == "function" then
+            if type(curDialogInfo) == "table" then
+                if curDialogInfo.ctrl and type(curDialogInfo.ctrl.OnExitScene) == "function" then
                     curDialogInfo.ctrl:OnExitScene()
                 end
             end
@@ -1451,8 +1452,7 @@ end
 --- 只是把ctrlPath推进场景栈里，并不加载Prefab
 function res.ChangeSceneImmediateAndDoNotInstantiatePrefab(ctrlPath, ...)
     SaveCurrentStatusData()
-    -- local disableOrDestroySceneFunc = SaveCurrentSceneInfo()
-    -- disableOrDestroySceneFunc()
+    SaveCurrentSceneInfo()
     res.ClearSceneCache()
     ClearCurrentSceneInfo()
 
