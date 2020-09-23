@@ -111,6 +111,34 @@ public class StackingMainCamera : StackingCamera
                     }
                 }
             }
+            bool captureOpaque = false;
+            bool captureDepth = false;
+            
+            for (int i = 0; i < stack.Count; ++i)
+            {
+                var cam = stack[i];
+                if (cam)
+                {
+                    var camex = cam.GetComponent<UniversalAdditionalCameraData>();
+                    if (camex)
+                    {
+                        if (camex.requiresColorOption == CameraOverrideOption.On)
+                        {
+                            captureOpaque = true;
+                        }
+                        if (camex.requiresDepthOption == CameraOverrideOption.On)
+                        {
+                            captureDepth = true;
+                        }
+                        if (captureOpaque && captureDepth)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            _CameraEx.requiresColorOption = captureOpaque ? CameraOverrideOption.On : CameraOverrideOption.UsePipelineSettings;
+            _CameraEx.requiresDepthOption = captureDepth ? CameraOverrideOption.On : CameraOverrideOption.UsePipelineSettings;
         }
     }
     public static void ManageCameraStack()
