@@ -108,7 +108,13 @@ public class StackingMainCamera : StackingCamera
                     else
                     {
                         _Camera.clearFlags = CameraClearFlags.SolidColor;
+                        _Camera.backgroundColor = first.backgroundColor;
                     }
+                }
+                else
+                {
+                    _Camera.clearFlags = CameraClearFlags.SolidColor;
+                    _Camera.backgroundColor = new Color();
                 }
             }
             bool captureOpaque = false;
@@ -176,6 +182,7 @@ public class StackingMainCamera : StackingCamera
 
         cam.cullingMask = 0;
         cam.depth = -100;
+        cam.useOcclusionCulling = false;
     }
 
     private static HashSet<Camera> _SceneCameras = new HashSet<Camera>();
