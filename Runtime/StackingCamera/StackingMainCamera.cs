@@ -172,6 +172,7 @@ public class StackingMainCamera : StackingCamera
         }
     }
 
+    public static int MainCameraRendererIndex = -1;
     private static void CreateStackingMainCamera()
     {
         var go = new GameObject("StackingMainCamera");
@@ -184,7 +185,7 @@ public class StackingMainCamera : StackingCamera
         cam.depth = -100;
         cam.useOcclusionCulling = false;
 
-        camex.SetRenderer(2);
+        camex.SetRenderer(MainCameraRendererIndex);
     }
 
     private static HashSet<Camera> _SceneCameras = new HashSet<Camera>();
