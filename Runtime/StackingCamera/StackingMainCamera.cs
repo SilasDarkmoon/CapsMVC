@@ -183,6 +183,8 @@ public class StackingMainCamera : StackingCamera
         cam.cullingMask = 0;
         cam.depth = -100;
         cam.useOcclusionCulling = false;
+
+        camex.SetRenderer(2);
     }
 
     private static HashSet<Camera> _SceneCameras = new HashSet<Camera>();
