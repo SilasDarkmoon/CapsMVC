@@ -180,7 +180,7 @@ public class StackingMainCamera : StackingCamera
         var cam = go.AddComponent<Camera>();
         var camex = go.AddComponent<UniversalAdditionalCameraData>();
         var maincam = go.AddComponent<StackingMainCamera>();
-        go.AddComponent<ForcePreserveHDRRenderTargetAlpha>();
+        go.AddComponent<FixHDRRenderTargetAlphaRenderFeature>();
 
         cam.cullingMask = 0;
         cam.depth = -100;

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class GrabPassRendererFeature : ComponentBasedRenderFeature
+public class GrabPassRenderFeature : ComponentBasedRenderFeature
 {
     public enum DownSampling
     {

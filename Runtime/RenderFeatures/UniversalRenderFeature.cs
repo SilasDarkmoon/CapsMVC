@@ -68,7 +68,7 @@ public class UniversalRenderFeature : ScriptableRendererFeature
     {
         var cam = renderingData.cameraData.camera;
         List<ComponentBasedRenderFeature> list;
-        if (_RegisteredFeatures.TryGetValue(cam ,out list))
+        if (_RegisteredFeatures.TryGetValue(cam, out list))
         {
             for (int i = 0; i < list.Count; ++i)
             {
