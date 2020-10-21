@@ -50,7 +50,7 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
         {
             var curFormat = renderingData.cameraData.cameraTargetDescriptor.colorFormat;
             if (curFormat == RenderTextureFormat.ARGBHalf
-                || curFormat == RenderTextureFormat.BGRA10101010_XR
+                //|| curFormat == RenderTextureFormat.BGRA10101010_XR
                 )
             {
                 return;
