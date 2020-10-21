@@ -12,6 +12,7 @@ public class RenderTargetHandleHolder : MonoBehaviour
 
     private Camera _Camera;
     private RenderTargetHandle _RenderTarget;
+    private static string _ProfilerTag = "RenderTargetHandleHolder";
 
     private void Awake()
     {
@@ -26,7 +27,7 @@ public class RenderTargetHandleHolder : MonoBehaviour
                 {
                     _Camera = Camera.main;
                 }
-                var cmd = new CommandBuffer();
+                var cmd = CommandBufferPool.Get(_ProfilerTag);
                 if (Size.x <= 0f || Size.y <= 0f)
                 {
                     Size = new Vector2(_Camera.pixelWidth, _Camera.pixelHeight);
@@ -42,6 +43,8 @@ public class RenderTargetHandleHolder : MonoBehaviour
                 descriptor.useDynamicScale = false;
 
                 cmd.GetTemporaryRT(_RenderTarget.id, descriptor, FilterMode.Point);
+                Graphics.ExecuteCommandBuffer(cmd);
+                CommandBufferPool.Release(cmd);
             }
         }
     }
@@ -53,8 +56,9 @@ public class RenderTargetHandleHolder : MonoBehaviour
             return;
         }
 
-        var cmd = new CommandBuffer();
+        var cmd = CommandBufferPool.Get(_ProfilerTag);
         cmd.ReleaseTemporaryRT(_RenderTarget.id);
         Graphics.ExecuteCommandBuffer(cmd);
+        CommandBufferPool.Release(cmd);
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class GrabPassRendererFeature : ScriptableRendererFeature
+public class GrabPassRendererFeature : ComponentBasedRenderFeature
 {
     public enum DownSampling
     {
@@ -11,7 +11,7 @@ public class GrabPassRendererFeature : ScriptableRendererFeature
         x4,
     }
 
-    class RenderPass : ScriptableRenderPass
+    class GrabRenderPass : ScriptableRenderPass
     {
         public Material BlitMaterial;
         protected string _ProfilerTag = "Grab Pass";
@@ -22,8 +22,8 @@ public class GrabPassRendererFeature : ScriptableRendererFeature
         protected DownSampling _DownSampling;
         public bool KeepRenderTargetAfterRendering;
 
-        public RenderPass() : this(null) { }
-        public RenderPass(string target)
+        public GrabRenderPass() : this(null) { }
+        public GrabRenderPass(string target)
         {
             _TargetName = target;
             if (string.IsNullOrEmpty(target))
@@ -110,7 +110,7 @@ public class GrabPassRendererFeature : ScriptableRendererFeature
         }
     }
 
-    RenderPass _Pass;
+    GrabRenderPass _Pass;
 
     [System.Serializable]
     public class GrabSettings
@@ -125,9 +125,11 @@ public class GrabPassRendererFeature : ScriptableRendererFeature
 
     public GrabSettings Settings = new GrabSettings();
 
-    public override void Create()
+    protected override void Awake()
     {
-        _Pass = new RenderPass(Settings.TargetName);
+        base.Awake();
+
+        _Pass = new GrabRenderPass(Settings.TargetName);
 
         // Configures where the render pass should be injected.
         _Pass.renderPassEvent = Settings.Event;
