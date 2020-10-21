@@ -20,22 +20,12 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            if (renderingData.cameraData.isHdrEnabled)
-            {
-                var curFormat = renderingData.cameraData.cameraTargetDescriptor.colorFormat;
-                if (curFormat == RenderTextureFormat.ARGBHalf
-                    || curFormat == RenderTextureFormat.BGRA10101010_XR
-                    )
-                {
-                    return;
-                }
-                renderingData.cameraData.cameraTargetDescriptor.colorFormat = RenderTextureFormat.ARGBHalf;
-                var cmd = CommandBufferPool.Get(_ProfilerTag);
-                cmd.ReleaseTemporaryRT(_CameraRenderTarget.id);
-                cmd.GetTemporaryRT(_CameraRenderTarget.id, renderingData.cameraData.cameraTargetDescriptor, FilterMode.Bilinear);
-                context.ExecuteCommandBuffer(cmd);
-                CommandBufferPool.Release(cmd);
-            }
+            renderingData.cameraData.cameraTargetDescriptor.colorFormat = RenderTextureFormat.ARGBHalf;
+            var cmd = CommandBufferPool.Get(_ProfilerTag);
+            cmd.ReleaseTemporaryRT(_CameraRenderTarget.id);
+            cmd.GetTemporaryRT(_CameraRenderTarget.id, renderingData.cameraData.cameraTargetDescriptor, FilterMode.Bilinear);
+            context.ExecuteCommandBuffer(cmd);
+            CommandBufferPool.Release(cmd);
         }
     }
     class FixHDRRenderTargetAlphaApplyPass : ScriptableRenderPass
@@ -58,6 +48,13 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
     {
         if (renderingData.cameraData.isHdrEnabled)
         {
+            var curFormat = renderingData.cameraData.cameraTargetDescriptor.colorFormat;
+            if (curFormat == RenderTextureFormat.ARGBHalf
+                || curFormat == RenderTextureFormat.BGRA10101010_XR
+                )
+            {
+                return;
+            }
             _RecreatePass._Renderer = renderer;
             renderer.EnqueuePass(_RecreatePass);
             renderer.EnqueuePass(_ApplyPass);
