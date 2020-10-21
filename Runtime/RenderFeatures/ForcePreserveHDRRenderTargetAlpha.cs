@@ -13,6 +13,7 @@ public class ForcePreserveHDRRenderTargetAlpha : ComponentBasedRenderFeature
         public FixHDRRenderTargetAlphaPass()
         {
             _CameraRenderTarget.Init("_CameraColorTexture");
+            renderPassEvent = RenderPassEvent.BeforeRendering;
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
