@@ -32,27 +32,6 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
             CommandBufferPool.Release(cmd);
         }
     }
-    //class FixHDRRenderTargetAlphaApplyPass : ScriptableRenderPass
-    //{
-    //    protected RenderTargetHandle _CameraRenderTarget;
-    //    public RenderTargetIdentifier _CameraDepthTarget;
-    //    public Color _ClearColor;
-
-    //    public FixHDRRenderTargetAlphaApplyPass()
-    //    {
-    //        renderPassEvent = RenderPassEvent.AfterRenderingPrePasses + 1;
-    //        _CameraRenderTarget.Init("_CameraColorTexture");
-    //    }
-
-    //    public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
-    //    {
-    //        ConfigureTarget(_CameraRenderTarget.Identifier(), _CameraDepthTarget);
-    //        ConfigureClear(ClearFlag.Color, _ClearColor);
-    //    }
-    //    public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
-    //    {
-    //    }
-    //}
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
@@ -65,19 +44,14 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
             {
                 return;
             }
-            //_ApplyPass._CameraDepthTarget = renderer.cameraDepth;
-            //_ApplyPass._ClearColor = CoreUtils.ConvertSRGBToActiveColorSpace(renderingData.cameraData.camera.backgroundColor);
             renderer.EnqueuePass(_RecreatePass);
-            //renderer.EnqueuePass(_ApplyPass);
         }
     }
 
     FixHDRRenderTargetAlphaRecreatePass _RecreatePass;
-    //FixHDRRenderTargetAlphaApplyPass _ApplyPass;
     protected override void Awake()
     {
         base.Awake();
         _RecreatePass = new FixHDRRenderTargetAlphaRecreatePass();
-        //_ApplyPass = new FixHDRRenderTargetAlphaApplyPass();
     }
 }
