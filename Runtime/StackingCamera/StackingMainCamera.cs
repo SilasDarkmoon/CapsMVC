@@ -13,6 +13,9 @@ public class StackingMainCamera : StackingCamera
     private List<Camera> _CameraStack;
     private Camera _FirstCameraInStack;
 
+    public Camera Camera { get { return _Camera; } }
+    public UniversalAdditionalCameraData CameraEx { get { return _CameraEx; } }
+
     private void Awake()
     {
         _Camera = GetComponent<Camera>();
