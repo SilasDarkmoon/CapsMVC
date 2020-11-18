@@ -97,8 +97,8 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
             {
                 int down = Shader.PropertyToID("_BlurMipDown" + i);
                 int up = Shader.PropertyToID("_BlurMipUp" + i);
-                cmd.GetTemporaryRT(down, tw, th, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBHalf);
-                cmd.GetTemporaryRT(up, tw, th, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBHalf);
+                cmd.GetTemporaryRT(down, tw, th, 0, FilterMode.Bilinear, RenderTextureFormat.RGB565);
+                cmd.GetTemporaryRT(up, tw, th, 0, FilterMode.Bilinear, RenderTextureFormat.RGB565);
                 RenderTargetIdentifier downRTI = new RenderTargetIdentifier(down);
                 RenderTargetIdentifier upRTI = new RenderTargetIdentifier(up);
                 m_Pyramid[i] = new Level
