@@ -63,8 +63,8 @@ function res.Instantiate(name)
 end
 
 function res.GetDialogCamera()
-    -- return UIResManager.GetUIDialogCamera()
-    return UIResManager.FindUICamera()
+    return UIResManager.GetUIDialogCamera()
+    -- return UIResManager.FindUICamera()
 end
 
 function res.GetMainCamera()
@@ -1206,8 +1206,8 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         if withShadow then
             diagcomp:setShadow(true)
             if res.NeedDialogCameraBlur() then
-                -- res.SetMainCameraBlur()
-                diagcomp:enableShadow()
+                res.SetMainCameraBlur(true)
+                -- diagcomp:enableShadow()
             else
                 res.GetLuaScript(dummycanvas):enableShadow()
                 diagcomp:enableShadow()
@@ -1228,7 +1228,8 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         diagcomp.withCtrl = withCtrl
         if withShadow then
             diagcomp:setShadow(true)
-            diagcomp:enableShadow()
+            -- diagcomp:enableShadow()
+            res.SetMainCameraBlur(true)
         else
             diagcomp:setShadow(false)
         end
@@ -1236,15 +1237,6 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
 
     local objcontent
     if type(content) == "string" then
-        -- TODO 这部分在全冠也没有用到，之后需要再查一下
-        -- objcontent = res.InstanceCache[content]
-
-        -- if objcontent and not res.IsClrNull(objcontent) then
-        --     objcontent = Object.Instantiate(objcontent)
-        -- else
-        --     objcontent = res.Instantiate(content)
-        -- end
-
         objcontent = res.Instantiate(content)
         objcontent.transform:SetParent(dummydialog and dummydialog.transform or dialog and dialog.transform, false)
         if objcontent then
@@ -1385,46 +1377,9 @@ function res.NeedDialogCameraBlur()
 end
 
 -- 设置由MainCamera渲染的UI界面模糊
--- function res.SetMainCameraBlur()
---     local loadingType = cache.getGlobalTempData("LoadingPrefabDialog")
---     if loadingType then
---         if type(res.curSceneInfo) == "table" then
---             res.curSceneInfo.blur = true
---         end
---     end
---     return res.SetCameraBlur(res.GetMainCamera())
--- end
-
--- function res.SetCameraBlur(camera)
---     local rapidBlurEffect = camera.gameObject:GetComponent(clr.RapidBlurEffect)
---     if not rapidBlurEffect then
---         rapidBlurEffect = camera.gameObject:AddComponent(clr.RapidBlurEffect)
---         rapidBlurEffect.DownSampleNum = 3
---         rapidBlurEffect.BlurSpreadSize = 6
---         rapidBlurEffect.BlurIterations = 2
---         local blurColor = {0, 0, 0, 0}
---         rapidBlurEffect.color = UnityEngine.Color(blurColor[1], blurColor[2], blurColor[3], blurColor[4])
---     end
---     rapidBlurEffect.enabled = true
--- end
-
--- 关闭模糊特效
--- function res.SetMainCameraBlurOver()
---     if type(res.curSceneInfo) == "table" then
---         res.curSceneInfo.blur = nil
---     end
---     return res.SetCameraBlurOver(res.GetMainCamera())
--- end
-
--- function res.SetCameraBlurOver(camera)
---     assert(camera and not res.IsClrNull(camera))
---     local rapidBlurEffect = camera.gameObject:GetComponent(clr.RapidBlurEffect)
---     if not rapidBlurEffect then
---         return
---     end
-
---     rapidBlurEffect.enabled = false
--- end
+function res.SetMainCameraBlur(enabled)
+    UIResManager.SetCameraBlur(enabled)
+end
 
 function res.CollectGarbage(level)
     -- if level == 0 then

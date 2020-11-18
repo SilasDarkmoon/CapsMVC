@@ -10,17 +10,19 @@ namespace Capstones.UnityEngineEx
     public static class UIResManager
     {
         private static Camera _UICamera;
+        private static Camera _DialogCamera;
         private static bool _UICameraLoading;
         private const int SceneAndDialogCacheLayer = 17;
         private const string UICameraName = "UICameraAndEventSystem(Clone)";
 
         private static AudioListener _UIAudioListener = null;
+        private static DualKawaseBlurRenderPassFeature _blurRPF;
 
         public static Camera FindUICamera()
         {
             if (!_UICameraLoading)
             {
-                if (_UICamera != null && !_UICamera.isActiveAndEnabled) _UICamera = null;
+                //if (_UICamera != null && !_UICamera.isActiveAndEnabled) _UICamera = null;
                 if (_UICamera == null)
                 {
                     _UICameraLoading = true;
@@ -31,6 +33,18 @@ namespace Capstones.UnityEngineEx
             return _UICamera;
         }
 
+        public static Camera GetUIDialogCamera()
+        {
+            //if (_DialogCamera != null && !_DialogCamera.isActiveAndEnabled) _DialogCamera = null;
+            if (_DialogCamera == null)
+            {
+                _UICameraLoading = true;
+                CreateCameraAndEventSystem();
+                _UICameraLoading = false;
+            }
+            return _DialogCamera;
+        }
+
         private static GameObject _UICameraAndEventSystemTemplate = null;
         private static GameObject _UICameraAndEventSystemGo = null;
         public static Camera CreateCameraAndEventSystem()
@@ -38,9 +52,10 @@ namespace Capstones.UnityEngineEx
             if (_UICameraAndEventSystemTemplate == null) _UICameraAndEventSystemTemplate = ResManager.LoadResDeep("UICameraAndEventSystem.prefab") as GameObject;
             if (_UICameraAndEventSystemGo != null && _UICamera != null) return _UICamera;
             _UICameraAndEventSystemGo = GameObject.Instantiate(_UICameraAndEventSystemTemplate);
-            _UICamera = _UICameraAndEventSystemGo.GetComponentInChildren<Camera>();
+            _UICamera = GameObject.Find("UICamera").GetComponentInChildren<Camera>();
+            _DialogCamera = GameObject.Find("DialogCamera").GetComponentInChildren<Camera>();
             _UIAudioListener = _UICameraAndEventSystemGo.GetComponentInChildren<AudioListener>();
-
+            _blurRPF = _UICamera.gameObject.GetComponent<DualKawaseBlurRenderPassFeature>();
 #if UNITY_EDITOR
             if (UnityEditor.EditorApplication.isPlaying)
             {
@@ -197,6 +212,14 @@ namespace Capstones.UnityEngineEx
             if (_UIAudioListener && _UIAudioListener.enabled != flag)
             {
                 _UIAudioListener.enabled = flag;
+            }
+        }
+
+        public static void SetCameraBlur(bool enabled)
+        {
+            if (_blurRPF)
+            {
+                _blurRPF.enabled = enabled;
             }
         }
     }

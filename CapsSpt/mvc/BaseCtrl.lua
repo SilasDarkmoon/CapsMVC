@@ -10,7 +10,7 @@ BaseCtrl.dialogStatus = {
 }
 
 BaseCtrl.withoutPop = false
-BaseCtrl.needSceneCache = true     -- ctrl是否需要缓存
+BaseCtrl.needSceneCache = true     -- view显示对象是否需要缓存
 
 function BaseCtrl:GetLoadType()
     return self.__loadType
