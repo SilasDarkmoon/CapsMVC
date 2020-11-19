@@ -9,8 +9,8 @@ BaseCtrl.dialogStatus = {
     noNeedSafeArea = false,
 }
 
-BaseCtrl.withoutPop = false
-BaseCtrl.needSceneCache = true     -- view显示对象是否需要缓存
+BaseCtrl.withoutPop = false        -- true:当这个界面显示时，清除掉之前的ctrl的堆栈
+BaseCtrl.needSceneCache = true     -- view显示对象是否需要缓存，且不需要添加到res.ctrlStack堆栈里
 
 function BaseCtrl:GetLoadType()
     return self.__loadType
