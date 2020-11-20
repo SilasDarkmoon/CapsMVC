@@ -9,8 +9,8 @@ local Canvas = UnityEngine.Canvas
 -- local Image = UnityEngine.UI.Image
 -- local CanvasScaler = UnityEngine.UI.CanvasScaler
 -- local GraphicRaycaster = UnityEngine.UI.GraphicRaycaster
--- local RectTransform = UnityEngine.RectTransform
--- local Vector2 = UnityEngine.Vector2
+local RectTransform = UnityEngine.RectTransform
+local Vector2 = UnityEngine.Vector2
 -- local Camera = UnityEngine.Camera
 local RenderMode = UnityEngine.RenderMode
 local CapsUnityLuaBehav = clr.CapsUnityLuaBehav
@@ -63,8 +63,7 @@ function res.Instantiate(name)
 end
 
 function res.GetDialogCamera()
-    -- return UIResManager.GetUIDialogCamera()
-    return UIResManager.FindUICamera()
+    return UIResManager.GetUIDialogCamera()
 end
 
 function res.GetMainCamera()
@@ -214,8 +213,10 @@ local function SaveCurrentSceneInfo()
                 ctrl = res.curSceneInfo.ctrl,
                 pack = pack,
             }
-            res.sceneCache[res.curSceneInfo.path] = sceneCacheItem
-            isTrimSceneCache = true
+            if res.curSceneInfo.ctrl.needSceneCache then
+                res.sceneCache[res.curSceneInfo.path] = sceneCacheItem
+                isTrimSceneCache = true
+            end
         else
             sceneCacheItem.seq = GetSceneSeq()
             if res.IsClrNull(sceneCacheItem.obj) then
@@ -243,13 +244,15 @@ local function SaveCurrentSceneInfo()
                 table.insert(dgosDisable, true)
                 local dgosItem = res.sceneCache[curDialogInfo.path]
                 if not dgosItem then
-                    res.sceneCache[curDialogInfo.path] = {
-                        obj = dgo,
-                        view = curDialogInfo.view,
-                        seq = GetSceneSeq(),
-                        ctrl = curDialogInfo.ctrl,
-                    }
-                    isTrimSceneCache = true
+                    if res.curSceneInfo.ctrl.needSceneCache then
+                        res.sceneCache[curDialogInfo.path] = {
+                            obj = dgo,
+                            view = curDialogInfo.view,
+                            seq = GetSceneSeq(),
+                            ctrl = curDialogInfo.ctrl,
+                        }
+                        isTrimSceneCache = true
+                    end
                 else
                     dgosItem.seq = GetSceneSeq()
                     if res.CacheObjIsClrNull(dgosItem.obj) then
@@ -369,14 +372,7 @@ end
 local function DisableCachedScene(sceneCacheItem)
     if sceneCacheItem and sceneCacheItem.pack then
         if sceneCacheItem.view and sceneCacheItem.ctrl.needSceneCache then
-            -- MoveToDontDestroy(sceneCacheItem)
             MoveToSceneAndDialogCache(sceneCacheItem)
-            -- local sgos = clr.table(sceneCacheItem.pack.SceneObjs)
-            -- for i, v in ipairs(sgos) do
-            --     if not res.IsClrNull(v) then
-            --         v:SetActive(false)
-            --     end
-            -- end
         else
             local pack = sceneCacheItem.pack
             local sgos = clr.table(pack.SceneObjs)
@@ -514,6 +510,10 @@ end
 local function SaveCurrentStatusData()
     -- 如果之前的场景是有ctrl的prefab，则保存其信息
     if type(res.curSceneInfo) == "table" and res.curSceneInfo.ctrl then
+        -- 如果这个ctrl不需要缓存，那么就不需要添加到ctrl栈帧里
+        if not res.curSceneInfo.ctrl.needSceneCache then
+            return
+        end
         -- 保存ctrl恢复的数据信息
         local args = {res.curSceneInfo.ctrl:GetStatusData()}
         local argc = select('#', res.curSceneInfo.ctrl:GetStatusData())
@@ -594,8 +594,8 @@ local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
             -- EnableCachedScene(cachedSceneInfo)
             EnableCachedDialog(cachedSceneInfo)
 
-            local scd, uds = res.GetLastSCDAndUDs(false)
-            res.AdjustDialogCamera(scd, uds, dialogInfo.view.gameObject, dialogInfo.view.dialog.withShadow)
+            local scd = res.GetLastSCD(false)
+            res.AdjustDialogCamera(scd, dialogInfo.view.gameObject, dialogInfo.view.dialog.withShadow)
         else
             res.sceneCache[ctrlPath] = nil
             CreateDialog()
@@ -655,9 +655,6 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             else
                 local prefab = res.LoadRes(viewPath)
                 if prefab then
-                    -- if UIResManager.TryChangeToUIScene() then
-                    --     coroutine.yield()
-                    -- end
                     local obj = Object.Instantiate(prefab)
                     local camera = UIResManager.FindUICamera()
                     res.SetUICamera(obj, camera)
@@ -669,12 +666,6 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             res.curSceneInfo.ctrl = ctrlClass.new(res.curSceneInfo.view, unpack(args, 1, argc))
             res.curSceneInfo.ctrl.__loadType = loadType
             res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
-            -- if isBlur then
-            --     res.curSceneInfo.blur = true
-            --     if res.NeedDialogCameraBlur() then
-            --         res.SetMainCameraBlur()
-            --     end
-            -- end
             CreateDialogs()
             res.SetUIAudioListener(ctrlClass.viewPath)
 
@@ -694,19 +685,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             res.curSceneInfo.view = cachedSceneInfo.view
             res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
 
-            -- local isDialogData = res.IsClrNull(res.GetLastSCDAndUDs()) and type(dialogData) == "table" and #dialogData > 0
-            -- res.curSceneInfo.ctrl.IsCheckCurrUIDialog = isDialogData
-            -- res.curSceneInfo.ctrl.IsCheckCurrUIDialog = false
-            
-            -- if res.NeedDialogCameraBlur() then
-            --     if not isDialogData then
-            --         res.SetMainCameraBlurOver()
-            --     else
-            --         res.SetMainCameraBlur()
-            --     end
-            -- end
-
-            -- CreateDialogs()
+            CreateDialogs()
             res.SetUIAudioListener(ctrlClass.viewPath)
             if res.curSceneInfo.ctrl and type(res.curSceneInfo.ctrl.OnLoadComplete) == "function" then
                 res.curSceneInfo.ctrl:OnLoadComplete()
@@ -837,18 +816,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             res.curSceneInfo.ctrl.__loadType = loadType
             res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
 
-            -- local isDialogData = res.IsClrNull(res.GetLastSCDAndUDs()) and type(dialogData) == "table" and #dialogData > 0
-            -- res.curSceneInfo.ctrl.IsCheckCurrUIDialog = isDialogData
-            -- res.curSceneInfo.ctrl.IsCheckCurrUIDialog = false
-
-            -- if res.NeedDialogCameraBlur() then
-            --     if not isDialogData then
-            --         res.SetMainCameraBlurOver()
-            --     else
-            --         res.SetMainCameraBlur()
-            --     end
-            -- end
-            -- CreateDialogs()
+            CreateDialogs()
             waitHandle.done = true
             waitHandle.ctrl = res.curSceneInfo.ctrl
             res.SetUIAudioListener(ctrlClass.viewPath)
@@ -995,21 +963,21 @@ end
 
 -- 如果当前最上层的是一个窗口，则只关闭这个窗口，否则关闭整个场景
 function res.PopSceneImmediate(...)
-    --if not CloseDialog() then
+    -- if not CloseDialog() then
         return res.PopSceneWithCurrentSceneImmediate(...)
-    --end
+    -- end
 end
 
 function res.PopSceneAsync(...)
-    --if not CloseDialog() then
+    -- if not CloseDialog() then
         return res.PopSceneWithCurrentSceneAsync(...)
-    --end
+    -- end
 end
 
 function res.PopScene(...)
-    if not CloseDialog() then
+    -- if not CloseDialog() then
         return res.PopSceneWithCurrentScene(...)
-    end
+    -- end
 end
 
 function res.PopSceneWithCurrentSceneImmediate(...)
@@ -1079,7 +1047,6 @@ function res.PopSceneWithoutCurrentImmediate(...)
         args = ctrlInfo.args
         argc = ctrlInfo.argc
     end
-    --local isBlur = ctrlInfo.blur
 
     return LoadPrefabScene(res.LoadType.Pop, ctrlPath, nil, unpack(args, 1, argc))
 end
@@ -1188,10 +1155,10 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         unmanagedDialogs[#unmanagedDialogs + 1] = loadingInfo
     end
 
-    local dialog, dialogSpt, dummydialog, blockdialog, diagcomp, dummycomp, scd, uds
+    local dialog, dialogSpt, dummydialog, blockdialog, diagcomp, dummycomp, scd
 
     if renderMode and renderMode ~= "overlay" then
-        scd, uds = res.GetLastSCDAndUDs(false)
+        scd = res.GetLastSCD(false)
         dialog, dialogSpt = res.Instantiate("Game/UI/Common/Dialog/CameraDialog.prefab")
 
         cache.setGlobalTempData(true, "isDummyDialog")
@@ -1206,8 +1173,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         if withShadow then
             diagcomp:setShadow(true)
             if res.NeedDialogCameraBlur() then
-                -- res.SetMainCameraBlur()
-                diagcomp:enableShadow()
+                res.SetMainCameraBlur(true)
             else
                 res.GetLuaScript(dummycanvas):enableShadow()
                 diagcomp:enableShadow()
@@ -1228,7 +1194,8 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         diagcomp.withCtrl = withCtrl
         if withShadow then
             diagcomp:setShadow(true)
-            diagcomp:enableShadow()
+            -- diagcomp:enableShadow()
+            res.SetMainCameraBlur(true)
         else
             diagcomp:setShadow(false)
         end
@@ -1236,15 +1203,6 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
 
     local objcontent
     if type(content) == "string" then
-        -- TODO 这部分在全冠也没有用到，之后需要再查一下
-        -- objcontent = res.InstanceCache[content]
-
-        -- if objcontent and not res.IsClrNull(objcontent) then
-        --     objcontent = Object.Instantiate(objcontent)
-        -- else
-        --     objcontent = res.Instantiate(content)
-        -- end
-
         objcontent = res.Instantiate(content)
         objcontent.transform:SetParent(dummydialog and dummydialog.transform or dialog and dialog.transform, false)
         if objcontent then
@@ -1264,7 +1222,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
             if dialog ~= nil and not res.IsClrNull(dialog) then
                 if objcontent then
                     objcontent.transform:SetParent(dialogSpt.safeArea or dialog.transform, false)
-                    res.AdjustDialogCamera(scd, uds, dialog, withShadow)
+                    res.AdjustDialogCamera(scd, dialog, withShadow)
                 end
             else
                 Object.Destroy(objcontent)
@@ -1313,22 +1271,15 @@ function res.ChangeCameraDialogToDialog(dialog)
     res.ChangeGameObjectLayer(dialog, DialogLayers)
 end
 
-function res.AdjustDialogCamera(scd, uds, dialog, withShadow)
+function res.ChangeCameraDialogToDefault(dialog)
+    res.ChangeGameObjectLayer(dialog, 0)
+end
+
+function res.AdjustDialogCamera(scd, dialog, withShadow)
+    res.ChangeCameraDialogToDialog(dialog)
     if withShadow then
-        res.ChangeCameraDialogToDialog(dialog)
         if scd and not res.IsClrNull(scd) then
-            res.ChangeCameraDialogToUI(scd)
-        end
-        for i, v in ipairs(uds) do
-            if v and not res.IsClrNull(v) then
-                res.ChangeCameraDialogToUI(v)
-            end
-        end
-    else
-        if scd and not res.IsClrNull(scd) then
-            res.ChangeCameraDialogToDialog(dialog)
-        else
-            res.ChangeCameraDialogToUI(dialog)
+            res.ChangeCameraDialogToDefault(scd)
         end
     end
 end
@@ -1337,40 +1288,31 @@ end
 -- 并且不带shadow的camera dialog是按照order从小到大排好序的
 -- withoutCurrent代表是否不包括当前最顶层CameraDialog
 -- 这个方法应该只在顶层是带有shadow的camera dialog是调用才有意义
-function res.GetLastSCDAndUDs(withoutCurrent)
-    local DialogCacheObjLayer = ResManager.DialogCacheObjLayer
-    local SceneCacheObjLayer = ResManager.SceneCacheObjLayer
+function res.GetLastSCD(withoutCurrent)
     local canvases = clr.table(Object.FindObjectsOfType(Canvas))
     local cameraCanvas = {}
     local layer, parent
     for i, v in ipairs(canvases) do
         if v ~= nil and (not res.IsClrNull(v.gameObject)) then
-            layer = v.gameObject.layer
-            if layer == DialogCacheObjLayer or layer == SceneCacheObjLayer then
-            else
-                parent = v.transform.parent
-                if (parent == nil or res.IsClrNull(parent)) and v.renderMode == RenderMode.ScreenSpaceCamera and v.sortingLayerName == "Dialog" then
-                    table.insert(cameraCanvas, v)
-                end
+            parent = v.transform.parent
+            if (parent == nil or res.IsClrNull(parent)) and v.renderMode == RenderMode.ScreenSpaceCamera and v.sortingLayerName == "Dialog" then
+                table.insert(cameraCanvas, v)
             end
         end
     end
 
     table.sort(cameraCanvas, function(a, b) return a.sortingOrder > b.sortingOrder end)
     local scd = nil
-    local uds = {}
     local startIndex = withoutCurrent and 2 or 1
     for i = startIndex, #cameraCanvas do
         local v = cameraCanvas[i]
         if res.GetLuaScript(v).withShadow then
             scd = v.gameObject
             break
-        else
-            table.insert(uds, 1, v.gameObject)
         end
     end
 
-    return scd, uds
+    return scd
 end
 
 function res.ChangeCameraDialogToDialog(dialog)
@@ -1385,46 +1327,9 @@ function res.NeedDialogCameraBlur()
 end
 
 -- 设置由MainCamera渲染的UI界面模糊
--- function res.SetMainCameraBlur()
---     local loadingType = cache.getGlobalTempData("LoadingPrefabDialog")
---     if loadingType then
---         if type(res.curSceneInfo) == "table" then
---             res.curSceneInfo.blur = true
---         end
---     end
---     return res.SetCameraBlur(res.GetMainCamera())
--- end
-
--- function res.SetCameraBlur(camera)
---     local rapidBlurEffect = camera.gameObject:GetComponent(clr.RapidBlurEffect)
---     if not rapidBlurEffect then
---         rapidBlurEffect = camera.gameObject:AddComponent(clr.RapidBlurEffect)
---         rapidBlurEffect.DownSampleNum = 3
---         rapidBlurEffect.BlurSpreadSize = 6
---         rapidBlurEffect.BlurIterations = 2
---         local blurColor = {0, 0, 0, 0}
---         rapidBlurEffect.color = UnityEngine.Color(blurColor[1], blurColor[2], blurColor[3], blurColor[4])
---     end
---     rapidBlurEffect.enabled = true
--- end
-
--- 关闭模糊特效
--- function res.SetMainCameraBlurOver()
---     if type(res.curSceneInfo) == "table" then
---         res.curSceneInfo.blur = nil
---     end
---     return res.SetCameraBlurOver(res.GetMainCamera())
--- end
-
--- function res.SetCameraBlurOver(camera)
---     assert(camera and not res.IsClrNull(camera))
---     local rapidBlurEffect = camera.gameObject:GetComponent(clr.RapidBlurEffect)
---     if not rapidBlurEffect then
---         return
---     end
-
---     rapidBlurEffect.enabled = false
--- end
+function res.SetMainCameraBlur(enabled)
+    UIResManager.SetCameraBlur(enabled)
+end
 
 function res.CollectGarbage(level)
     -- if level == 0 then
