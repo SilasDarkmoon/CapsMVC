@@ -244,7 +244,7 @@ MonoBehaviour:
     passTag: X-DualKawaseBlur
     BlurRadius: 5
     Iteration: 2
-    RTDownScaling: 2
+    RTDownScaling: 4
     Event: 500
 --- !u!1 &9212045279653130852
 GameObject:
