@@ -163,7 +163,7 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         {
             cmd.SetGlobalTexture(MainTex, src);
             cmd.SetRenderTarget(des);
-            cmd.DrawMesh(fullscreenTriangle, Matrix4x4.identity, mat, passIndex);
+            cmd.DrawMesh(fullscreenTriangle, Matrix4x4.identity, mat, 0, passIndex);
         }
     }
 
