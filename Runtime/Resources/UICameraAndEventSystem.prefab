@@ -242,9 +242,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings:
     passTag: X-DualKawaseBlur
-    BlurRadius: 5
-    Iteration: 2
-    RTDownScaling: 4
+    blurRadius: 0.7
+    iteration: 2
+    rtDownScaling: 2
     Event: 500
 --- !u!1 &9212045279653130852
 GameObject:
