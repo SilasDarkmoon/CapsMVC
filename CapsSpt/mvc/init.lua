@@ -568,7 +568,9 @@ local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
 
     local function CreateDialog()
         local viewPath = ctrlClass.viewPath
-        local dialog, dialogcomp = res.ShowDialog(viewPath, "camera", ctrlClass.dialogStatus.touchClose, ctrlClass.dialogStatus.withShadow, ctrlClass.dialogStatus.unblockRaycast, true, nil, ctrlClass.dialogStatus.noNeedSafeArea)
+        local dialogStatus = ctrlClass.dialogStatus
+        local dialog, dialogcomp = res.ShowDialog(viewPath, "camera", dialogStatus.touchClose, dialogStatus.withShadow, dialogStatus.unblockRaycast, true, nil,
+                dialogStatus.noNeedSafeArea, dialogStatus.blurRadius, dialogStatus.iteration, dialogStatus.rtDownScaling, dialogStatus.blurTime)
         dialogInfo.view = dialogcomp.contentcomp
         dialogInfo.order = dialog:GetComponent(Canvas).sortingOrder
         dialogInfo.ctrl = ctrlClass.new(dialogInfo.view, unpack(args, 1, argc))
@@ -1138,7 +1140,8 @@ function res.ChangeGameObjectLayer(dialog, layer)
     UIResManager.ChangeGameObjectLayer(dialog, layer)
 end
 
-function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRaycast, withCtrl, overlaySortingOrder, noNeedSafeArea)
+function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRaycast, withCtrl, overlaySortingOrder, noNeedSafeArea,
+                        blurRadius, iteration, rtDownScaling, blurTime)
     local loadingType = cache.getGlobalTempData("LoadingPrefabDialog")
     local loadingInfo = { dialog = {} }
     if not loadingType then
@@ -1173,7 +1176,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         if withShadow then
             diagcomp:setShadow(true)
             if res.NeedDialogCameraBlur() then
-                res.SetMainCameraBlur(true)
+                res.SetMainCameraBlur(true, blurRadius, iteration, rtDownScaling, blurTime)
             else
                 res.GetLuaScript(dummycanvas):enableShadow()
                 diagcomp:enableShadow()
@@ -1195,7 +1198,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         if withShadow then
             diagcomp:setShadow(true)
             -- diagcomp:enableShadow()
-            res.SetMainCameraBlur(true)
+            res.SetMainCameraBlur(true, blurRadius, iteration, rtDownScaling, blurTime)
         else
             diagcomp:setShadow(false)
         end
@@ -1327,8 +1330,8 @@ function res.NeedDialogCameraBlur()
 end
 
 -- 设置由MainCamera渲染的UI界面模糊
-function res.SetMainCameraBlur(enabled)
-    UIResManager.SetCameraBlur(enabled)
+function res.SetMainCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time)
+    UIResManager.SetCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time)
 end
 
 function res.CollectGarbage(level)
