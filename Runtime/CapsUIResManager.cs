@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 using Object = UnityEngine.Object;
 
@@ -18,9 +17,6 @@ namespace Capstones.UnityEngineEx
 
         private static AudioListener _UIAudioListener = null;
         private static DualKawaseBlurRenderPassFeature _blurRPF;
-        private static Tween blurRadiusValueTween;
-        private static Tween iterationValueTween;
-        private static Tween rtDownScalingValueTween;
 
         public static Camera FindUICamera()
         {
@@ -227,37 +223,11 @@ namespace Capstones.UnityEngineEx
 
                 if (enabled)
                 {
-                    if (blurRadius != 0)
-                    {
-                        blurRadiusValueTween = DOTween.To(() => 0, x => _blurRPF.settings.BlurRadius = x, blurRadius, time);
-                        blurRadiusValueTween.SetEase(Ease.OutSine);
-                    }
-                    if (iteration > 1)
-                    {
-                        iterationValueTween = DOTween.To(() => 1, x => _blurRPF.settings.Iteration = x, iteration, time);
-                        iterationValueTween.SetEase(Ease.OutSine);
-                    }
-                    if (rtDownScaling > 1)
-                    {
-                        rtDownScalingValueTween = DOTween.To(() => 1, x => _blurRPF.settings.RTDownScaling = x, rtDownScaling, time);
-                        rtDownScalingValueTween.SetEase(Ease.OutSine);
-                    }
+                    _blurRPF.DoCameraBlur(blurRadius, iteration, rtDownScaling, time);
                 }
                 else
                 {
-                    if (blurRadiusValueTween != null)
-                    {
-                        TweenExtensions.Kill(blurRadiusValueTween);
-                    }
-                    if (iterationValueTween != null)
-                    {
-                        TweenExtensions.Kill(iterationValueTween);
-                    }
-                    if (rtDownScalingValueTween != null)
-                    {
-                        TweenExtensions.Kill(rtDownScalingValueTween);
-                    }
-                    _blurRPF.ResetValue();
+                    _blurRPF.StopCameraBlur();
                 }
             }
         }
