@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using DG.Tweening;
 
 public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
 {
@@ -238,6 +239,9 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
     private float blurRadius;
     private int iteration;
     private float rtDownScaling;
+    private static Tween blurRadiusValueTween;
+    private static Tween iterationValueTween;
+    private static Tween rtDownScalingValueTween;
 
     protected override void Awake()
     {
@@ -286,6 +290,42 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
     {
         m_ScriptablePass.Setup(renderer.cameraColorTarget);
         renderer.EnqueuePass(m_ScriptablePass);
+    }
+
+    public void DoCameraBlur(float blurRadius = 0, int iteration = 1, float rtDownScaling = 1, float time = 0)
+    {
+        if (blurRadius != 0)
+        {
+            blurRadiusValueTween = DOTween.To(() => 0, x => settings.BlurRadius = x, blurRadius, time);
+            blurRadiusValueTween.SetEase(Ease.OutSine);
+        }
+        if (iteration > 1)
+        {
+            iterationValueTween = DOTween.To(() => 1, x => settings.Iteration = x, iteration, time);
+            iterationValueTween.SetEase(Ease.OutSine);
+        }
+        if (rtDownScaling > 1)
+        {
+            rtDownScalingValueTween = DOTween.To(() => 1, x => settings.RTDownScaling = x, rtDownScaling, time);
+            rtDownScalingValueTween.SetEase(Ease.OutSine);
+        }
+    }
+
+    public void StopCameraBlur()
+    {
+        if (blurRadiusValueTween != null)
+        {
+            TweenExtensions.Kill(blurRadiusValueTween);
+        }
+        if (iterationValueTween != null)
+        {
+            TweenExtensions.Kill(iterationValueTween);
+        }
+        if (rtDownScalingValueTween != null)
+        {
+            TweenExtensions.Kill(rtDownScalingValueTween);
+        }
+        ResetValue();
     }
 }
 
