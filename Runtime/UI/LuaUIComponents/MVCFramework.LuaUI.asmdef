@@ -1,10 +1,8 @@
 {
-    "name": "CapsMVC",
+    "name": "MVCFramework.LuaUI",
     "references": [
-        "ResManager",
-        "DOTween",
-        "Unity.RenderPipelines.Universal.Runtime",
-        "Unity.RenderPipelines.Core.Runtime"
+        "GUID:a928433628054664e9e6266b4b16fb9d",
+        "GUID:f19c5c6eff4d2334b831595591988c72"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -12,7 +10,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "MOD_CAPSLUA"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
