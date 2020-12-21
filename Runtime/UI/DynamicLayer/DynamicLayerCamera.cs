@@ -8,6 +8,7 @@ namespace Capstones.UnityEngineEx.UI
     public class DynamicLayerCamera : DynamicLayer
     {
         private Camera _Camera;
+        public bool Reverse;
 
         protected override void OnEnable()
         {
@@ -19,7 +20,14 @@ namespace Capstones.UnityEngineEx.UI
                 }
                 if (_Camera)
                 {
-                    _Camera.cullingMask &= ~(1 << AssignedLayer);
+                    if (Reverse)
+                    {
+                        _Camera.cullingMask |= (1 << AssignedLayer);
+                    }
+                    else
+                    {
+                        _Camera.cullingMask &= ~(1 << AssignedLayer);
+                    }
                 }
             }
             base.OnEnable();
@@ -36,7 +44,14 @@ namespace Capstones.UnityEngineEx.UI
                 }
                 if (_Camera)
                 {
-                    _Camera.cullingMask |= 1 << AssignedLayer;
+                    if (Reverse)
+                    {
+                        _Camera.cullingMask &= ~(1 << AssignedLayer);
+                    }
+                    else
+                    {
+                        _Camera.cullingMask |= (1 << AssignedLayer);
+                    }
                 }
             }
         }
@@ -45,7 +60,11 @@ namespace Capstones.UnityEngineEx.UI
             if (AssignedLayer > 0 && _Camera)
             {
                 var mask = 1 << AssignedLayer;
-                if ((_Camera.cullingMask & mask) != 0)
+                if (Reverse)
+                {
+                    _Camera.cullingMask |= mask;
+                }
+                else
                 {
                     _Camera.cullingMask &= ~mask;
                 }

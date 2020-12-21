@@ -3,6 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Object = UnityEngine.Object;
+
+#if UNITY_EDITOR
+using System.Linq.Expressions;
+#endif
+
 namespace Capstones.UnityEngineEx.UI
 {
     [ExecuteInEditMode]
@@ -24,6 +30,9 @@ namespace Capstones.UnityEngineEx.UI
                         layer = AssignedLayer;
                         LayersInUsing[layer] = LayerName;
                         UsingNameToID[LayerName] = layer;
+#if UNITY_EDITOR
+                        DynamicLayerUtils.SetLayerName(layer, "[D]" + LayerName);
+#endif
                     }
                     else
                     {
@@ -34,6 +43,9 @@ namespace Capstones.UnityEngineEx.UI
                                 layer = candiLayer;
                                 LayersInUsing[layer] = LayerName;
                                 UsingNameToID[LayerName] = layer;
+#if UNITY_EDITOR
+                                DynamicLayerUtils.SetLayerName(layer, "[D]" + LayerName);
+#endif
                                 break;
                             }
                         }
@@ -132,5 +144,43 @@ namespace Capstones.UnityEngineEx.UI
                 }
             }
         }
+
+#if UNITY_EDITOR
+        protected static class DynamicLayerUtils
+        {
+            private static Func<Object> Func_GetTagManager;
+            public static Object GetTagManager()
+            {
+                if (Func_GetTagManager == null)
+                {
+                    Func_GetTagManager = Expression.Lambda<Func<Object>>(Expression.Property(null, typeof(UnityEditor.EditorApplication).GetProperty("tagManager", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic))).Compile();
+                }
+                return Func_GetTagManager();
+            }
+
+            private static UnityEditor.SerializedObject so_TagManager;
+            private static UnityEditor.SerializedProperty sp_TagManager_Layers;
+            public static UnityEditor.SerializedProperty GetTagManagerLayers()
+            {
+                if (so_TagManager == null)
+                {
+                    so_TagManager = new UnityEditor.SerializedObject(GetTagManager());
+                }
+                if (sp_TagManager_Layers == null)
+                {
+                    sp_TagManager_Layers = so_TagManager.FindProperty("layers");
+                }
+                return sp_TagManager_Layers;
+            }
+
+            public static void SetLayerName(int layer, string name)
+            {
+                var layers = GetTagManagerLayers();
+                var ele = layers.GetArrayElementAtIndex(layer);
+                ele.stringValue = name;
+                layers.serializedObject.ApplyModifiedProperties();
+            }
+        }
+#endif
     }
 }
