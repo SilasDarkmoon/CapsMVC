@@ -1309,17 +1309,23 @@ function res.GetLastSCD(withoutCurrent)
     end
 
     table.sort(cameraCanvas, function(a, b) return a.sortingOrder > b.sortingOrder end)
-    local scd = nil
+    local scd, nextScdShadow = nil, false
     local startIndex = withoutCurrent and 2 or 1
     for i = startIndex, #cameraCanvas do
         local v = cameraCanvas[i]
-        if res.GetLuaScript(v).withShadow then
+        local script = res.GetLuaScript(v)
+        if script.withShadow then
             scd = v.gameObject
-            break
+
+            local state = cameraCanvas[i + 1] or cameraCanvas[i - 1]
+            if state then
+                script = res.GetLuaScript(state)
+                nextScdShadow = script.withShadow
+            end
         end
     end
 
-    return scd
+    return scd, nextScdShadow
 end
 
 function res.ChangeCameraDialogToDialog(dialog)
