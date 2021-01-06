@@ -24,7 +24,7 @@ namespace UnityEditor.ShaderGraph
     [Title("Master", "Sprite Lit (Ex)")]
     class SpriteLitMasterNodeEx : SpriteLitMasterNode, ISerializationCallbackReceiver
     {
-        [MenuItem("Assets/Create/Shader/2D Renderer/Sprite Lit Graph (Ex)", false, 208)]
+        [MenuItem("Assets/Create/Shader/2D Renderer/Sprite Lit Graph (Ex)", false, 209)]
         public static void CreateMaterialGraph()
         {
             GraphUtil.CreateNewGraph(new SpriteLitMasterNodeEx());

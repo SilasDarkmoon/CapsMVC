@@ -18,7 +18,7 @@ namespace UnityEditor.ShaderGraph
     [Title("Master", "PBR (Ex)")]
     class PBRMasterNodeEx : PBRMasterNode, ISerializationCallbackReceiver
     {
-        [MenuItem("Assets/Create/Shader/PBR Graph (Ex)", false, 208)]
+        [MenuItem("Assets/Create/Shader/PBR Graph (Ex)", false, 209)]
         public static void CreateMaterialGraph()
         {
             GraphUtil.CreateNewGraph(new PBRMasterNodeEx());

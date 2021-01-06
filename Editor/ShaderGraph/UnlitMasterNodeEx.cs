@@ -18,7 +18,7 @@ namespace UnityEditor.ShaderGraph
     [Title("Master", "Unlit (Ex)")]
     class UnlitMasterNodeEx : UnlitMasterNode, ISerializationCallbackReceiver
     {
-        [MenuItem("Assets/Create/Shader/Unlit Graph (Ex)", false, 208)]
+        [MenuItem("Assets/Create/Shader/Unlit Graph (Ex)", false, 209)]
         public static void CreateMaterialGraph()
         {
             GraphUtil.CreateNewGraph(new UnlitMasterNodeEx());
