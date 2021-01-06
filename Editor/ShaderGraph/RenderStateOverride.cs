@@ -51,16 +51,16 @@ namespace UnityEditor.ShaderGraph
 
         public static string[] CompareFunctionStrings = new[]
         {
-        null, // 0
-        "Never", // 1
-        "Less", // 2
-        "Equal", // 3
-        "LEqual", // 4
-        "Greater", // 5
-        "NotEqual", // 6
-        "GEqual", // 7
-        "Always", // 8
-    };
+            null, // 0
+            "Never", // 1
+            "Less", // 2
+            "Equal", // 3
+            "LEqual", // 4
+            "Greater", // 5
+            "NotEqual", // 6
+            "GEqual", // 7
+            "Always", // 8
+        };
         public static string GetCompareFunctionString(UnityEngine.Rendering.CompareFunction comp)
         {
             int index = (int)comp;
@@ -72,15 +72,15 @@ namespace UnityEditor.ShaderGraph
         }
         public static string[] StencilOpStrings = new[]
         {
-        "Keep",
-        "Zero",
-        "Replace",
-        "IncrSat",
-        "DecrSat",
-        "Invert",
-        "IncrWrap",
-        "DecrWrap",
-    };
+            "Keep",
+            "Zero",
+            "Replace",
+            "IncrSat",
+            "DecrSat",
+            "Invert",
+            "IncrWrap",
+            "DecrWrap",
+        };
         public static string GetStencilOpString(UnityEngine.Rendering.StencilOp op)
         {
             int index = (int)op;
@@ -92,28 +92,28 @@ namespace UnityEditor.ShaderGraph
         }
         public static string[] BlendOpStrings = new[]
         {
-        "Add",
-        "Sub",
-        "RevSub",
-        "Min",
-        "Max",
-        "LogicalClear",
-        "LogicalSet",
-        "LogicalCopy",
-        "LogicalCopyInverted",
-        "LogicalNoop",
-        "LogicalInvert",
-        "LogicalAnd",
-        "LogicalNand",
-        "LogicalOr",
-        "LogicalNor",
-        "LogicalXor",
-        "LogicalEquiv",
-        "LogicalAndReverse",
-        "LogicalAndInverted",
-        "LogicalOrReverse",
-        "LogicalOrInverted",
-    };
+            "Add",
+            "Sub",
+            "RevSub",
+            "Min",
+            "Max",
+            "LogicalClear",
+            "LogicalSet",
+            "LogicalCopy",
+            "LogicalCopyInverted",
+            "LogicalNoop",
+            "LogicalInvert",
+            "LogicalAnd",
+            "LogicalNand",
+            "LogicalOr",
+            "LogicalNor",
+            "LogicalXor",
+            "LogicalEquiv",
+            "LogicalAndReverse",
+            "LogicalAndInverted",
+            "LogicalOrReverse",
+            "LogicalOrInverted",
+        };
         public static string GetBlendOpString(UnityEngine.Rendering.BlendOp op)
         {
             int index = (int)op;
