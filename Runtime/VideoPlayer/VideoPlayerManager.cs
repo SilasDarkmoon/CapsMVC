@@ -32,9 +32,10 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
     private RawImage targetRawImage;
     [SerializeField]
     private InitType IsInitType = InitType.Awake;
-    [SerializeField]
+    //[SerializeField]
     //private CoreGame.QualityLevel MinimumAdaptation = CoreGame.QualityLevel.Middle;
     private RenderTexture _targetRenderTexture;
+    public RenderTexture targetRenderTexture { get { return _targetRenderTexture; } }
     private const int MaxW = 1920;
     private const int MaxH = 1080;
     private bool _isInit = false;
