@@ -25,6 +25,18 @@ local unmanagedBlockDialogs =
     ["Game/UI/Common/Template/Loading/WaitForPost2.prefab"] = true,
 }
 
+local function ShowDialogPrefabName(dialog)
+    if not res.IsClrNull(dialog) then
+        local safeArea = dialog:GetComponentInChildren(clr.SafeAreaRect).gameObject
+        local spt = safeArea:GetComponentInChildren(CapsUnityLuaBehav)
+        if not res.IsClrNull(spt) then
+            return spt.gameObject.name
+        end
+    end
+
+    return nil
+end
+
 --#region Basic and Override
 function res.IsClrNull(obj)
     return obj == nil or obj == clr.null
@@ -1311,12 +1323,14 @@ function res.GetLastSCD(withoutCurrent)
     table.sort(cameraCanvas, function(a, b) return a.sortingOrder > b.sortingOrder end)
     local scd, nextScdShadow = nil, false
     local startIndex = withoutCurrent and 2 or 1
+
     for i = startIndex, #cameraCanvas do
         local v = cameraCanvas[i]
         local script = res.GetLuaScript(v)
         if script.withShadow then
-            scd = v.gameObject
-
+            if scd == nil then
+                scd = v.gameObject
+            end
             local state = cameraCanvas[i + 1] or cameraCanvas[i - 1]
             if state then
                 script = res.GetLuaScript(state)
