@@ -15,7 +15,7 @@ namespace Lua.UI
     [RequireComponent(typeof(RectTransform))]
     [RequireComponent(typeof(CapsUnityLuaBehav))]
     [DisallowMultipleComponent]
-    public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IScrollHandler, ICanvasElement
+    public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IScrollHandler, ICanvasElement, ICapsUnityLuaBehavEx
     {
         public enum MovementType
         {
@@ -1100,8 +1100,8 @@ namespace Lua.UI
         /// <returns>元素的tag</returns>
         private string GetItemTagLuaFunc(int index)
         {
-            //string tag = getItemTagLuaFunc(luaBehaviour.lua, index + 1);
-            string tag = luaBehaviour.CallLuaFunc<string, int>("getItemTag", index + 1);
+            string tag;
+            this.CallLuaFunc("getItemTag", out tag, index + 1);
             return tag;
         }
         /// <summary>
@@ -1111,8 +1111,8 @@ namespace Lua.UI
         /// <returns>index处的元素</returns>
         private GameObject CreateItemLuaFunc(int index)
         {
-            //GameObject obj = createItemLuaFunc(luaBehaviour.lua, index + 1);
-            GameObject obj = luaBehaviour.CallLuaFunc<GameObject, int>("createItem", index + 1);
+            GameObject obj;
+            this.CallLuaFunc("createItem", out obj, index + 1);
             return obj;
         }
         /// <summary>
@@ -1121,8 +1121,8 @@ namespace Lua.UI
         /// <returns>新创建的换行分割线</returns>
         private GameObject CreateLineLuaFunc()
         {
-            //GameObject obj = createLineLuaFunc(luaBehaviour.lua);
-            GameObject obj = luaBehaviour.CallLuaFunc<GameObject>("createLine");
+            GameObject obj;
+            this.CallLuaFunc("createLine", out obj);
             return obj;
         }
         /// <summary>
@@ -1134,7 +1134,7 @@ namespace Lua.UI
         {
             var itemLuaBehaviour = go.GetComponent<CapsUnityLuaBehav>();
             //resetItemLuaFunc(luaBehaviour.lua, itemLuaBehaviour ? itemLuaBehaviour.lua : null, index + 1);
-            luaBehaviour.CallLuaFunc<CapsUnityLuaBehav, int>("resetItem", itemLuaBehaviour, index + 1);
+            this.CallLuaFunc("resetItem", itemLuaBehaviour, index + 1);
         }
         /// <summary>
         /// 如果是按元素滚动，当前元素变化时被调用
@@ -1146,7 +1146,7 @@ namespace Lua.UI
             {
                 m_PreItemIndex = index;
                 //onItemIndexChanged(luaBehaviour.lua, index + 1);
-                luaBehaviour.CallLuaFunc<int>("onItemIndexChanged", index + 1);
+                this.CallLuaFunc("onItemIndexChanged", index + 1);
             }
         }
         /// <summary>
@@ -1156,16 +1156,16 @@ namespace Lua.UI
         private void OnScrollPositionChanged(float position)
         {
 #if UNITY_EDITOR
-            if (Application.isPlaying && luaBehaviour != null)
-#else
-            if (luaBehaviour != null)
+            if (Application.isPlaying)
 #endif
             {
                 //onScrollPositionChanged(luaBehaviour.lua, position);
-                luaBehaviour.CallLuaFunc<float>("onScrollPositionChanged", position);
+                this.CallLuaFunc("onScrollPositionChanged", position);
             }
         }
         #endregion
+
+        CapsUnityLuaBehav ICapsUnityLuaBehavEx.Major { get; set; }
 
         #region Unity Methods
         //public delegate void ScrollRectExDelegate(LuaTable self, int param1);
@@ -1174,8 +1174,6 @@ namespace Lua.UI
         //public delegate GameObject ScrollRectExDelegate3(LuaTable self, int param1);
         //public delegate GameObject ScrollRectExDelegate4(LuaTable self);
         //public delegate string ScrollRectExDelegate5(LuaTable self, int param1);
-
-        private CapsUnityLuaBehav luaBehaviour;
 
         //private ScrollRectExDelegate3 createItemLuaFunc;
         //private ScrollRectExDelegate4 createLineLuaFunc;
@@ -1193,10 +1191,6 @@ namespace Lua.UI
         }
         protected override void Awake()
         {
-            if (luaBehaviour == null)
-            {
-                luaBehaviour = GetComponent<CapsUnityLuaBehav>();
-            }
             //if (luaBehaviour != null && luaBehaviour.lua != null)
             //{
             //    if (createItemLuaFunc == null)
@@ -1224,12 +1218,6 @@ namespace Lua.UI
             //        luaBehaviour.lua.Get("onScrollPositionChanged", out onScrollPositionChanged);
             //    }
             //}
-#if UNITY_EDITOR
-            else if (Application.isPlaying)
-            {
-                Debug.Assert(luaBehaviour);
-            }
-#endif
 
             RefreshWithItemCount(0);
         }

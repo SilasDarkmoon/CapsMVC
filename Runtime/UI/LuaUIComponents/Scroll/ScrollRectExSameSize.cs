@@ -17,7 +17,7 @@ namespace Lua.UI // TODO: change to Capstones.UnityEngineEx(.UI?)
     [RequireComponent(typeof(ScrollRect))]
     [RequireComponent(typeof(CapsUnityLuaBehav))]
     [DisallowMultipleComponent]
-    public class ScrollRectExSameSize : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
+    public class ScrollRectExSameSize : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, ICapsUnityLuaBehavEx
     {
         public enum Direction
         {
@@ -547,15 +547,15 @@ namespace Lua.UI // TODO: change to Capstones.UnityEngineEx(.UI?)
 
         private GameObject CreateItemLuaFunc(int index)
         {
-            //GameObject obj = createItemLuaFunc(luaBehaviour.lua, index + 1);
-            GameObject obj = luaBehaviour.CallLuaFunc<GameObject, int>("createItem", index + 1);
+            GameObject obj;
+            this.CallLuaFunc("createItem", out obj, index + 1);
             itemViewDict[index + 1] = obj;
             return obj;
         }
         private GameObject CreateLineLuaFunc(int index)
         {
-            //GameObject obj = createLineLuaFunc(luaBehaviour.lua, index + 1);
-            GameObject obj = luaBehaviour.CallLuaFunc<GameObject, int>("createLine", index + 1);
+            GameObject obj;
+            this.CallLuaFunc("createLine", out obj, index +1);
             return obj;
         }
         private void ResetItemLuaFunc(GameObject obj, int internalIndex, int index)
@@ -564,32 +564,34 @@ namespace Lua.UI // TODO: change to Capstones.UnityEngineEx(.UI?)
             itemViewDict[index + 1] = obj;
             var itemLuaBehaviour = obj.GetComponent<CapsUnityLuaBehav>();
             //resetItemLuaFunc(luaBehaviour.lua, itemLuaBehaviour ? itemLuaBehaviour.lua : null, index + 1);
-            luaBehaviour.CallLuaFunc<CapsUnityLuaBehav, int>("resetItem", itemLuaBehaviour, index + 1);
+            this.CallLuaFunc("resetItem", itemLuaBehaviour, index + 1);
         }
         private void UpdateItemIndexLuaFunc(GameObject obj, int index)
         {
             itemViewDict[index + 1] = obj;
             var itemLuaBehaviour = obj.GetComponent<CapsUnityLuaBehav>();
             //updateItemIndexLuaFunc(luaBehaviour.lua, itemLuaBehaviour ? itemLuaBehaviour.lua : null, index + 1);
-            luaBehaviour.CallLuaFunc<CapsUnityLuaBehav, int>("updateItemIndex", itemLuaBehaviour, index + 1);
+            this.CallLuaFunc("updateItemIndex", itemLuaBehaviour, index + 1);
         }
         private void DestroyItemLuaFunc(int index)
         {
             //destroyItemLuaFunc(luaBehaviour.lua, index + 1);
-            luaBehaviour.CallLuaFunc<int>("destroyItem", index + 1);
+            this.CallLuaFunc("destroyItem", index + 1);
         }
         private void OnItemIndexChanged(int index)
         {
             //onItemIndexChanged(luaBehaviour.lua, index + 1);
-            luaBehaviour.CallLuaFunc<int>("onItemIndexChanged", index + 1);
+            this.CallLuaFunc("onItemIndexChanged", index + 1);
         }
         private void OnScrollPositionChanged(float position)
         {
             //onScrollPositionChanged(luaBehaviour.lua, position);
-            luaBehaviour.CallLuaFunc<float>("onScrollPositionChanged", position);
+            this.CallLuaFunc("onScrollPositionChanged", position);
         }
         #endregion
 
+        CapsUnityLuaBehav ICapsUnityLuaBehavEx.Major { get; set; }
+        
         #region Unity Method
 
         public Dictionary<int, GameObject> GetItemViewDict()
@@ -614,8 +616,6 @@ namespace Lua.UI // TODO: change to Capstones.UnityEngineEx(.UI?)
 
         //public delegate GameObject ScrollRectExDelegate3(LuaTable self, int param1);
 
-        private CapsUnityLuaBehav luaBehaviour;
-
         //private ScrollRectExDelegate3 createItemLuaFunc;
         //private ScrollRectExDelegate3 createLineLuaFunc;
         //private ScrollRectExDelegate1 resetItemLuaFunc;
@@ -626,10 +626,6 @@ namespace Lua.UI // TODO: change to Capstones.UnityEngineEx(.UI?)
 
         public void Awake()
         {
-            if (luaBehaviour == null)
-            {
-                luaBehaviour = GetComponent<CapsUnityLuaBehav>();
-            }
             //if (createItemLuaFunc == null)
             //{
             //    luaBehaviour.lua.Get("createItem", out createItemLuaFunc);

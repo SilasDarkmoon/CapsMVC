@@ -13,7 +13,7 @@ namespace Capstones.UnityEngineEx.UI
         Dynamic
     }
 
-    public class CommonToggle : ToggleGroup
+    public class CommonToggle : ToggleGroup, ICapsUnityLuaBehavEx
     {
         public ButtonGroupType ButtonGroupType;
         public GameObject ToggleObj;
@@ -22,14 +22,12 @@ namespace Capstones.UnityEngineEx.UI
         public List<GameObject> Toggles;
         public bool AllowReselect;
         private bool isTriggerLuaListener = true;
-        private CapsUnityLuaBehav luaBehav;
+        CapsUnityLuaBehav ICapsUnityLuaBehavEx.Major { get; set; }
         private int m_cache_tag;
 
         protected override void Awake()
         {
             base.Awake();
-
-            luaBehav = gameObject.GetComponent<CapsUnityLuaBehav>();
 
             if (ButtonGroupType == ButtonGroupType.Dynamic)
             {
@@ -63,7 +61,7 @@ namespace Capstones.UnityEngineEx.UI
                 GameObject obj = Toggles[i];
                 Debug.Assert(obj.GetComponent<UnityEngine.UI.Toggle>(), "Toggle object must has a toggle compoment");
                 CapsUnityLuaBehav btnLua = obj.GetComponent<CapsUnityLuaBehav>();
-                luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onToggleCreated", btnLua, tag);
+                this.CallLuaFunc("onToggleCreated", btnLua, tag);
                 Toggle t = obj.GetComponent<Toggle>();
                 t.group = this;
                 t.onValueChanged = new Toggle.ToggleEvent();
@@ -81,12 +79,12 @@ namespace Capstones.UnityEngineEx.UI
                             else
                                 m_cache_tag = tag;
 
-                            luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onToggleSelected", btnLua2, tag);
-                            luaBehav.CallLuaFunc<int>("onTagSwitched", tag);
+                            this.CallLuaFunc("onToggleSelected", btnLua2, tag);
+                            this.CallLuaFunc("onTagSwitched", tag);
                         }
                         else
                         {
-                            luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onToggleDeselected", btnLua2, tag);
+                            this.CallLuaFunc("onToggleDeselected", btnLua2, tag);
                         }
                     }
                 });
@@ -105,13 +103,13 @@ namespace Capstones.UnityEngineEx.UI
                 if (toggleTag == tag)
                 {
                     obj.GetComponent<Toggle>().isOn = true;
-                    luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onToggleSelected", btnLua, tag);
-                    luaBehav.CallLuaFunc<int>("onTagSwitched", tag);
+                    this.CallLuaFunc("onToggleSelected", btnLua, tag);
+                    this.CallLuaFunc("onTagSwitched", tag);
                 }
                 else
                 {
                     obj.GetComponent<Toggle>().isOn = false;
-                    luaBehav.CallLuaFunc<CapsUnityLuaBehav, int>("onToggleDeselected", btnLua, tag);
+                    this.CallLuaFunc("onToggleDeselected", btnLua, tag);
                 }
             }
             isTriggerLuaListener = true;
