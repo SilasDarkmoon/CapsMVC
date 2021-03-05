@@ -10,6 +10,8 @@ public static class MusicManager
     private static bool isPlaying;
     private static bool IsSet = false;
 
+    private static string category = "music";
+
     public static void Reset()
     {
         IsSet = false;
@@ -24,7 +26,7 @@ public static class MusicManager
 
     public static void SetPlayList(List<string> playList)
     {
-        if (AudioManager.GetPlayer("music") != null && AudioManager.GetPlayer("music").isPlaying)
+        if (AudioManager.GetPlayer(category) != null && AudioManager.GetPlayer(category).isPlaying)
         {
             Sequence seq = DOTween.Sequence();
             seq.Append(FadeOut());
@@ -54,34 +56,34 @@ public static class MusicManager
         {
             SetPlayList(new List<string>(playList));
         }
-        if (AudioManager.GetPlayer("music") == null)
+        if (AudioManager.GetPlayer(category) == null)
         {
-            AudioManager.CreatePlayer("music", true);
+            AudioManager.CreatePlayer(category, true);
         }
         if (!isPlaying)
         {
             isPlaying = true;
-            AudioManager.GetPlayer("music").StartCoroutine(PlayMusic());
+            AudioManager.GetPlayer(category).StartCoroutine(PlayMusic());
         }
     }
 
     public static void Stop()
     {
         isPlaying = false;
-        if (AudioManager.GetPlayer("music") == null) return;
-        AudioManager.GetPlayer("music").Stop();
+        if (AudioManager.GetPlayer(category) == null) return;
+        AudioManager.GetPlayer(category).Stop();
     }
 
     public static void DestroyPlayer()
     {
         Stop();
-        AudioManager.DestroyPlayer("music");
+        AudioManager.DestroyPlayer(category);
     }
 
     public static Sequence FadeOut()
     {
         Sequence seq = DOTween.Sequence();
-        var target = AudioManager.GetPlayer("music");
+        var target = AudioManager.GetPlayer(category);
         seq.Append(DOTween.To(() => target.GlobalVolume, x => target.GlobalVolume = x, 0, 2f).SetTarget(target));
         seq.AppendCallback(Stop);
         return seq;
@@ -94,7 +96,7 @@ public static class MusicManager
             if (PlayList != null && PlayList.Count > 0)
             {
                 int playIndex = Random.Range(0, PlayList.Count);
-                yield return AudioManager.GetPlayer("music").PlayAudio(PlayList[playIndex], Volume);
+                yield return AudioManager.GetPlayer(category).PlayAudio(PlayList[playIndex], Volume);
             }
             yield return null;
         }

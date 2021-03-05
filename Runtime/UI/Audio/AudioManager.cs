@@ -5,53 +5,14 @@ using Capstones.UnityEngineEx;
 
 public class AudioManager
 {
-    private static float? globalVolume = null;
-    private static float? globalMusicVolume = null;
-    private static string playerPrefsKey = "keyAudioGlobalVolume";
-    private static string playerPrefsKeyMusic = "keyMusicGlobalVolume";
+    private static string prePrefsKey = "___keyAudioVolume_";
+
     private static Dictionary<string, AudioPlayer> playerMap = new Dictionary<string, AudioPlayer>();
 
-    public static float GlobalVolume
-    {
-        get
-        {
-            if (!globalVolume.HasValue)
-            {
-                if (PlayerPrefs.HasKey(playerPrefsKey))
-                {
-                    globalVolume = PlayerPrefs.GetFloat(playerPrefsKey);
-                }
-                else
-                {
-                    SetGlobalVolume(1f);
-                }
-            }
-
-            return globalVolume.Value;
-        }
-        set { SetGlobalVolume(value); }
-    }
-
-    public static float GlobalMusicVolume
-    {
-        get
-        {
-            if (!globalMusicVolume.HasValue)
-            {
-                if (PlayerPrefs.HasKey(playerPrefsKeyMusic))
-                {
-                    globalMusicVolume = PlayerPrefs.GetFloat(playerPrefsKeyMusic);
-                }
-                else
-                {
-                    SetGlobalMusicVolume(1f);
-                }
-            }
-
-            return globalMusicVolume.Value;
-        }
-        set { SetGlobalMusicVolume(value); }
-    }
+    /// <summary>
+    /// 音量大小记录
+    /// </summary>
+    private static Dictionary<string, float> volumeMap = new Dictionary<string, float>();
 
     public static AudioPlayer GetPlayer(string category)
     {
@@ -61,11 +22,45 @@ public class AudioManager
             if (!player)
             {
                 playerMap.Remove(category);
+                volumeMap.Remove(category);
                 return null;
             }
             return player;
         }
         return null;
+    }
+
+    public static float GetAudioVolume(string category)
+    {
+        float valume = 1.0f;
+        if (volumeMap.ContainsKey(category))
+        {
+            valume = volumeMap[category];
+        }
+        else
+        {
+            string key = prePrefsKey + category;
+            if (PlayerPrefs.HasKey(key))
+            {
+                volumeMap[category] = PlayerPrefs.GetFloat(key);
+                valume = volumeMap[category];
+            }
+        }
+
+        return valume;
+    }
+
+    public static void SetAudioVolume(string category, float value)
+    {
+        string key = prePrefsKey + category;
+        PlayerPrefs.SetFloat(key, value);
+        if (!playerMap.ContainsKey(category))
+        {
+            return;
+        }
+        volumeMap[category] = value;
+        AudioPlayer ap = playerMap[category];
+        ap.ApplyVolume();
     }
 
     public static bool CreatePlayer(string category, bool ignoreClear = false)
@@ -76,6 +71,7 @@ public class AudioManager
             if (!player)
             {
                 playerMap.Remove(category);
+                volumeMap.Remove(category);
             }
             else
             {
@@ -86,21 +82,31 @@ public class AudioManager
 
         // Create new Audio Player
         var go = new GameObject("AudioPlayer " + category, typeof(AudioSource), typeof(AudioPlayer));
-        GameObject.DontDestroyOnLoad(go);
-        //if (!ignoreClear)
-        //{
-        //    ResManager.CanDestroyAll(go);
-        //}
+        if (ignoreClear)
+        {
+            GameObject.DontDestroyOnLoad(go);
+        }
 
         var audioPlayer = go.GetComponent<AudioPlayer>();
         audioPlayer.Category = category;
-        audioPlayer.GlobalVolume = 1f;
         playerMap.Add(category, audioPlayer);
+        string key = prePrefsKey + category;
+        float volume = 1.0f;
+        if (PlayerPrefs.HasKey(key))
+        {
+            volume = PlayerPrefs.GetFloat(key);
+        }
+        else
+        {
+            PlayerPrefs.SetFloat(key, volume);
+        }
+        volumeMap[category] = volume;
+        audioPlayer.ApplyVolume();
 
         return true;
     }
 
-    public static void DestroyPlayer(string category)
+    public static void DestroyPlayer(string category, bool destroyTheAudio = false)
     {
         if (!playerMap.ContainsKey(category))
         {
@@ -113,11 +119,15 @@ public class AudioManager
             if (player)
             {
                 player.Stop();
-                Object.Destroy(player);
+                if (destroyTheAudio)
+                {
+                    Object.Destroy(player);
+                }
             }
         }
 
         playerMap.Remove(category);
+        volumeMap.Remove(category);
     }
 
     public static void RemoveUnusedKeys()
@@ -129,6 +139,7 @@ public class AudioManager
             if (playerMap[key] == null)
             {
                 playerMap.Remove(key);
+                volumeMap.Remove(key);
             }
         }
     }
@@ -141,26 +152,7 @@ public class AudioManager
         {
             Object.Destroy(playerMap[key]);
             playerMap.Remove(key);
-        }
-    }
-
-    private static void SetGlobalVolume(float value)
-    {
-        globalVolume = value;
-        PlayerPrefs.SetFloat(playerPrefsKey, value);
-        foreach (var player in playerMap.Values)
-        {
-            player.ApplyVolume();
-        }
-    }
-
-    private static void SetGlobalMusicVolume(float value)
-    {
-        globalMusicVolume = value;
-        PlayerPrefs.SetFloat(playerPrefsKeyMusic, value);
-        foreach (var player in playerMap.Values)
-        {
-            player.ApplyVolume();
+            volumeMap.Remove(key);
         }
     }
 }

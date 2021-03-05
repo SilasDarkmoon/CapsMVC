@@ -6,9 +6,8 @@ using Capstones.UnityEngineEx;
 public class AudioPlayer : MonoBehaviour
 {
     private float clipVolume = 1f;
-    private float? globalVolume = null;
+    private float? globalVolume = 1f;
     private string category;
-    private string playerPrefsKey;
     private AudioSource audioSource = null;
 
     public bool isPlaying
@@ -32,7 +31,6 @@ public class AudioPlayer : MonoBehaviour
         set
         {
             category = value;
-            playerPrefsKey = "keyAudioGlobalVolume_" + value;
         }
     }
 
@@ -110,18 +108,16 @@ public class AudioPlayer : MonoBehaviour
 
     public void ApplyVolume()
     {
-        if (category.Equals("music"))
-        {
-            audioSource.volume = clipVolume * GlobalVolume * AudioManager.GlobalMusicVolume;
-        }
-        else
-        {
-            audioSource.volume = clipVolume * GlobalVolume * AudioManager.GlobalVolume;
-        }
+        audioSource.volume = clipVolume * GlobalVolume * AudioManager.GetAudioVolume(category);
     }
 
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+    }
+
+    private void OnDestroy()
+    {
+        AudioManager.DestroyPlayer(this.Category);
     }
 }
