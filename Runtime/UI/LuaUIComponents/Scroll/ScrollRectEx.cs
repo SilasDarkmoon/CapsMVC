@@ -1166,6 +1166,7 @@ namespace Lua.UI
         #endregion
 
         CapsUnityLuaBehav ICapsUnityLuaBehavEx.Major { get; set; }
+        bool ICapsUnityLuaBehavEx.RouteToParents { get { return false; } }
 
         #region Unity Methods
         //public delegate void ScrollRectExDelegate(LuaTable self, int param1);

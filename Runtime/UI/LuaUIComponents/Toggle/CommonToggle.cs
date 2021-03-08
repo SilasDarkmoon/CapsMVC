@@ -23,6 +23,7 @@ namespace Capstones.UnityEngineEx.UI
         public bool AllowReselect;
         private bool isTriggerLuaListener = true;
         CapsUnityLuaBehav ICapsUnityLuaBehavEx.Major { get; set; }
+        bool ICapsUnityLuaBehavEx.RouteToParents { get { return false; } }
         private int m_cache_tag;
 
         protected override void Awake()

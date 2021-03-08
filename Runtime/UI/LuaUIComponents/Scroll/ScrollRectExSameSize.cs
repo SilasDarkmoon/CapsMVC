@@ -591,7 +591,8 @@ namespace Lua.UI // TODO: change to Capstones.UnityEngineEx(.UI?)
         #endregion
 
         CapsUnityLuaBehav ICapsUnityLuaBehavEx.Major { get; set; }
-        
+        bool ICapsUnityLuaBehavEx.RouteToParents { get { return false; } }
+
         #region Unity Method
 
         public Dictionary<int, GameObject> GetItemViewDict()
