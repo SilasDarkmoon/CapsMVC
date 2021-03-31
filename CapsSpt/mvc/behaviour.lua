@@ -120,7 +120,7 @@ function behaviour:_UnregisterEvent()
 end
 
 function behaviour:coroutine(func)
-    clr.coroutine(self, func)
+    clr.bcoroutine(self, func)
 end
 
 -- function behaviour.getmt(base)
