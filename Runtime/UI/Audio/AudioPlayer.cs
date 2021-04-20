@@ -18,7 +18,7 @@ public class AudioPlayer : MonoBehaviour
     public float ClipVolume
     {
         get { return clipVolume; }
-        private set
+        set
         {
             clipVolume = value;
             ApplyVolume();
