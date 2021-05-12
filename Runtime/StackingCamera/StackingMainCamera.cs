@@ -188,7 +188,7 @@ public class StackingMainCamera : StackingCamera
         cam.cullingMask = 0;
         cam.depth = -100;
         cam.useOcclusionCulling = false;
-        cam.allowDynamicResolution = true;
+        //cam.allowDynamicResolution = true;
 
         camex.SetRenderer(MainCameraRendererIndex);
     }
