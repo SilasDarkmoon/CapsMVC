@@ -1,21 +1,14 @@
 local ResManager = clr.Capstones.UnityEngineEx.ResManager
 local UIResManager = clr.Capstones.UnityEngineEx.UIResManager
 local UnityEngine = clr.UnityEngine
--- local LightmapData = UnityEngine.LightmapData
--- local LightmapSettings = UnityEngine.LightmapSettings
 local Object = UnityEngine.Object
 local GameObject = UnityEngine.GameObject
 local Canvas = UnityEngine.Canvas
--- local Image = UnityEngine.UI.Image
--- local CanvasScaler = UnityEngine.UI.CanvasScaler
--- local GraphicRaycaster = UnityEngine.UI.GraphicRaycaster
 local RectTransform = UnityEngine.RectTransform
 local Vector2 = UnityEngine.Vector2
--- local Camera = UnityEngine.Camera
 local RenderMode = UnityEngine.RenderMode
 local CapsUnityLuaBehav = clr.CapsUnityLuaBehav
 local Time = UnityEngine.Time
--- local StandaloneInputModule = UnityEngine.EventSystems.StandaloneInputModule
 
 local res = require("unity.res")
 
@@ -629,6 +622,7 @@ end
 
 --#region Load Prefab/Scene as Scene
 local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
+    DynamicResolutionConfig.ChangeResolution(ctrlPath)
     if res.NeedDialogCameraBlur() then
         res.SetMainCameraBlur(false)
     end
@@ -724,6 +718,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
 end
 
 local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
+    DynamicResolutionConfig.ChangeResolution(ctrlPath)
     if res.NeedDialogCameraBlur() then
         res.SetMainCameraBlur(false)
     end
@@ -856,6 +851,7 @@ end
 
 --#region Push/Pop Scenes
 function res.LoadViewImmediate(name, ...)
+    DynamicResolutionConfig.ChangeResolution(name)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
@@ -881,6 +877,7 @@ function res.LoadViewImmediate(name, ...)
 end
 
 function res.LoadViewAsync(name, ...)
+    DynamicResolutionConfig.ChangeResolution(name)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
@@ -922,6 +919,7 @@ function res.LoadViewAsync(name, ...)
 end
 
 function res.LoadView(name, ...)
+    DynamicResolutionConfig.ChangeResolution(name)
     local args = {...}
     local argc = select('#', ...)
 
@@ -1014,7 +1012,6 @@ function res.PopSceneWithCurrentSceneImmediate(...)
         argc = ctrlInfo.argc
     end
     --local isBlur = ctrlInfo.blur
-
     return LoadPrefabScene(res.LoadType.Pop, ctrlPath, ctrlInfo.dialogs, unpack(args, 1, argc))
 end
 
