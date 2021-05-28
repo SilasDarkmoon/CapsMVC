@@ -106,10 +106,16 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
         videoPlayer.prepareCompleted += PrepareCompleted;
         videoPlayer.errorReceived += ErrorReceived;
         videoPlayer.loopPointReached += LoopEnd;
-        videoPlayer.url = Application.streamingAssetsPath + "/" + videoPath;
-
+        if (videoPath != "")
+        {
+            videoPlayer.url = Application.streamingAssetsPath + "/" + videoPath;
+        }
         targetRawImage.texture = _targetRenderTexture;
         _isInit = true;
+    }
+    public void SetVideoPath(string path)
+    {
+        videoPlayer.url = Application.streamingAssetsPath + "/" + path;
     }
     /// <summary>
     /// 播放
