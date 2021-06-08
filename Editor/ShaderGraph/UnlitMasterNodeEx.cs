@@ -12,6 +12,7 @@ using UnityEditor.Rendering.Universal;
 
 using static System.Linq.Expressions.Expression;
 
+#if !UNITY_2020_1_OR_NEWER
 namespace UnityEditor.ShaderGraph
 {
     [Serializable]
@@ -98,3 +99,4 @@ namespace UnityEditor.ShaderGraph
         }
     }
 }
+#endif

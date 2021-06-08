@@ -152,6 +152,83 @@ namespace UnityEditor.ShaderGraph
             }
         }
 
+        public string GetStencilRawOverrideString()
+        {
+            if (OverrideStencil)
+            {
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("Stencil");
+                sb.AppendLine("{");
+                sb.Append("    Ref ");
+                sb.AppendLine(StencilRef.ToString());
+                sb.Append("    ReadMask ");
+                sb.AppendLine(StencilReadMask.ToString());
+                sb.Append("    WriteMask ");
+                sb.AppendLine(StencilWriteMask.ToString());
+                var comp = GetCompareFunctionString(StencilComp);
+                if (comp != null)
+                {
+                    sb.Append("    Comp ");
+                    sb.AppendLine(comp);
+                }
+                var op = GetStencilOpString(StencilPass);
+                if (op != null)
+                {
+                    sb.Append("    Pass ");
+                    sb.AppendLine(op);
+                }
+                op = GetStencilOpString(StencilFail);
+                if (op != null)
+                {
+                    sb.Append("    Fail ");
+                    sb.AppendLine(op);
+                }
+                op = GetStencilOpString(StencilZFail);
+                if (op != null)
+                {
+                    sb.Append("    ZFail ");
+                    sb.AppendLine(op);
+                }
+                sb.AppendLine("}");
+                return sb.ToString();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public string GetOffsetOverrideString()
+        {
+            if (OverrideOffset)
+            {
+                return "Offset " + OffsetFactor + ", " + OffsetUnits;
+            }
+            else
+            {
+                return null;
+            }    
+        }
+        public string GetBlendOpOverrideString()
+        {
+            if (OverrideBlend && BlendEnabled && OverrideBlendOp)
+            {
+                var op = GetBlendOpString(BlendOp);
+                if (op != null)
+                {
+                    string line = "BlendOp " + op;
+                    if (OverrideBlendOpAlpha)
+                    {
+                        op = GetBlendOpString(BlendOpA);
+                        if (op != null)
+                        {
+                            line += ", " + op;
+                        }
+                    }
+                    return line;
+                }
+            }
+            return null;
+        }
         public List<string> GetStencilOverrideString()
         {
             List<string> lines = new List<string>();
@@ -186,23 +263,18 @@ namespace UnityEditor.ShaderGraph
             }
             if (OverrideOffset)
             {
-                lines.Add("Offset " + OffsetFactor + ", " + OffsetUnits);
+                var offset = GetOffsetOverrideString();
+                if (offset != null)
+                {
+                    lines.Add(offset);
+                }
             }
             if (OverrideBlend && BlendEnabled && OverrideBlendOp)
             {
-                var op = GetBlendOpString(BlendOp);
+                var op = GetBlendOpOverrideString();
                 if (op != null)
                 {
-                    string line = "BlendOp " + op;
-                    if (OverrideBlendOpAlpha)
-                    {
-                        op = GetBlendOpString(BlendOpA);
-                        if (op != null)
-                        {
-                            line += ", " + op;
-                        }
-                    }
-                    lines.Add(line);
+                    lines.Add(op);
                 }
             }
 
@@ -763,5 +835,85 @@ namespace UnityEditor.ShaderGraph
 
             return ps;
         }
+
+#if UNITY_2020_1_OR_NEWER
+        internal RenderStateCollection ModifyRenderStateCollection(RenderStateCollection collection)
+        {
+            if (!OverrideStencil && !OverrideCull && !OverrideZWrite && !OverrideZTest && !OverrideOffset && !OverrideBlend && !OverrideColorMask)
+            {
+                return collection;
+            }
+            else
+            {
+                var newcollection = new RenderStateCollection();
+                if (OverrideCull)
+                {
+                    var val = GetCullOverrideString();
+                    if (val != null)
+                    {
+                        newcollection.Add(new RenderStateDescriptor { type = RenderStateType.Cull, value = val });
+                    }
+                }
+                newcollection.Add(collection);
+                if (OverrideStencil)
+                {
+                    var val = GetStencilRawOverrideString();
+                    if (val != null)
+                    {
+                        newcollection.Add(new RenderStateDescriptor { type = RenderStateType.Stencil, value = val });
+                    }
+                }
+                if (OverrideZWrite)
+                {
+                    var val = GetZWriteOverrideString();
+                    if (val != null)
+                    {
+                        newcollection.Add(new RenderStateDescriptor { type = RenderStateType.ZWrite, value = val });
+                    }
+                }
+                if (OverrideZTest)
+                {
+                    var val = GetZTestOverrideString();
+                    if (val != null)
+                    {
+                        newcollection.Add(new RenderStateDescriptor { type = RenderStateType.ZTest, value = val });
+                    }
+                }
+                if (OverrideOffset)
+                {
+                    var val = GetOffsetOverrideString();
+                    if (val != null)
+                    {
+                        newcollection.Add(new RenderStateDescriptor { type = RenderStateType.ZTest, value = val });
+                    }
+                }
+                if (OverrideBlend)
+                {
+                    var val = GetBlendOverrideString();
+                    if (val != null)
+                    {
+                        newcollection.Add(new RenderStateDescriptor { type = RenderStateType.Blend, value = val });
+                    }
+                    if (BlendEnabled && OverrideBlendOp)
+                    {
+                        val = GetBlendOpOverrideString();
+                        if (val != null)
+                        {
+                            newcollection.Add(new RenderStateDescriptor { type = RenderStateType.BlendOp, value = val });
+                        }
+                    }
+                }
+                if (OverrideColorMask)
+                {
+                    var val = GetColorMaskOverrideString();
+                    if (val != null)
+                    {
+                        newcollection.Add(new RenderStateDescriptor { type = RenderStateType.ColorMask, value = val });
+                    }
+                }
+                return newcollection;
+            }
+        }
+#endif
     }
 }
