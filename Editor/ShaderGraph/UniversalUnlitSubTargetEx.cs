@@ -1,3 +1,4 @@
+#if UNITY_2020_1_OR_NEWER
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using UnityEditor.ShaderGraph.Legacy;
 
-#if UNITY_2020_1_OR_NEWER
 namespace UnityEditor.Rendering.Universal.ShaderGraph
 {
     sealed class UniversalUnlitSubTargetEx : SubTarget<UniversalTarget>

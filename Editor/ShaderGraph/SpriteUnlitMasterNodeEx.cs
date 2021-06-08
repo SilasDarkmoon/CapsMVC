@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !UNITY_2020_1_OR_NEWER
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -18,7 +19,6 @@ using UnityEditor.ShaderGraph.Drawing;
 using UnityEditor.Graphing.Util;
 using UnityEditor.UIElements;
 
-#if !UNITY_2020_1_OR_NEWER
 namespace UnityEditor.ShaderGraph
 {
     [Serializable]
