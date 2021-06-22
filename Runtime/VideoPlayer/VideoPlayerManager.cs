@@ -39,7 +39,7 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
     private const int MaxW = 1920;
     private const int MaxH = 1080;
     private bool _isInit = false;
-
+    private bool closeClick = false;
     private static VideoPlayerManager instance;
     public static VideoPlayerManager GetInstance()
     {
@@ -117,6 +117,12 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
     {
         videoPlayer.url = Application.streamingAssetsPath + "/" + path;
     }
+
+    public void SetCloseClickTrigger(bool close)
+    {
+        closeClick = close;
+    }
+
     /// <summary>
     /// 播放
     /// </summary>
@@ -237,7 +243,8 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
-        LoopEnd(videoPlayer);
+        if(!closeClick) 
+            LoopEnd(videoPlayer);
     }
 
     private void LoopEnd(VideoPlayer vp)
