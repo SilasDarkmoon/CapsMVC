@@ -144,6 +144,17 @@ function res.GetSceneCacheMax()
     return sceneCacheMax
 end
 
+-- 等判断出机型等级后，再设置
+function res.SetSceneCacheMax(level)
+    if level == 3 then
+        sceneCacheMax = 4
+    elseif level == 2 then
+        sceneCacheMax = 2
+    else
+        sceneCacheMax = 2
+    end
+end
+
 function res.DestroyGameObjectList(objs)
     if res.IsClrNull(objs) then return end
     local lst = clr.table(objs)
