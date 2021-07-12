@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 public class UniversalRenderFeature : ScriptableRendererFeature
 {
     protected static readonly Dictionary<Camera, List<ComponentBasedRenderFeature>> _RegisteredFeatures = new Dictionary<Camera, List<ComponentBasedRenderFeature>>();
-    protected static readonly List<List<ComponentBasedRenderFeature>> _RegisteredTypedFeatures = new List<List<ComponentBasedRenderFeature>>();
+    protected static readonly List<ComponentBasedRenderFeature>[] _RegisteredTypedFeatures = new List<ComponentBasedRenderFeature>[32];
     public static void RegRenderFeature(ComponentBasedRenderFeature feature)
     {
         var cam = feature.Camera;
@@ -27,15 +27,23 @@ public class UniversalRenderFeature : ScriptableRendererFeature
         else
         {
             var type = feature.TargetCameraType;
-            int tindex = (int)type;
-            while (_RegisteredTypedFeatures.Count <= tindex)
+            uint tindex = (uint)type;
+            BitArray32 arrtypes = new BitArray32(tindex);
+            for (uint i = 0; i < arrtypes.capacity; ++i)
             {
-                _RegisteredTypedFeatures.Add(new List<ComponentBasedRenderFeature>());
-            }
-            var list = _RegisteredTypedFeatures[tindex];
-            if (!list.Contains(feature))
-            {
-                list.Add(feature);
+                if (arrtypes[i])
+                {
+                    var list = _RegisteredTypedFeatures[i];
+                    if (list == null)
+                    {
+                        list = new List<ComponentBasedRenderFeature>();
+                        _RegisteredTypedFeatures[i] = list;
+                    }
+                    if (!list.Contains(feature))
+                    {
+                        list.Add(feature);
+                    }
+                }
             }
         }
     }
@@ -54,11 +62,22 @@ public class UniversalRenderFeature : ScriptableRendererFeature
             }
         }
         var type = feature.TargetCameraType;
-        int tindex = (int)type;
-        if (_RegisteredTypedFeatures.Count > tindex)
+        uint tindex = (uint)type;
+        BitArray32 arrtypes = new BitArray32(tindex);
+        for (uint i = 0; i < arrtypes.capacity; ++i)
         {
-            var list = _RegisteredTypedFeatures[tindex];
-            list.Remove(feature);
+            if (arrtypes[i])
+            {
+                var list = _RegisteredTypedFeatures[i];
+                if (list != null)
+                {
+                    list.Remove(feature);
+                    if (list.Count == 0)
+                    {
+                        _RegisteredTypedFeatures[i] = null;
+                    }
+                }
+            }
         }
         RemoveDeadRenderFeatures();
     }
@@ -88,14 +107,21 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
-        for (int i = 0; i < _RegisteredTypedFeatures.Count; ++i)
+        for (int i = 0; i < _RegisteredTypedFeatures.Length; ++i)
         {
             var list = _RegisteredTypedFeatures[i];
-            for (int j = list.Count - 1; j >= 0; --j)
+            if (list != null)
             {
-                if (feature == list[j])
+                for (int j = list.Count - 1; j >= 0; --j)
                 {
-                    list.RemoveAt(j);
+                    if (feature == list[j])
+                    {
+                        list.RemoveAt(j);
+                    }
+                }
+                if (list.Count == 0)
+                {
+                    _RegisteredTypedFeatures[i] = null;
                 }
             }
         }
@@ -127,15 +153,22 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
-        for (int i = 0; i < _RegisteredTypedFeatures.Count; ++i)
+        for (int i = 0; i < _RegisteredTypedFeatures.Length; ++i)
         {
             var list = _RegisteredTypedFeatures[i];
-            for (int j = list.Count - 1; j >= 0; --j)
+            if (list != null)
             {
-                var feature = list[j];
-                if (!feature)
+                for (int j = list.Count - 1; j >= 0; --j)
                 {
-                    list.RemoveAt(j);
+                    var feature = list[j];
+                    if (!feature)
+                    {
+                        list.RemoveAt(j);
+                    }
+                }
+                if (list.Count == 0)
+                {
+                    _RegisteredTypedFeatures[i] = null;
                 }
             }
         }
@@ -157,16 +190,30 @@ public class UniversalRenderFeature : ScriptableRendererFeature
         }
 
         var type = renderingData.cameraData.camera.cameraType;
-        int tindex = (int)type;
-        if (_RegisteredTypedFeatures.Count > tindex)
+        uint tindex = (uint)type;
+        if (tindex > 0)
         {
-            var list = _RegisteredTypedFeatures[tindex];
-            for (int i = 0; i < list.Count; ++i)
+            int bitpos = log2(tindex);
+            var list = _RegisteredTypedFeatures[bitpos];
+            if (list != null)
             {
-                var feature = list[i];
-                feature.AddRenderPasses(renderer, ref renderingData);
+                for (int i = 0; i < list.Count; ++i)
+                {
+                    var feature = list[i];
+                    feature.AddRenderPasses(renderer, ref renderingData);
+                }
             }
         }
+    }
+    private static int log2(uint n)
+    {
+        int result = 0;
+        if ((n & 0xffff0000U) != 0) { result += 16; n >>= 16; }
+        if ((n & 0x0000ff00U) != 0) { result += 8; n >>= 8; }
+        if ((n & 0x000000f0U) != 0) { result += 4; n >>= 4; }
+        if ((n & 0x0000000cU) != 0) { result += 2; n >>= 2; }
+        if ((n & 0x00000002U) != 0) { result += 1; n >>= 1; }
+        return result;
     }
 
     public override void Create()
