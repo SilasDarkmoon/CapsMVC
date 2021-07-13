@@ -7,7 +7,10 @@ using UnityEngine.Rendering.Universal;
 public class UniversalRenderFeature : ScriptableRendererFeature
 {
     protected static readonly Dictionary<Camera, List<ComponentBasedRenderFeature>> _RegisteredFeatures = new Dictionary<Camera, List<ComponentBasedRenderFeature>>();
+#if UNITY_EDITOR
     protected static readonly List<ComponentBasedRenderFeature>[] _RegisteredTypedFeatures = new List<ComponentBasedRenderFeature>[32];
+#endif
+
     public static void RegRenderFeature(ComponentBasedRenderFeature feature)
     {
         var cam = feature.Camera;
@@ -24,6 +27,7 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 list.Add(feature);
             }
         }
+#if UNITY_EDITOR
         else
         {
             var type = feature.TargetCameraType;
@@ -46,6 +50,7 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
+#endif
     }
     public static void UnregRenderFeature(ComponentBasedRenderFeature feature)
     {
@@ -61,6 +66,8 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
+
+#if UNITY_EDITOR
         var type = feature.TargetCameraType;
         uint tindex = (uint)type;
         BitArray32 arrtypes = new BitArray32(tindex);
@@ -79,6 +86,8 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
+#endif
+
         RemoveDeadRenderFeatures();
     }
     public static void RemoveRenderFeature(ComponentBasedRenderFeature feature)
@@ -107,6 +116,7 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
+#if UNITY_EDITOR
         for (int i = 0; i < _RegisteredTypedFeatures.Length; ++i)
         {
             var list = _RegisteredTypedFeatures[i];
@@ -125,6 +135,7 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
+#endif
     }
     public static void RemoveDeadRenderFeatures()
     {
@@ -153,6 +164,7 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
+#if UNITY_EDITOR
         for (int i = 0; i < _RegisteredTypedFeatures.Length; ++i)
         {
             var list = _RegisteredTypedFeatures[i];
@@ -172,6 +184,7 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
+#endif
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -189,6 +202,7 @@ public class UniversalRenderFeature : ScriptableRendererFeature
             }
         }
 
+#if UNITY_EDITOR
         var type = renderingData.cameraData.camera.cameraType;
         uint tindex = (uint)type;
         if (tindex > 0)
@@ -204,8 +218,9 @@ public class UniversalRenderFeature : ScriptableRendererFeature
                 }
             }
         }
+#endif
     }
-    private static int log2(uint n)
+    public static int log2(uint n)
     {
         int result = 0;
         if ((n & 0xffff0000U) != 0) { result += 16; n >>= 16; }
