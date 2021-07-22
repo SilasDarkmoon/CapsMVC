@@ -224,5 +224,46 @@ function behaviour:DealVersionSpriteList()
     -- end
 end
 
+local asyncmeta = {}
+asyncmeta.__index = function(cls, key)
+    if type(key) == "string" and string.sub(key, -5) == "Async" then
+        local regtab = rawget(cls, "\022")
+        if regtab then
+            return regtab[key]
+        end
+    end
+end
+asyncmeta.__newindex = function(cls, key, value)
+    if type(key) == "string" and string.sub(key, -5) == "Async" then
+        local regtab = rawget(cls, "\022")
+        if not regtab then
+            regtab = {}
+            rawset(cls, "\022", regtab)
+        end
+        regtab[key] = value
+        if type(value) == "function" then
+            local funcasync = function(self, ...)
+                local args = {...}
+                local argc = select('#', ...)
+                if type(self) == "table" and self.coroutine == rawget(behaviour, "coroutine") then
+                    self:coroutine(function()
+                        value(self, unpack(args, 1, argc))
+                    end)
+                else
+                    clr.coroutine(function()
+                        value(self, unpack(args, 1, argc))
+                    end)
+                end
+            end
+            local keyasync = string.sub(key, 1, -6)
+            rawset(cls, keyasync, funcasync)
+        end
+    else
+        rawset(cls, key, value)
+    end
+end
+
+setmetatable(behaviour, asyncmeta)
+
 _G["behaviour"] = behaviour
--- return behaviour
+return behaviour
