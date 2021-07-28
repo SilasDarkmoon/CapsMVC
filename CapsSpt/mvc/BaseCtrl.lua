@@ -54,5 +54,7 @@ function BaseCtrl:GetStatusData()
 
 end
 
+setmetatable(BaseCtrl, unity.asyncmeta)
+
 _G["BaseCtrl"] = BaseCtrl
 -- return BaseCtrl
