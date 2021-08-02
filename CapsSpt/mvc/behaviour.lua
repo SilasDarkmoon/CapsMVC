@@ -119,9 +119,8 @@ function behaviour:_UnregisterEvent()
     end
 end
 
-function behaviour:coroutine(func)
-    clr.bcoroutine(self, func)
-end
+behaviour.coroutine = clr.bcoroutine
+behaviour.async = unity.basync
 
 -- function behaviour.getmt(base)
 --     return function(table, key)
