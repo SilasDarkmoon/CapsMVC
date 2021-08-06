@@ -39,7 +39,7 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
     private const int MaxW = 1920;
     private const int MaxH = 1080;
     private bool _isInit = false;
-    private bool closeClick = false;
+
     private static VideoPlayerManager instance;
     public static VideoPlayerManager GetInstance()
     {
@@ -106,23 +106,11 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
         videoPlayer.prepareCompleted += PrepareCompleted;
         videoPlayer.errorReceived += ErrorReceived;
         videoPlayer.loopPointReached += LoopEnd;
-        if (videoPath != "")
-        {
-            videoPlayer.url = Application.streamingAssetsPath + "/" + videoPath;
-        }
+        videoPlayer.url = Application.streamingAssetsPath + "/" + videoPath;
+
         targetRawImage.texture = _targetRenderTexture;
         _isInit = true;
     }
-    public void SetVideoPath(string path)
-    {
-        videoPlayer.url = Application.streamingAssetsPath + "/" + path;
-    }
-
-    public void SetCloseClickTrigger(bool close)
-    {
-        closeClick = close;
-    }
-
     /// <summary>
     /// 播放
     /// </summary>
@@ -243,8 +231,7 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
-        if(!closeClick) 
-            LoopEnd(videoPlayer);
+        LoopEnd(videoPlayer);
     }
 
     private void LoopEnd(VideoPlayer vp)
