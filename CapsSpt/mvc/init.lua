@@ -633,7 +633,7 @@ end
 
 --#region Load Prefab/Scene as Scene
 local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
-    DynamicResolutionConfig.ChangeResolution(ctrlPath)
+    res.DoPreProcess(ctrlPath)
     if res.NeedDialogCameraBlur() then
         res.SetMainCameraBlur(false)
     end
@@ -701,6 +701,7 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             end
 
             res.SetCurrentEventSystemEnabled(true)
+            res.DoPostProcess(ctrlPath)
         end)
     end
 
@@ -724,12 +725,11 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
     else
         CreateScene()
     end
-
     return res.curSceneInfo.ctrl
 end
 
 local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
-    DynamicResolutionConfig.ChangeResolution(ctrlPath)
+    res.DoPreProcess(ctrlPath)
     if res.NeedDialogCameraBlur() then
         res.SetMainCameraBlur(false)
     end
@@ -826,6 +826,7 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             end
 
             res.SetCurrentEventSystemEnabled(true)
+            res.DoPostProcess(ctrlPath)
         end)
     end
 
@@ -862,7 +863,7 @@ end
 
 --#region Push/Pop Scenes
 function res.LoadViewImmediate(name, ...)
-    DynamicResolutionConfig.ChangeResolution(name)
+    res.DoPreProcess(name)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
@@ -874,6 +875,7 @@ function res.LoadViewImmediate(name, ...)
         res.ClearSceneCache()
         res.CollectGarbage(1)
         res.SetUIAudioListener(name)
+        res.DoPostProcess(name)
     else
         local prefab = res.LoadRes(name)
         if prefab then
@@ -882,13 +884,14 @@ function res.LoadViewImmediate(name, ...)
             local camera = UIResManager.FindUICamera()
             res.SetUICamera(obj, camera)
             res.SetUIAudioListener(name)
+            res.DoPostProcess(name)
             return res.GetLuaScript(obj)
         end
     end
 end
 
 function res.LoadViewAsync(name, ...)
-    DynamicResolutionConfig.ChangeResolution(name)
+    res.DoPreProcess(name)
     SaveCurrentStatusData()
     local cacheItem = SaveCurrentSceneInfo()
     ClearCurrentSceneInfo()
@@ -925,12 +928,13 @@ function res.LoadViewAsync(name, ...)
         DisableCachedScene(cacheItem)
         waitHandle.done = true
         res.SetUIAudioListener(name)
+        res.DoPostProcess(name)
     end)
     return waitHandle
 end
 
 function res.LoadView(name, ...)
-    DynamicResolutionConfig.ChangeResolution(name)
+    res.DoPreProcess(name)
     local args = {...}
     local argc = select('#', ...)
 
@@ -947,6 +951,7 @@ function res.LoadView(name, ...)
             res.ClearSceneCache()
             res.CollectGarbage(1)
             res.SetUIAudioListener(name)
+            res.DoPostProcess(name)
         else
             local prefab = res.LoadRes(name)
             if prefab then
@@ -956,6 +961,7 @@ function res.LoadView(name, ...)
                 DisableCachedScene(cacheItem)
                 res.SetUICamera(obj, camera)
                 res.SetUIAudioListener(name)
+                res.DoPostProcess(name)
                 return res.GetLuaScript(obj)
             end
         end
