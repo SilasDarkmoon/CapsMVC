@@ -1188,6 +1188,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
     --     unmanagedDialogs[#unmanagedDialogs + 1] = loadingInfo
     -- end
 
+    res.SetCurrentEventSystemEnabled(true)
     local dialog, dialogSpt, dummydialog, blockdialog, diagcomp, dummycomp, scd
 
     scd = res.GetLastSCD(false)
