@@ -39,7 +39,7 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
     private const int MaxW = 1920;
     private const int MaxH = 1080;
     private bool _isInit = false;
-
+    private bool closeClick = false;
     private static VideoPlayerManager instance;
     public static VideoPlayerManager GetInstance()
     {
@@ -80,10 +80,10 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
             var h =  Math.Min(Screen.height, MaxH);
             int w =  Mathf.FloorToInt(h * (MaxW * 1.0f / MaxH));
             _targetRenderTexture = RenderTexture.GetTemporary(w, h, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
-            _targetRenderTexture.useMipMap = false;
+            //_targetRenderTexture.useMipMap = false;
             _targetRenderTexture.wrapMode = TextureWrapMode.Clamp;
             _targetRenderTexture.filterMode = FilterMode.Point;
-            _targetRenderTexture.useMipMap = false;
+            //_targetRenderTexture.useMipMap = false;
         }
         else
         {
@@ -106,11 +106,23 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
         videoPlayer.prepareCompleted += PrepareCompleted;
         videoPlayer.errorReceived += ErrorReceived;
         videoPlayer.loopPointReached += LoopEnd;
-        videoPlayer.url = Application.streamingAssetsPath + "/" + videoPath;
-
+        if (videoPath != "")
+        {
+            videoPlayer.url = Application.streamingAssetsPath + "/" + videoPath;
+        }
         targetRawImage.texture = _targetRenderTexture;
         _isInit = true;
     }
+    public void SetVideoPath(string path)
+    {
+        videoPlayer.url = Application.streamingAssetsPath + "/" + path;
+    }
+
+    public void SetCloseClickTrigger(bool close)
+    {
+        closeClick = close;
+    }
+
     /// <summary>
     /// 播放
     /// </summary>
@@ -231,7 +243,8 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
-        LoopEnd(videoPlayer);
+        if(!closeClick) 
+            LoopEnd(videoPlayer);
     }
 
     private void LoopEnd(VideoPlayer vp)
