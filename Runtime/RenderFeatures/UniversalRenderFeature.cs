@@ -25,6 +25,25 @@ public class UniversalRenderFeature : ScriptableRendererFeature
             if (!list.Contains(feature))
             {
                 list.Add(feature);
+                if (list.Count > 1)
+                {
+                    // need sort.
+                    HashSet<ComponentBasedRenderFeature> existing = new HashSet<ComponentBasedRenderFeature>(list);
+                    list.Clear();
+                    var allcomps = cam.gameObject.GetComponents<ComponentBasedRenderFeature>();
+                    for (int i = 0; i < allcomps.Length; ++i)
+                    {
+                        var comp = allcomps[i];
+                        if (existing.Remove(comp))
+                        {
+                            list.Add(comp);
+                        }
+                    }
+                    if (existing.Count > 0)
+                    {
+                        list.AddRange(existing); // NOTICE: should we sort the rest in existing?
+                    }
+                }
             }
         }
 #if UNITY_EDITOR
