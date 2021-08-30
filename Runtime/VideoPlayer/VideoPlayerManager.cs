@@ -250,19 +250,29 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
     private void LoopEnd(VideoPlayer vp)
     {
        
-        if (renderCamera.enabled)
+        //if (renderCamera.enabled)
+        //{
+        //    renderCamera.enabled = false;
+        //    GetComponent<EmptyGraphic>().enabled = false;
+        //    videoPlayer.Pause();
+        //    videoPlayer.time = 0f;
+        //    Time.timeScale = 1f;
+        //    DOTween.timeScale = 1f;
+        //    targetRawImage.raycastTarget = false;
+        //    if (LoopEndDelegate != null)
+        //    {
+        //        LoopEndDelegate(vp);
+        //    }
+        //}
+        GetComponent<EmptyGraphic>().enabled = false;
+        videoPlayer.Pause();
+        videoPlayer.time = 0f;
+        Time.timeScale = 1f;
+        DOTween.timeScale = 1f;
+        targetRawImage.raycastTarget = false;
+        if (LoopEndDelegate != null)
         {
-            renderCamera.enabled = false;
-            GetComponent<EmptyGraphic>().enabled = false;
-            videoPlayer.Pause();
-            videoPlayer.time = 0f;
-            Time.timeScale = 1f;
-            DOTween.timeScale = 1f;
-            targetRawImage.raycastTarget = false;
-            if (LoopEndDelegate != null)
-            {
-                LoopEndDelegate(vp);
-            }
+            LoopEndDelegate(vp);
         }
     }
     #endregion
