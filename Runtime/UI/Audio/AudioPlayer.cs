@@ -8,6 +8,7 @@ public class AudioPlayer : MonoBehaviour
     private float clipVolume = 1f;
     private float? globalVolume = 1f;
     private string category;
+    private string audioPath;
     private AudioSource audioSource = null;
 
     public bool isPlaying
@@ -80,6 +81,7 @@ public class AudioPlayer : MonoBehaviour
         var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
         if (clip)
         {
+            audioPath = path;
             audioSource.clip = clip;
             ApplyVolume();
             audioSource.Play();
@@ -95,6 +97,44 @@ public class AudioPlayer : MonoBehaviour
     public void PlayAudioInstantly(string path, float volume, bool loop = false)
     {
         PlayAudio(path, volume, loop).MoveNext();
+    }
+
+    public IEnumerator PlayAudioScheduled(string path, float volume, float startTime, float playTime, bool loop = false)
+    {
+        if (audioPath == path && audioSource.clip)
+        {
+            ApplyVolume();
+            audioSource.time = startTime;
+            audioSource.Play();
+            audioSource.SetScheduledEndTime(AudioSettings.dspTime + playTime);
+            audioSource.loop = loop;
+            yield return new AudioPlayEndYieldInstruction(audioSource);
+        }
+        else
+        {
+            ClipVolume = volume;
+            var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
+            if (clip)
+            {
+                audioPath = path;
+                audioSource.clip = clip;
+                ApplyVolume();
+                audioSource.time = startTime;
+                audioSource.Play();
+                audioSource.SetScheduledEndTime(AudioSettings.dspTime + playTime);
+                audioSource.loop = loop;
+                yield return new AudioPlayEndYieldInstruction(audioSource);
+            }
+            else
+            {
+                PlatDependant.LogError("Audio clip not found, path :" + path);
+            }
+        }
+    }
+
+    public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false)
+    {
+        PlayAudioScheduled(path, volume, startTime, playTime, loop).MoveNext();
     }
 
     public void Stop()
@@ -119,5 +159,6 @@ public class AudioPlayer : MonoBehaviour
     private void OnDestroy()
     {
         AudioManager.DestroyPlayer(this.Category);
+        audioPath = null;
     }
 }
