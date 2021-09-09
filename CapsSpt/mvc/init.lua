@@ -53,18 +53,16 @@ function res.SetCanvasSortingLayer(obj, layerName)
     end
 end
 
+local __old_Instantiate = res.Instantiate
 function res.Instantiate(name)
-    local prefab = ResManager.LoadRes(name)
-    if prefab then
-        local obj = Object.Instantiate(prefab)
-        if obj then
-            local canvas = obj:GetComponent(Canvas)
-            if canvas and canvas ~= clr.null then
-                res.SetUICamera(obj, UIResManager.FindUICamera())
-            end
-            return obj, res.GetLuaScript(obj)
+    local obj, spt = __old_Instantiate(name)
+    if obj and obj ~= clr.null and obj.GetComponent then
+        local canvas = obj:GetComponent(Canvas)
+        if canvas and canvas ~= clr.null then
+            res.SetUICamera(obj, UIResManager.FindUICamera())
         end
     end
+    return obj, spt
 end
 
 function res.GetDialogCamera()
