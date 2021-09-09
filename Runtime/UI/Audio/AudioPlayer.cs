@@ -84,6 +84,7 @@ public class AudioPlayer : MonoBehaviour
             audioPath = path;
             audioSource.clip = clip;
             ApplyVolume();
+            audioSource.time = 0;
             audioSource.Play();
             audioSource.loop = loop;
             yield return new AudioPlayEndYieldInstruction(audioSource);
@@ -143,6 +144,7 @@ public class AudioPlayer : MonoBehaviour
         {
             audioSource.Stop();
             audioSource.clip = null;
+            audioSource.time = 0;
         }
     }
 

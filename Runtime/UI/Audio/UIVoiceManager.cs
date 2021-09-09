@@ -6,11 +6,17 @@ public static class UIVoiceManager
 
     private static string category = "voice";
 
-    public static void Play(string file, float volume = -1f, bool loop = false)
+    public static void Play(string voice_category, string file, float volume = -1f, bool loop = false)
     {
         if (volume == 0f)
         {
             volume = UISoundVolume;
+        }
+
+        category = voice_category;
+        if (voice_category == "")
+        {
+            category = "voice";
         }
 
         if (AudioManager.GetPlayer(category) == null)
@@ -21,12 +27,13 @@ public static class UIVoiceManager
             .PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop);
     }
 
-    public static void PlayScheduled(string file, float volume = -1f, float startTime = 0f, float endTime = 0f, bool loop = false)
+    public static void PlayScheduled(string voice_category, string file, float volume = -1f, float startTime = 0f, float endTime = 0f, bool loop = false)
     {
         if (volume == 0f)
         {
             volume = UISoundVolume;
         }
+        category = voice_category;
 
         if (AudioManager.GetPlayer(category) == null)
         {
