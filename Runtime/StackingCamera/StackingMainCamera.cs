@@ -203,7 +203,7 @@ public class StackingMainCamera : StackingCamera
     }
     public static void RegSceneCamera(Camera cam)
     {
-        if (cam)
+        if (cam && cam.isActiveAndEnabled)
         {
             _SceneCameras.Add(cam);
             ManageCameraStack();
