@@ -9,6 +9,8 @@ public class AudioPlayer : MonoBehaviour
     private float? globalVolume = 1f;
     private string category;
     private string audioPath;
+    private float tempTime;
+    private float tempEndTime;
     private AudioSource audioSource = null;
 
     public bool isPlaying
@@ -78,6 +80,7 @@ public class AudioPlayer : MonoBehaviour
     public IEnumerator PlayAudio(string path, float volume, bool loop = false)
     {
         ClipVolume = volume;
+        tempEndTime = 0;
         var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
         if (clip)
         {
@@ -102,6 +105,7 @@ public class AudioPlayer : MonoBehaviour
 
     public IEnumerator PlayAudioScheduled(string path, float volume, float startTime, float playTime, bool loop = false)
     {
+        tempEndTime = playTime;
         if (audioPath == path && audioSource.clip)
         {
             ApplyVolume();
@@ -136,6 +140,31 @@ public class AudioPlayer : MonoBehaviour
     public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false)
     {
         PlayAudioScheduled(path, volume, startTime, playTime, loop).MoveNext();
+    }
+
+    public void IsPlayingAudioClip(bool isPlaying)
+    {
+        if (audioSource != null)
+        {
+            if (isPlaying)
+            {
+                if (tempEndTime > 0)
+                {
+                    audioSource.time = tempTime;
+                    audioSource.Play();
+                    audioSource.SetScheduledEndTime(AudioSettings.dspTime + tempEndTime);
+                }
+                else
+                {
+                    audioSource.Play();
+                }
+            }
+            else
+            {
+                tempTime = audioSource.time;
+                audioSource.Pause();
+            }
+        }
     }
 
     public void Stop()

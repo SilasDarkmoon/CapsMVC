@@ -51,4 +51,17 @@ public static class UIVoiceManager
             AudioManager.GetPlayer(category).Stop();
         }
     }
+
+    public static void IsPlayingAudio(bool isPlaying)
+    {
+        string[] categorys = new string[] { "voice", "voice_music", "voice_ui" };
+        for (int i=0; i< categorys.Length; i++)
+        {
+            var category = categorys[i];
+            if (AudioManager.GetPlayer(category) != null)
+            {
+                AudioManager.GetPlayer(category).IsPlayingAudioClip(isPlaying);
+            }
+        }
+    }
 }
