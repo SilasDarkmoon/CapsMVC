@@ -59,6 +59,7 @@ public static class MusicManager
         if (AudioManager.GetPlayer(category) == null)
         {
             AudioManager.CreatePlayer(category, true);
+            isPlaying = false;
         }
         if (!isPlaying)
         {
