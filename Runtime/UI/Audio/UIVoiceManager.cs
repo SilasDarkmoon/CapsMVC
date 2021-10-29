@@ -6,7 +6,7 @@ public static class UIVoiceManager
 
     private static string category = "voice";
 
-    public static void Play(string voice_category, string file, float volume = -1f, bool loop = false)
+    public static void Play(string voice_category, string file, float volume = -1f, bool loop = false, float pitch = 1)
     {
         if (volume == 0f)
         {
@@ -24,10 +24,10 @@ public static class UIVoiceManager
             AudioManager.CreatePlayer(category, true);
         }
         AudioManager.GetPlayer(category)
-            .PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop);
+            .PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop, pitch);
     }
 
-    public static void PlayScheduled(string voice_category, string file, float volume = -1f, float startTime = 0f, float endTime = 0f, bool loop = false)
+    public static void PlayScheduled(string voice_category, string file, float volume = -1f, float startTime = 0f, float endTime = 0f, bool loop = false, float pitch = 1)
     {
         if (volume == 0f)
         {
@@ -41,7 +41,7 @@ public static class UIVoiceManager
         }
         var playTime = endTime - startTime;
         AudioManager.GetPlayer(category)
-            .PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop);
+            .PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch);
     }
 
     public static void Stop()

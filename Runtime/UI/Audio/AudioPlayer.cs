@@ -77,7 +77,7 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
-    public IEnumerator PlayAudio(string path, float volume, bool loop = false)
+    public IEnumerator PlayAudio(string path, float volume, bool loop = false, float pitch = 1)
     {
         ClipVolume = volume;
         tempEndTime = 0;
@@ -88,6 +88,7 @@ public class AudioPlayer : MonoBehaviour
             audioSource.clip = clip;
             ApplyVolume();
             audioSource.time = 0;
+            audioSource.pitch = pitch;
             audioSource.Play();
             audioSource.loop = loop;
             yield return new AudioPlayEndYieldInstruction(audioSource);
@@ -98,21 +99,27 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
-    public void PlayAudioInstantly(string path, float volume, bool loop = false)
+    public void PlayAudioInstantly(string path, float volume, bool loop = false, float pitch = 1)
     {
-        PlayAudio(path, volume, loop).MoveNext();
+        PlayAudio(path, volume, loop, pitch).MoveNext();
     }
 
-    public IEnumerator PlayAudioScheduled(string path, float volume, float startTime, float playTime, bool loop = false)
+    private void AudioScheduledConfigure(float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
+    {
+        ApplyVolume();
+        audioSource.time = startTime;
+        audioSource.pitch = pitch;
+        audioSource.Play();
+        audioSource.SetScheduledEndTime(AudioSettings.dspTime + playTime);
+        audioSource.loop = loop;
+    }
+
+    public IEnumerator PlayAudioScheduled(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
     {
         tempEndTime = playTime;
         if (audioPath == path && audioSource.clip)
         {
-            ApplyVolume();
-            audioSource.time = startTime;
-            audioSource.Play();
-            audioSource.SetScheduledEndTime(AudioSettings.dspTime + playTime);
-            audioSource.loop = loop;
+            AudioScheduledConfigure(volume, startTime, playTime, loop, pitch);
             yield return new AudioPlayEndYieldInstruction(audioSource);
         }
         else
@@ -123,11 +130,7 @@ public class AudioPlayer : MonoBehaviour
             {
                 audioPath = path;
                 audioSource.clip = clip;
-                ApplyVolume();
-                audioSource.time = startTime;
-                audioSource.Play();
-                audioSource.SetScheduledEndTime(AudioSettings.dspTime + playTime);
-                audioSource.loop = loop;
+                AudioScheduledConfigure(volume, startTime, playTime, loop, pitch);
                 yield return new AudioPlayEndYieldInstruction(audioSource);
             }
             else
@@ -137,9 +140,9 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
-    public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false)
+    public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
     {
-        PlayAudioScheduled(path, volume, startTime, playTime, loop).MoveNext();
+        PlayAudioScheduled(path, volume, startTime, playTime, loop, pitch).MoveNext();
     }
 
     public void IsPlayingAudioClip(bool isPlaying)
