@@ -104,7 +104,7 @@ public class AudioPlayer : MonoBehaviour
         PlayAudio(path, volume, loop, pitch).MoveNext();
     }
 
-    private void AudioScheduledConfigure(float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
+    private void AudioScheduledConfigure(float startTime, float playTime, bool loop = false, float pitch = 1)
     {
         ApplyVolume();
         audioSource.time = startTime;
@@ -116,21 +116,21 @@ public class AudioPlayer : MonoBehaviour
 
     public IEnumerator PlayAudioScheduled(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
     {
+        ClipVolume = volume;
         tempEndTime = playTime;
         if (audioPath == path && audioSource.clip)
         {
-            AudioScheduledConfigure(volume, startTime, playTime, loop, pitch);
+            AudioScheduledConfigure(startTime, playTime, loop, pitch);
             yield return new AudioPlayEndYieldInstruction(audioSource);
         }
         else
         {
-            ClipVolume = volume;
             var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
             if (clip)
             {
                 audioPath = path;
                 audioSource.clip = clip;
-                AudioScheduledConfigure(volume, startTime, playTime, loop, pitch);
+                AudioScheduledConfigure(startTime, playTime, loop, pitch);
                 yield return new AudioPlayEndYieldInstruction(audioSource);
             }
             else
