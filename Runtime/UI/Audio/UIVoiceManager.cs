@@ -5,6 +5,7 @@ public static class UIVoiceManager
     private static float UISoundVolume = 1.0f;
 
     private static string category = "voice";
+    private static string mixerPath = "Game/Audio/Mixer/VoiceMixer.mixer";
 
     public static void Play(string voice_category, string file, float volume = -1f, bool loop = false, float pitch = 1)
     {
@@ -19,12 +20,11 @@ public static class UIVoiceManager
             category = "voice";
         }
 
-        if (AudioManager.GetPlayer(category) == null)
+        if (AudioMixerManager.GetPlayer(category) == null)
         {
-            AudioManager.CreatePlayer(category, true);
+            AudioMixerManager.CreatePlayer(category, true, mixerPath);
         }
-        AudioManager.GetPlayer(category)
-            .PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop, pitch);
+        AudioMixerManager.GetPlayer(category).PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop, pitch);
     }
 
     public static void PlayScheduled(string voice_category, string file, float volume = -1f, float startTime = 0f, float endTime = 0f, bool loop = false, float pitch = 1)
@@ -35,20 +35,20 @@ public static class UIVoiceManager
         }
         category = voice_category;
 
-        if (AudioManager.GetPlayer(category) == null)
+        if (AudioMixerManager.GetPlayer(category) == null)
         {
-            AudioManager.CreatePlayer(category, true);
+            AudioMixerManager.CreatePlayer(category, true, mixerPath);
         }
         var playTime = endTime - startTime;
-        AudioManager.GetPlayer(category)
-            .PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch);
+        AudioMixerManager.GetPlayer(category).PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch);
     }
 
     public static void Stop()
     {
-        if (AudioManager.GetPlayer(category) != null)
+        AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
+        if (mixerPlayer != null)
         {
-            AudioManager.GetPlayer(category).Stop();
+            mixerPlayer.Stop();
         }
     }
 
@@ -58,9 +58,25 @@ public static class UIVoiceManager
         for (int i=0; i< categorys.Length; i++)
         {
             var category = categorys[i];
-            if (AudioManager.GetPlayer(category) != null)
+            AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
+            if (mixerPlayer != null)
             {
-                AudioManager.GetPlayer(category).IsPlayingAudioClip(isPlaying);
+                mixerPlayer.IsPlayingAudioClip(isPlaying);
+            }
+        }
+    }
+
+    public static void AudioMixerConfig(float pitch = 1)
+    {
+        string[] categorys = new string[] { "voice", "voice_music", "voice_ui" };
+        for (int i = 0; i < categorys.Length; i++)
+        {
+            var category = categorys[i];
+            AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
+            if (mixerPlayer != null)
+            {
+                mixerPlayer.AudioSourceComponent.pitch = pitch;
+                mixerPlayer.AudioMixerConfig(pitch);
             }
         }
     }

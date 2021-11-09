@@ -5,13 +5,10 @@ using Capstones.UnityEngineEx;
 [RequireComponent(typeof(AudioSource))]
 public class AudioPlayer : MonoBehaviour
 {
-    private float clipVolume = 1f;
-    private float? globalVolume = 1f;
-    private string category;
-    private string audioPath;
-    private float tempTime;
-    private float tempEndTime;
-    private AudioSource audioSource = null;
+    protected float clipVolume = 1f;
+    protected float? globalVolume = 1f;
+    protected string category;
+    protected AudioSource audioSource = null;
 
     public bool isPlaying
     {
@@ -34,6 +31,15 @@ public class AudioPlayer : MonoBehaviour
         set
         {
             category = value;
+        }
+    }
+
+    public AudioSource AudioSourceComponent
+    {
+        get { return audioSource; }
+        set
+        {
+            audioSource = value;
         }
     }
 
@@ -77,18 +83,14 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
-    public IEnumerator PlayAudio(string path, float volume, bool loop = false, float pitch = 1)
+    public IEnumerator PlayAudio(string path, float volume, bool loop = false)
     {
         ClipVolume = volume;
-        tempEndTime = 0;
         var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
         if (clip)
         {
-            audioPath = path;
             audioSource.clip = clip;
             ApplyVolume();
-            audioSource.time = 0;
-            audioSource.pitch = pitch;
             audioSource.Play();
             audioSource.loop = loop;
             yield return new AudioPlayEndYieldInstruction(audioSource);
@@ -99,75 +101,9 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
-    public void PlayAudioInstantly(string path, float volume, bool loop = false, float pitch = 1)
+    public void PlayAudioInstantly(string path, float volume, bool loop = false)
     {
-        PlayAudio(path, volume, loop, pitch).MoveNext();
-    }
-
-    private void AudioScheduledConfigure(float startTime, float playTime, bool loop = false, float pitch = 1)
-    {
-        ApplyVolume();
-        audioSource.time = startTime;
-        audioSource.pitch = pitch;
-        audioSource.Play();
-        audioSource.SetScheduledEndTime(AudioSettings.dspTime + playTime);
-        audioSource.loop = loop;
-    }
-
-    public IEnumerator PlayAudioScheduled(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
-    {
-        ClipVolume = volume;
-        tempEndTime = playTime;
-        if (audioPath == path && audioSource.clip)
-        {
-            AudioScheduledConfigure(startTime, playTime, loop, pitch);
-            yield return new AudioPlayEndYieldInstruction(audioSource);
-        }
-        else
-        {
-            var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
-            if (clip)
-            {
-                audioPath = path;
-                audioSource.clip = clip;
-                AudioScheduledConfigure(startTime, playTime, loop, pitch);
-                yield return new AudioPlayEndYieldInstruction(audioSource);
-            }
-            else
-            {
-                PlatDependant.LogError("Audio clip not found, path :" + path);
-            }
-        }
-    }
-
-    public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
-    {
-        PlayAudioScheduled(path, volume, startTime, playTime, loop, pitch).MoveNext();
-    }
-
-    public void IsPlayingAudioClip(bool isPlaying)
-    {
-        if (audioSource != null)
-        {
-            if (isPlaying)
-            {
-                if (tempEndTime > 0)
-                {
-                    audioSource.time = tempTime;
-                    audioSource.Play();
-                    audioSource.SetScheduledEndTime(AudioSettings.dspTime + tempEndTime);
-                }
-                else
-                {
-                    audioSource.Play();
-                }
-            }
-            else
-            {
-                tempTime = audioSource.time;
-                audioSource.Pause();
-            }
-        }
+        PlayAudio(path, volume, loop).MoveNext();
     }
 
     public void Stop()
@@ -176,7 +112,6 @@ public class AudioPlayer : MonoBehaviour
         {
             audioSource.Stop();
             audioSource.clip = null;
-            audioSource.time = 0;
         }
     }
 
@@ -193,6 +128,5 @@ public class AudioPlayer : MonoBehaviour
     private void OnDestroy()
     {
         AudioManager.DestroyPlayer(this.Category);
-        audioPath = null;
     }
 }

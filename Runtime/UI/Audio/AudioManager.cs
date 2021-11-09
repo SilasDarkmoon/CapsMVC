@@ -3,18 +3,20 @@ using System.Linq;
 using UnityEngine;
 using Capstones.UnityEngineEx;
 
-public class AudioManager
-{
-    private static string prePrefsKey = "___keyAudioVolume_";
+public class AudioManager : AudioManager<AudioPlayer>{}
 
-    private static Dictionary<string, AudioPlayer> playerMap = new Dictionary<string, AudioPlayer>();
+public class AudioManager<T> where T : AudioPlayer
+{
+    protected static string prePrefsKey = "___keyAudioVolume_";
+
+    protected static Dictionary<string, T> playerMap = new Dictionary<string, T>();
 
     /// <summary>
     /// 音量大小记录
     /// </summary>
-    private static Dictionary<string, float> volumeMap = new Dictionary<string, float>();
+    protected static Dictionary<string, float> volumeMap = new Dictionary<string, float>();
 
-    public static AudioPlayer GetPlayer(string category)
+    public static T GetPlayer(string category)
     {
         if (playerMap.ContainsKey(category))
         {
@@ -81,13 +83,13 @@ public class AudioManager
         }
 
         // Create new Audio Player
-        var go = new GameObject("AudioPlayer " + category, typeof(AudioSource), typeof(AudioPlayer));
+        var go = new GameObject("AudioPlayer " + category, typeof(AudioSource), typeof(T));
         if (ignoreClear)
         {
             GameObject.DontDestroyOnLoad(go);
         }
 
-        var audioPlayer = go.GetComponent<AudioPlayer>();
+        var audioPlayer = go.GetComponent<T>();
         audioPlayer.Category = category;
         playerMap.Add(category, audioPlayer);
         string key = prePrefsKey + category;
