@@ -116,14 +116,9 @@ public class AudioMixerPlayer : AudioPlayer
         }
     }
 
-    public new void ApplyVolume()
-    {
-        audioSource.volume = clipVolume * GlobalVolume * AudioMixerManager.GetAudioVolume(category);
-    }
-
     private void OnDestroy()
     {
-        AudioMixerManager.DestroyPlayer(this.Category);
+        AudioManager.DestroyPlayer(this.Category);
         audioPath = null;
     }
 }

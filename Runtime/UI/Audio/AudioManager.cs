@@ -3,20 +3,18 @@ using System.Linq;
 using UnityEngine;
 using Capstones.UnityEngineEx;
 
-public class AudioManager : AudioManager<AudioPlayer>{}
-
-public class AudioManager<T> where T : AudioPlayer
+public class AudioManager
 {
     protected static string prePrefsKey = "___keyAudioVolume_";
 
-    protected static Dictionary<string, T> playerMap = new Dictionary<string, T>();
+    protected static Dictionary<string, AudioPlayer> playerMap = new Dictionary<string, AudioPlayer>();
 
     /// <summary>
     /// 音量大小记录
     /// </summary>
     protected static Dictionary<string, float> volumeMap = new Dictionary<string, float>();
 
-    public static T GetPlayer(string category)
+    public static AudioPlayer GetPlayer(string category)
     {
         if (playerMap.ContainsKey(category))
         {
@@ -30,6 +28,10 @@ public class AudioManager<T> where T : AudioPlayer
             return player;
         }
         return null;
+    }
+    public static T GetPlayer<T>(string category) where T : AudioPlayer
+    {
+        return GetPlayer(category) as T;
     }
 
     public static float GetAudioVolume(string category)
@@ -65,7 +67,7 @@ public class AudioManager<T> where T : AudioPlayer
         ap.ApplyVolume();
     }
 
-    public static bool CreatePlayer(string category, bool ignoreClear = false)
+    public static bool CreatePlayer<T>(string category, bool ignoreClear = false) where T : AudioPlayer
     {
         if (playerMap.ContainsKey(category))
         {
@@ -108,6 +110,11 @@ public class AudioManager<T> where T : AudioPlayer
         return true;
     }
 
+    public static bool CreatePlayer(string category, bool ignoreClear = false)
+    {
+        return CreatePlayer<AudioPlayer>(category, ignoreClear);
+    }
+
     public static void DestroyPlayer(string category, bool destroyTheAudio = false)
     {
         if (!playerMap.ContainsKey(category))
@@ -146,15 +153,23 @@ public class AudioManager<T> where T : AudioPlayer
         }
     }
 
-    public static void DestroyAllPlayers()
+    public static void DestroyAllPlayers<T>() where T : AudioPlayer
     {
         var keys = playerMap.Keys.ToArray();
 
         foreach (var key in keys)
         {
-            Object.Destroy(playerMap[key]);
-            playerMap.Remove(key);
-            volumeMap.Remove(key);
+            if (playerMap[key] is T)
+            {
+                Object.Destroy(playerMap[key]);
+                playerMap.Remove(key);
+                volumeMap.Remove(key);
+            }
         }
+    }
+
+    public static void DestroyAllPlayers()
+    {
+        DestroyAllPlayers<AudioPlayer>();
     }
 }

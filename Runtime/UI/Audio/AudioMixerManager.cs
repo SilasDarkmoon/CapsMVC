@@ -4,34 +4,18 @@ using UnityEngine;
 using UnityEngine.Audio;
 using Capstones.UnityEngineEx;
 
-public class AudioMixerManager : AudioManager<AudioMixerPlayer>
+public class AudioMixerManager 
 {
+    public static AudioMixerPlayer GetPlayer(string category)
+    {
+        return AudioManager.GetPlayer<AudioMixerPlayer>(category);
+    }
+
+
     public static bool CreatePlayer(string category, bool ignoreClear = false, string mixerPath = "")
     {
-        if (playerMap.ContainsKey(category))
-        {
-            var player = playerMap[category];
-            if (!player)
-            {
-                playerMap.Remove(category);
-                volumeMap.Remove(category);
-            }
-            else
-            {
-                PlatDependant.LogWarning("Audio Player '" + category + "' already created! Returning original player!");
-                return false;
-            }
-        }
-
-        // Create new Audio Player
-        var go = new GameObject("AudioMixerPlayer " + category, typeof(AudioSource), typeof(AudioMixerPlayer));
-        if (ignoreClear)
-        {
-            GameObject.DontDestroyOnLoad(go);
-        }
-
-        var audioMixerPlayer = go.GetComponent<AudioMixerPlayer>();
-        audioMixerPlayer.Category = category;
+        var result = AudioManager.CreatePlayer<AudioMixerPlayer>(category, ignoreClear);
+        var audioMixerPlayer = AudioManager.GetPlayer<AudioMixerPlayer>(category);
 
         if (mixerPath != "")
         {
@@ -39,20 +23,12 @@ public class AudioMixerManager : AudioManager<AudioMixerPlayer>
             AudioMixerGroup[] groups = mixer.FindMatchingGroups("Master");
             audioMixerPlayer.AudioSourceComponent.outputAudioMixerGroup = groups[0];
         }
-        playerMap.Add(category, audioMixerPlayer);
-        string key = prePrefsKey + category;
-        float volume = 1.0f;
-        if (PlayerPrefs.HasKey(key))
-        {
-            volume = PlayerPrefs.GetFloat(key);
-        }
-        else
-        {
-            PlayerPrefs.SetFloat(key, volume);
-        }
-        volumeMap[category] = volume;
-        audioMixerPlayer.ApplyVolume();
 
-        return true;
+        return result;
+    }
+
+    public static void DestroyAllPlayers()
+    {
+        AudioManager.DestroyAllPlayers<AudioMixerPlayer>();
     }
 }
