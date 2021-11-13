@@ -16,15 +16,19 @@ public class AudioMixerManager
     {
         var result = AudioManager.CreatePlayer<AudioMixerPlayer>(category, ignoreClear);
         var audioMixerPlayer = AudioManager.GetPlayer<AudioMixerPlayer>(category);
+        BuildMixerPlayer(audioMixerPlayer, mixerPath);
 
+        return result;
+    }
+
+    public static void BuildMixerPlayer(AudioMixerPlayer audioMixerPlayer, string mixerPath = "")
+    {
         if (mixerPath != "")
         {
             AudioMixer mixer = ResManager.LoadRes(mixerPath) as AudioMixer;
             AudioMixerGroup[] groups = mixer.FindMatchingGroups("Master");
             audioMixerPlayer.AudioSourceComponent.outputAudioMixerGroup = groups[0];
         }
-
-        return result;
     }
 
     public static void DestroyAllPlayers()

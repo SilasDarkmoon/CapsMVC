@@ -22,7 +22,7 @@ public static class UIVoiceManager
 
         if (AudioMixerManager.GetPlayer(category) == null)
         {
-            AudioMixerManager.CreatePlayer(category, true, mixerPath);
+            AudioMixerManager.CreatePlayer(category, false, mixerPath);
         }
         AudioMixerManager.GetPlayer(category).PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop, pitch);
     }
@@ -37,7 +37,7 @@ public static class UIVoiceManager
 
         if (AudioMixerManager.GetPlayer(category) == null)
         {
-            AudioMixerManager.CreatePlayer(category, true, mixerPath);
+            AudioMixerManager.CreatePlayer(category, false, mixerPath);
         }
         var playTime = endTime - startTime;
         AudioMixerManager.GetPlayer(category).PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch);
@@ -73,8 +73,14 @@ public static class UIVoiceManager
         {
             var category = categorys[i];
             AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
+
             if (mixerPlayer != null)
             {
+                if (mixerPlayer.AudioSourceComponent.outputAudioMixerGroup == null)
+                {
+                    AudioMixerManager.BuildMixerPlayer(mixerPlayer, mixerPath);
+                }
+
                 mixerPlayer.AudioSourceComponent.pitch = pitch;
                 mixerPlayer.AudioMixerConfig(pitch);
             }
