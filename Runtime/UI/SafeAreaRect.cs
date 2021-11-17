@@ -40,7 +40,7 @@ public class SafeAreaRect : MonoBehaviour
 
             if (Simulate == SimulateOption.IphoneXLandscape)
             {
-                orientation = ScreenOrientation.Landscape;
+                orientation = ScreenOrientation.LandscapeLeft;
             }
             
             if (orientation == ScreenOrientation.Portrait || orientation == ScreenOrientation.PortraitUpsideDown)
