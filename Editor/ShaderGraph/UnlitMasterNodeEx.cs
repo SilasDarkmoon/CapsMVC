@@ -100,3 +100,28 @@ namespace UnityEditor.ShaderGraph
     }
 }
 #endif
+
+#if UNITY_2020_1_OR_NEWER
+using System;
+using System.Collections.Generic;
+using UnityEditor.Graphing;
+
+namespace UnityEditor.ShaderGraph.Legacy
+{
+    [FormerName("UnityEditor.ShaderGraph.UnlitMasterNodeEx")]
+    class UnlitMasterNodeEx : AbstractMaterialNode, IMasterNodeEx1
+    {
+        public UnlitMasterNode1.SurfaceType m_SurfaceType;
+        public UnlitMasterNode1.AlphaMode m_AlphaMode;
+        public bool m_TwoSided;
+        public string m_ShaderGUIOverride;
+        public bool m_OverrideEnabled;
+
+        public RenderStateOverride RenderState;
+        public RenderStateOverride GetRenderStateOverride()
+        {
+            return RenderState;
+        }
+    }
+}
+#endif

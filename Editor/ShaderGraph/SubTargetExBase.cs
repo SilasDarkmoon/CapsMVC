@@ -11,7 +11,7 @@ using UnityEditor.ShaderGraph.Legacy;
 
 namespace UnityEditor.Rendering.Universal.ShaderGraph
 {
-    abstract class SubTargetExBase<TTarget, TInner> : SubTarget<TTarget> where TTarget : Target where TInner : SubTarget<TTarget>, new()
+    abstract class SubTargetExBase<TTarget, TInner> : SubTarget<TTarget>, ILegacyTarget where TTarget : Target where TInner : SubTarget<TTarget>, new()
     {
         [SerializeField] internal TInner _Inner;
         [SerializeField] public RenderStateOverride RenderState;
@@ -179,6 +179,47 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                     _Inner.target = target;
                 }
                 return _Inner.saveContext;
+            }
+        }
+
+        public virtual bool TryUpgradeFromMasterNode(IMasterNode1 masterNode, out Dictionary<BlockFieldDescriptor, int> blockMap)
+        {
+            blockMap = null;
+            return false;
+        }
+
+        public abstract class SubTargetExCanUpgrade<TMasterNode, TMasterNodeInner> : SubTargetExBase<TTarget, TInner> where TMasterNode : IMasterNodeEx1 where TMasterNodeInner : IMasterNode1, new()
+        {
+            public override bool TryUpgradeFromMasterNode(IMasterNode1 masterNode, out Dictionary<BlockFieldDescriptor, int> blockMap)
+            {
+                if (masterNode is TMasterNode oldex && _Inner is ILegacyTarget inner)
+                {
+                    var oldnorm = new TMasterNodeInner();
+                    inner.TryUpgradeFromMasterNode(oldnorm, out blockMap);
+                    RenderState = oldex.GetRenderStateOverride() ?? new RenderStateOverride();
+                    return true;
+                }
+                else
+                {
+                    return base.TryUpgradeFromMasterNode(masterNode, out blockMap);
+                }
+            }
+        }
+    }
+
+    internal static class SubTargetExUtils
+    {
+        public static void UpgradeAlphaClip(UniversalTarget target, AbstractMaterialNode node)
+        {
+            var clipThresholdId = 8;
+            var clipThresholdSlot = node.FindSlot<Vector1MaterialSlot>(clipThresholdId);
+            if (clipThresholdSlot == null)
+                return;
+
+            clipThresholdSlot.owner = node;
+            if (clipThresholdSlot.isConnected || clipThresholdSlot.value > 0.0f)
+            {
+                target.alphaClip = true;
             }
         }
     }

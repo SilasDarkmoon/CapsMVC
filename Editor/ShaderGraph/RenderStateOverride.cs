@@ -917,3 +917,13 @@ namespace UnityEditor.ShaderGraph
 #endif
     }
 }
+
+#if UNITY_2020_1_OR_NEWER
+namespace UnityEditor.ShaderGraph.Legacy
+{
+    public interface IMasterNodeEx1 : IMasterNode1
+    {
+        RenderStateOverride GetRenderStateOverride();
+    }
+}
+#endif
