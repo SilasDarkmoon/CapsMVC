@@ -1371,15 +1371,11 @@ function res.SetMainCameraBlur(enabled, blurRadius, iteration, rtDownScaling, ti
     UIResManager.SetCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time)
 end
 
+-- 目前只接受leve = 2的垃圾回收
 function res.CollectGarbage(level)
-    -- if level == 0 then
-    --     ResManager.StartGarbageCollectLite()
-    -- elseif level == 1 then
-    --     ResManager.StartGarbageCollectNorm()
-    -- else
-    --     ResManager.StartGarbageCollectDeep()
-    -- end
-    ResManager.GarbageCollector.StartGarbageCollect(level)
+    if level == 2 then
+        ResManager.GarbageCollector.StartGarbageCollect(level)
+    end
 end
 
 -- 只弹出一个栈帧
