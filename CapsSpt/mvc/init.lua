@@ -994,21 +994,21 @@ end
 
 -- 如果当前最上层的是一个窗口，则只关闭这个窗口，否则关闭整个场景
 function res.PopSceneImmediate(...)
-    -- if not CloseDialog() then
+    if not CloseDialog() then
         return res.PopSceneWithCurrentSceneImmediate(...)
-    -- end
+    end
 end
 
 function res.PopSceneAsync(...)
-    -- if not CloseDialog() then
+    if not CloseDialog() then
         return res.PopSceneWithCurrentSceneAsync(...)
-    -- end
+    end
 end
 
 function res.PopScene(...)
-    -- if not CloseDialog() then
+    if not CloseDialog() then
         return res.PopSceneWithCurrentScene(...)
-    -- end
+    end
 end
 
 function res.PopSceneWithCurrentSceneImmediate(...)
