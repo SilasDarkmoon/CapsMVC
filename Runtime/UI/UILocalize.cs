@@ -48,7 +48,14 @@ public class UILocalize : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        OnLocalize();
+        if (!string.IsNullOrEmpty(key))
+        {
+            OnLocalize();
+        }
+        else
+        {
+            LanguageConverter.IterateText(transform);
+        }
     }
 
     void OnLocalize()
