@@ -233,9 +233,9 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
                 }
             }
         }
-        [Range(1, 10)]
+        [Range(0, 1)]
         [SerializeField]
-        public float rate = 1;
+        public float rate = 0.5f;
 
         public RenderPassEvent Event = RenderPassEvent.AfterRenderingTransparents;
     }
