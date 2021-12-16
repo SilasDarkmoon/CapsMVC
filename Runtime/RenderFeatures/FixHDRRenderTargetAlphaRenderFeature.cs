@@ -29,13 +29,20 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             bool found = false;
-            for (int i = 0; i < _CandidateCameraRenderTargets.Length; ++i)
+            if (_CameraRenderTarget.Identifier() == renderingData.cameraData.renderer.cameraColorTarget)
             {
-                _CameraRenderTarget = _CandidateCameraRenderTargets[i];
-                if (_CameraRenderTarget.Identifier() == renderingData.cameraData.renderer.cameraColorTarget)
+                found = true;
+            }
+            if (!found)
+            {
+                for (int i = 0; i < _CandidateCameraRenderTargets.Length; ++i)
                 {
-                    found = true;
-                    break;
+                    _CameraRenderTarget = _CandidateCameraRenderTargets[i];
+                    if (_CameraRenderTarget.Identifier() == renderingData.cameraData.renderer.cameraColorTarget)
+                    {
+                        found = true;
+                        break;
+                    }
                 }
             }
             if (found)
