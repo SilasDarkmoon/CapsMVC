@@ -6,13 +6,20 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
 {
     class FixHDRRenderTargetAlphaRecreatePass : ScriptableRenderPass
     {
+        protected static RenderTargetHandle[] _CandidateCameraRenderTargets = new RenderTargetHandle[3];
+        static FixHDRRenderTargetAlphaRecreatePass()
+        {
+            _CandidateCameraRenderTargets[0].Init("_CameraColorTexture");
+            _CandidateCameraRenderTargets[1].Init("_CameraColorAttachmentA");
+            _CandidateCameraRenderTargets[2].Init("_CameraColorAttachmentB");
+        }
+
         protected string _ProfilerTag = "FixHDRRenderTargetAlphaRecreatePass";
         protected RenderTargetHandle _CameraRenderTarget;
 
         public FixHDRRenderTargetAlphaRecreatePass()
         {
             renderPassEvent = RenderPassEvent.BeforeRendering;
-            _CameraRenderTarget.Init("_CameraColorTexture");
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -21,14 +28,31 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
         }
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            renderingData.cameraData.cameraTargetDescriptor.colorFormat = RenderTextureFormat.ARGBHalf;
-            var desc = renderingData.cameraData.cameraTargetDescriptor;
-            desc.depthBufferBits = 0;
-            var cmd = CommandBufferPool.Get(_ProfilerTag);
-            cmd.ReleaseTemporaryRT(_CameraRenderTarget.id);
-            cmd.GetTemporaryRT(_CameraRenderTarget.id, desc, FilterMode.Bilinear);
-            context.ExecuteCommandBuffer(cmd);
-            CommandBufferPool.Release(cmd);
+            bool found = false;
+            for (int i = 0; i < _CandidateCameraRenderTargets.Length; ++i)
+            {
+                _CameraRenderTarget = _CandidateCameraRenderTargets[i];
+                if (_CameraRenderTarget.Identifier() == renderingData.cameraData.renderer.cameraColorTarget)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (found)
+            {
+                renderingData.cameraData.cameraTargetDescriptor.colorFormat = RenderTextureFormat.ARGBHalf;
+                var desc = renderingData.cameraData.cameraTargetDescriptor;
+                desc.depthBufferBits = 0;
+                var cmd = CommandBufferPool.Get(_ProfilerTag);
+                cmd.ReleaseTemporaryRT(_CameraRenderTarget.id);
+                cmd.GetTemporaryRT(_CameraRenderTarget.id, desc, FilterMode.Bilinear);
+                context.ExecuteCommandBuffer(cmd);
+                CommandBufferPool.Release(cmd);
+            }
+            else
+            {
+                Debug.LogError("Cannot fix HDR RenderTarget Alpha. Please check RenderTarget name.");
+            }
         }
     }
 
