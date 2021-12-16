@@ -66,6 +66,8 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
 
         public float RTDownScaling;
 
+        public float Rate;
+
         public DualKawaseBlurRenderPass(string profilerTag)
         {
             m_ProfilerTag = profilerTag;
@@ -123,8 +125,8 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         {
             CommandBuffer cmd = CommandBufferPool.Get(m_ProfilerTag);
             material.SetFloat(BlurOffset, BlurRadius);
-
-            // Downsample
+            material.SetFloat("_Rate", Rate);
+            // Downsample Rate
             RenderTargetIdentifier lastDown = source;
             for (int i = 0; i < Iteration; i++)
             {
@@ -231,6 +233,9 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
                 }
             }
         }
+        [Range(0, 1)]
+        [SerializeField]
+        public float rate = 0.5f;
 
         public RenderPassEvent Event = RenderPassEvent.AfterRenderingTransparents;
     }
@@ -250,7 +255,7 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         m_ScriptablePass.BlurRadius = settings.BlurRadius;
         m_ScriptablePass.Iteration = settings.Iteration;
         m_ScriptablePass.RTDownScaling = settings.RTDownScaling;
-
+        m_ScriptablePass.Rate = settings.rate;
         // Configures where the render pass should be injected.
         m_ScriptablePass.renderPassEvent = settings.Event;
 
