@@ -235,7 +235,8 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         }
         [Range(0, 1)]
         [SerializeField]
-        public float rate = 0.5f;
+        //新增70%黑色遮罩，UI已经确认效果
+        public readonly float rate = 0.3f;
 
         public RenderPassEvent Event = RenderPassEvent.AfterRenderingTransparents;
     }
