@@ -6,24 +6,11 @@ using UnityEditor;
 namespace Capstones.UnityEditorEx
 {
     [InitializeOnLoad]
-    public class AnimOnlyModelResBuilder : CapsResBuilder.IResBuilderEx
+    public class AnimOnlyModelResBuilder : CapsResBuilder.BaseResBuilderEx<AnimOnlyModelResBuilder>
     {
-        private static AnimOnlyModelResBuilder _Instance = new AnimOnlyModelResBuilder();
-        static AnimOnlyModelResBuilder()
-        {
-            CapsResBuilder.ResBuilderEx.Add(_Instance);
-        }
+        private static HierarchicalInitializer _Initializer = new HierarchicalInitializer(0);
 
-        public void Prepare(string output)
-        {
-        }
-        public void Cleanup()
-        {
-        }
-        public void OnSuccess()
-        {
-        }
-        public string FormatBundleName(string asset, string mod, string dist, string norm)
+        public override string FormatBundleName(string asset, string mod, string dist, string norm)
         {
             if (asset.EndsWith(".animonly.txt"))
             {
@@ -53,17 +40,6 @@ namespace Capstones.UnityEditorEx
                 }
             }
             return null;
-        }
-        public bool CreateItem(CapsResManifestNode node)
-        {
-            return false;
-        }
-        public void ModifyItem(CapsResManifestItem item)
-        {
-        }
-
-        public void GenerateBuildWork(string bundleName, IList<string> assets, ref AssetBundleBuild abwork, CapsResBuilder.CapsResBuildWork modwork, int abindex)
-        {
         }
 
         public static void DeleteAllSubAssetsExceptAnim(string assetpath)
