@@ -15,3 +15,5 @@ ShaderVariantCollection:
         passType: 0
       - keywords: SOFTMASK_SIMPLE UNITY_UI_ALPHACLIP
         passType: 0
+      - keywords: SOFTMASK_SLICED
+        passType: 0
