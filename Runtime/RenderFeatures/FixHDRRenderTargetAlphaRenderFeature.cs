@@ -7,6 +7,7 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
     class FixHDRRenderTargetAlphaRecreatePass : ScriptableRenderPass
     {
         protected static RenderTargetHandle[] _CandidateCameraRenderTargets = new RenderTargetHandle[3];
+        public ScriptableRenderer Renderer;
         static FixHDRRenderTargetAlphaRecreatePass()
         {
             _CandidateCameraRenderTargets[0].Init("_CameraColorTexture");
@@ -29,19 +30,22 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             bool found = false;
-            if (_CameraRenderTarget.Identifier() == renderingData.cameraData.renderer.cameraColorTarget)
+            if (Renderer != null)
             {
-                found = true;
-            }
-            if (!found)
-            {
-                for (int i = 0; i < _CandidateCameraRenderTargets.Length; ++i)
+                if (_CameraRenderTarget.Identifier() == Renderer.cameraColorTarget)
                 {
-                    _CameraRenderTarget = _CandidateCameraRenderTargets[i];
-                    if (_CameraRenderTarget.Identifier() == renderingData.cameraData.renderer.cameraColorTarget)
+                    found = true;
+                }
+                if (!found)
+                {
+                    for (int i = 0; i < _CandidateCameraRenderTargets.Length; ++i)
                     {
-                        found = true;
-                        break;
+                        _CameraRenderTarget = _CandidateCameraRenderTargets[i];
+                        if (_CameraRenderTarget.Identifier() == Renderer.cameraColorTarget)
+                        {
+                            found = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -74,6 +78,7 @@ public class FixHDRRenderTargetAlphaRenderFeature : ComponentBasedRenderFeature
             {
                 return;
             }
+            _RecreatePass.Renderer = renderer;
             renderer.EnqueuePass(_RecreatePass);
         }
     }
