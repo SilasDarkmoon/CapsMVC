@@ -78,6 +78,7 @@ public class StackingMainCamera : StackingCamera
                             camex = cam.gameObject.AddComponent<UniversalAdditionalCameraData>();
                         }
                         camex.renderType = CameraRenderType.Overlay;
+                        cam.allowDynamicResolution = _Camera.allowDynamicResolution;
                         stack.Add(cam);
                         newcam = true;
                     }
