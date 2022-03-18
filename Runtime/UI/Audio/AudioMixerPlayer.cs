@@ -9,7 +9,7 @@ public class AudioMixerPlayer : AudioPlayer
     private float runTime;
     private float endTime;
 
-    public IEnumerator PlayAudio(string path, float volume, bool loop = false, float pitch = 1)
+    public IEnumerator PlayAudio(string path, float volume, bool loop = false, float pitch = 1, bool isPlayAwake = false)
     {
         ClipVolume = volume;
         endTime = 0;
@@ -25,6 +25,7 @@ public class AudioMixerPlayer : AudioPlayer
             AudioMixerConfig(pitch);
             audioSource.Play();
             audioSource.loop = loop;
+            audioSource.playOnAwake = isPlayAwake;
             yield return new AudioPlayEndYieldInstruction(audioSource);
         }
         else
@@ -33,9 +34,9 @@ public class AudioMixerPlayer : AudioPlayer
         }
     }
 
-    public void PlayAudioInstantly(string path, float volume, bool loop = false, float pitch = 1)
+    public void PlayAudioInstantly(string path, float volume, bool loop = false, float pitch = 1, bool isPlayAwake = false)
     {
-        PlayAudio(path, volume, loop, pitch).MoveNext();
+        PlayAudio(path, volume, loop, pitch, isPlayAwake).MoveNext();
     }
 
     public void AudioMixerConfig(float pitch = 1)
@@ -47,7 +48,7 @@ public class AudioMixerPlayer : AudioPlayer
         }
     }
 
-    private void AudioScheduledConfigure(float startTime, float playTime, bool loop = false, float pitch = 1)
+    private void AudioScheduledConfigure(float startTime, float playTime, bool loop = false, float pitch = 1, bool isPlayAwake = false)
     {
         var expand = (pitch < 1) ? (1 / pitch) : 1;
         ApplyVolume();
@@ -58,15 +59,16 @@ public class AudioMixerPlayer : AudioPlayer
         audioSource.Play();
         audioSource.SetScheduledEndTime((AudioSettings.dspTime + playTime) * expand);
         audioSource.loop = loop;
+        audioSource.playOnAwake = isPlayAwake;
     }
 
-    public IEnumerator PlayAudioScheduled(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
+    public IEnumerator PlayAudioScheduled(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1, bool isPlayAwake = false)
     {
         ClipVolume = volume;
         endTime = playTime;
         if (audioPath == path && audioSource.clip)
         {
-            AudioScheduledConfigure(startTime, playTime, loop, pitch);
+            AudioScheduledConfigure(startTime, playTime, loop, pitch, isPlayAwake);
             yield return new AudioPlayEndYieldInstruction(audioSource);
         }
         else
@@ -76,7 +78,7 @@ public class AudioMixerPlayer : AudioPlayer
             {
                 audioPath = path;
                 audioSource.clip = clip;
-                AudioScheduledConfigure(startTime, playTime, loop, pitch);
+                AudioScheduledConfigure(startTime, playTime, loop, pitch, isPlayAwake);
                 yield return new AudioPlayEndYieldInstruction(audioSource);
             }
             else
@@ -86,9 +88,9 @@ public class AudioMixerPlayer : AudioPlayer
         }
     }
 
-    public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1)
+    public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1, bool isPlayAwake = false)
     {
-        PlayAudioScheduled(path, volume, startTime, playTime, loop, pitch).MoveNext();
+        PlayAudioScheduled(path, volume, startTime, playTime, loop, pitch, isPlayAwake).MoveNext();
     }
 
     public void IsPlayingAudioClip(bool isPlaying)

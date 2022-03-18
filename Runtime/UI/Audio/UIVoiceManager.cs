@@ -3,7 +3,7 @@
 public static class UIVoiceManager
 {
     private static float UISoundVolume = 1.0f;
-
+    private static bool isPlayAwake = false;
     private static string category = "voice";
     private static string mixerPath = "Game/Audio/Mixer/VoiceMixer.mixer";
 
@@ -24,7 +24,7 @@ public static class UIVoiceManager
         {
             AudioMixerManager.CreatePlayer(category, false, mixerPath);
         }
-        AudioMixerManager.GetPlayer(category).PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop, pitch);
+        AudioMixerManager.GetPlayer(category).PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop, pitch, isPlayAwake);
     }
 
     public static void PlayScheduled(string voice_category, string file, float volume = -1f, float startTime = 0f, float endTime = 0f, bool loop = false, float pitch = 1)
@@ -40,7 +40,7 @@ public static class UIVoiceManager
             AudioMixerManager.CreatePlayer(category, false, mixerPath);
         }
         var playTime = endTime - startTime;
-        AudioMixerManager.GetPlayer(category).PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch);
+        AudioMixerManager.GetPlayer(category).PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch, isPlayAwake);
     }
 
     public static void Stop()
@@ -61,9 +61,17 @@ public static class UIVoiceManager
             AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
             if (mixerPlayer != null)
             {
-                mixerPlayer.IsPlayingAudioClip(isPlaying);
+                if (mixerPlayer.audioSource != null && mixerPlayer.audioSource.time > 0)
+                {
+                    mixerPlayer.IsPlayingAudioClip(isPlaying);
+                }
             }
         }
+    }
+
+    public static void IsPlayAwake(bool isAwake)
+    {
+        isPlayAwake = isAwake;
     }
 
     public static void AudioMixerConfig(float pitch = 1)
