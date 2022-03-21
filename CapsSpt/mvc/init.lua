@@ -1169,7 +1169,7 @@ function res.ChangeGameObjectLayer(dialog, layer)
 end
 
 function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRaycast, withCtrl, overlaySortingOrder, noNeedSafeArea,
-                        blurRadius, iteration, rtDownScaling, blurTime)
+                        blurRadius, iteration, rtDownScaling, blurTime, rate)
     -- local loadingType = cache.getGlobalTempData("LoadingPrefabDialog")
     -- local loadingInfo = { dialog = {} }
     -- if not loadingType then
@@ -1205,7 +1205,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         if withShadow then
             diagcomp:setShadow(true)
             if res.NeedDialogCameraBlur() then
-                res.SetMainCameraBlur(true, blurRadius, iteration, rtDownScaling, blurTime)
+                res.SetMainCameraBlur(true, blurRadius, iteration, rtDownScaling, blurTime, rate)
             else
                 res.GetLuaScript(dummycanvas):enableShadow()
                 diagcomp:enableShadow()
@@ -1226,7 +1226,7 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         diagcomp.withCtrl = withCtrl
         if withShadow then
             diagcomp:setShadow(true)
-            res.SetMainCameraBlur(true, blurRadius, iteration, rtDownScaling, blurTime)
+            res.SetMainCameraBlur(true, blurRadius, iteration, rtDownScaling, blurTime, rate)
         else
             diagcomp:setShadow(false)
         end
@@ -1367,8 +1367,8 @@ function res.NeedDialogCameraBlur()
 end
 
 -- 设置由MainCamera渲染的UI界面模糊
-function res.SetMainCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time)
-    UIResManager.SetCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time)
+function res.SetMainCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time, rate)
+    UIResManager.SetCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time, rate)
 end
 
 -- 目前只接受leve = 2的垃圾回收

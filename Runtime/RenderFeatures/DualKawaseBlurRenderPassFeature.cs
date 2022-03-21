@@ -176,11 +176,13 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
     public class DualKawaseBlurSettings
     {
         public delegate void OnRTScalingChangeDelegate(float newVal);
-        public event OnRTScalingChangeDelegate OnRTChange;
         public delegate void OnIterationChangeDelegate(int newVal);
-        public event OnIterationChangeDelegate OnIterationChange;
         public delegate void OnBlurRadiusChangeDelegate(float newVal);
+        public delegate void OnRateChangeDelegate(float newVal);
+        public event OnIterationChangeDelegate OnIterationChange;
+        public event OnRTScalingChangeDelegate OnRTChange;
         public event OnBlurRadiusChangeDelegate OnBlurRadiusChange;
+        public event OnRateChangeDelegate OnRateChange;
         public string passTag = "X-DualKawaseBlur";
 
         [Range(0.0f, 15.0f)]
@@ -194,8 +196,7 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
                 if (value != blurRadius)
                 {
                     blurRadius = value;
-                    if (OnBlurRadiusChange != null)
-                        OnBlurRadiusChange(blurRadius);
+                    OnBlurRadiusChange?.Invoke(blurRadius);
                 }
             }
         }
@@ -211,8 +212,7 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
                 if (value != iteration)
                 {
                     iteration = value;
-                    if (OnIterationChange != null)
-                        OnIterationChange(iteration);
+                    OnIterationChange?.Invoke(iteration);
                 }
             }
         }
@@ -228,15 +228,26 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
                 if (value != rtDownScaling)
                 {
                     rtDownScaling = value;
-                    if (OnRTChange != null)
-                        OnRTChange(rtDownScaling);
+                    OnRTChange?.Invoke(rtDownScaling);
                 }
             }
         }
         [Range(0, 1)]
         [SerializeField]
         //新增70%黑色遮罩，UI已经确认效果
-        public readonly float rate = 0.3f;
+        private float _rate = 0.3f;
+        public float Rate
+        {
+            get { return _rate; }
+            set 
+            {
+                if (value != _rate)
+                {
+                    _rate = value;
+                    OnRateChange?.Invoke(_rate);
+                }
+            }
+        }
 
         public RenderPassEvent Event = RenderPassEvent.AfterRenderingTransparents;
     }
@@ -245,6 +256,7 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
     private float blurRadius;
     private int iteration;
     private float rtDownScaling;
+    private float defaultRate;
     private static Tween blurRadiusValueTween;
     private static Tween iterationValueTween;
     private static Tween rtDownScalingValueTween;
@@ -256,16 +268,18 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         m_ScriptablePass.BlurRadius = settings.BlurRadius;
         m_ScriptablePass.Iteration = settings.Iteration;
         m_ScriptablePass.RTDownScaling = settings.RTDownScaling;
-        m_ScriptablePass.Rate = settings.rate;
+        m_ScriptablePass.Rate = settings.Rate;
         // Configures where the render pass should be injected.
         m_ScriptablePass.renderPassEvent = settings.Event;
 
         blurRadius = settings.BlurRadius;
         iteration = settings.Iteration;
         rtDownScaling = settings.RTDownScaling;
+        defaultRate = settings.Rate;
         settings.OnRTChange += RTChange;
         settings.OnIterationChange += IterationChange;
         settings.OnBlurRadiusChange += BlurRadiusChange;
+        settings.OnRateChange += RateChange;
     }
 
     public void ResetValue()
@@ -273,6 +287,7 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         settings.BlurRadius = blurRadius;
         settings.Iteration = iteration;
         settings.RTDownScaling = rtDownScaling;
+        settings.Rate = defaultRate;
     }
 
     private void BlurRadiusChange(float value)
@@ -290,6 +305,11 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         m_ScriptablePass.RTDownScaling = value;
     }
 
+    private void RateChange(float value)
+    {
+        m_ScriptablePass.Rate = value;
+    }
+
     // Here you can inject one or multiple render passes in the renderer.
     // This method is called when setting up the renderer once per-camera.
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -298,7 +318,7 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         renderer.EnqueuePass(m_ScriptablePass);
     }
 
-    public void DoCameraBlur(float blurRadius = 0, int iteration = 1, float rtDownScaling = 1, float time = 0)
+    public void DoCameraBlur(float blurRadius = 0, int iteration = 1, float rtDownScaling = 1, float time = 0, float rate = 0.3f)
     {
         if (blurRadius != 0)
         {
@@ -314,6 +334,10 @@ public class DualKawaseBlurRenderPassFeature : ComponentBasedRenderFeature
         {
             rtDownScalingValueTween = DOTween.To(() => 1, x => settings.RTDownScaling = x, rtDownScaling, time);
             rtDownScalingValueTween.SetEase(Ease.OutSine);
+        }
+        if (rate > 0)
+        {
+            settings.Rate = rate;
         }
     }
 
