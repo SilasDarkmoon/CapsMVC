@@ -215,7 +215,7 @@ namespace Capstones.UnityEngineEx
             }
         }
 
-        public static void SetCameraBlur(bool enabled, float blurRadius = 0, int iteration = 1, float rtDownScaling = 1, float time = 0)
+        public static void SetCameraBlur(bool enabled, float blurRadius = 0, int iteration = 1, float rtDownScaling = 1, float time = 0, float rate = 0.3f)
         {
             if (_blurRPF)
             {
@@ -223,7 +223,7 @@ namespace Capstones.UnityEngineEx
 
                 if (enabled)
                 {
-                    _blurRPF.DoCameraBlur(blurRadius, iteration, rtDownScaling, time);
+                    _blurRPF.DoCameraBlur(blurRadius, iteration, rtDownScaling, time, rate);
                 }
                 else
                 {
