@@ -61,10 +61,10 @@ public static class UIVoiceManager
             AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
             if (mixerPlayer != null)
             {
-                if (mixerPlayer.audioSource != null && mixerPlayer.audioSource.time > 0)
-                {
-                    mixerPlayer.IsPlayingAudioClip(isPlaying);
-                }
+                //if (mixerPlayer.audioSource != null && mixerPlayer.audioSource.time > 0)
+                //{
+                //    mixerPlayer.IsPlayingAudioClip(isPlaying);
+                //}
             }
         }
     }
