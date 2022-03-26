@@ -54,6 +54,87 @@ function BaseCtrl:GetStatusData()
 
 end
 
+function BaseCtrl:checkDeadCoroutine()
+    if self.runningcos then
+        for coinfo, v in pairs(self.runningcos) do
+            if not clr.getucoroutine(coinfo) then
+                self.runningcos[coinfo] = nil
+            end
+        end
+    end
+end
+
+function BaseCtrl:coroutine(func)
+    self:checkDeadCoroutine()
+    local coinfo
+    local co = clr.coroutine(function()
+        func()
+        if self.runningcos and coinfo then
+            self.runningcos[coinfo] = nil
+        end
+        self:checkDeadCoroutine()
+    end)
+    if co then
+        coinfo = clr.getucoroutine(co)
+        if not self.runningcos then
+            self.runningcos = {}
+        end
+        self.runningcos[coinfo] = true
+    end
+    return co
+end
+
+function BaseCtrl:async(func, ...)
+    self:checkDeadCoroutine()
+    local coinfo
+    coinfo = unity.async(function(...)
+        func(...)
+        if self.runningcos and coinfo then
+            self.runningcos[coinfo] = nil
+        end
+        self:checkDeadCoroutine()
+    end, ...)
+    if coinfo then
+        if not self.runningcos then
+            self.runningcos = {}
+        end
+        self.runningcos[coinfo] = true
+    end
+    return coinfo
+end
+
+function BaseCtrl:abortAllCoroutine()
+    self:checkDeadCoroutine()
+    local curcoinfo = clr.getucoroutine()
+    local thisco = nil
+    if self.runningcos then
+        for coinfo, v in pairs(self.runningcos) do
+            if coinfo == curcoinfo then
+                thisco = coinfo
+            else
+                unity.abort(coinfo)
+            end
+            self.runningcos[coinfo] = nil
+        end
+    end
+    if thisco then
+        unity.abort()
+    end
+end
+
+function BaseCtrl:abortAllCoroutineExceptCurrent()
+    self:checkDeadCoroutine()
+    local curcoinfo = clr.getucoroutine()
+    if self.runningcos then
+        for coinfo, v in pairs(self.runningcos) do
+            if coinfo ~= curcoinfo then
+                unity.abort(coinfo)
+                self.runningcos[coinfo] = nil
+            end
+        end
+    end
+end
+
 setmetatable(BaseCtrl, unity.asyncmeta)
 
 _G["BaseCtrl"] = BaseCtrl
