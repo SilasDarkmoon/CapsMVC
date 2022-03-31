@@ -103,7 +103,7 @@ function BaseCtrl:async(func, ...)
     return coinfo
 end
 
-function BaseCtrl:abortAllCoroutine()
+function BaseCtrl:abortAllCoroutines()
     self:checkDeadCoroutine()
     local curcoinfo = clr.getucoroutine()
     local thisco = nil
@@ -122,16 +122,22 @@ function BaseCtrl:abortAllCoroutine()
     end
 end
 
-function BaseCtrl:abortAllCoroutineExceptCurrent()
+function BaseCtrl:stopAllCoroutines()
     self:checkDeadCoroutine()
     local curcoinfo = clr.getucoroutine()
+    local thisco = nil
     if self.runningcos then
         for coinfo, v in pairs(self.runningcos) do
-            if coinfo ~= curcoinfo then
+            if coinfo == curcoinfo then
+                thisco = coinfo
+            else
                 unity.abort(coinfo)
-                self.runningcos[coinfo] = nil
             end
+            self.runningcos[coinfo] = nil
         end
+    end
+    if thisco then
+        clr.Capstones.UnityEngineEx.CoroutineRunner.StopCoroutine(thisco)
     end
 end
 
