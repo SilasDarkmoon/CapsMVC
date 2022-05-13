@@ -18,6 +18,25 @@ local unmanagedBlockDialogs =
     ["Game/UI/Common/Template/Loading/WaitForPost2.prefab"] = true,
 }
 
+
+-- 阴影类型 现在dialog阴影分为：White；Black
+res.shadowType = {
+    White = {
+        blurRadius = 8,
+        iteration = 2,
+        rtDownScaling = 2,
+        time = 0,
+        rate = 1,
+    },
+    Black = {
+        blurRadius = 0,
+        iteration = 1,
+        rtDownScaling = 1,
+        time = 0,
+        rate = 0.3,
+    }
+}
+
 local function ShowDialogPrefabName(dialog)
     if not res.IsClrNull(dialog) then
         local safeArea = dialog:GetComponentInChildren(clr.SafeAreaRect).gameObject
@@ -584,7 +603,7 @@ local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
         local viewPath = ctrlClass.viewPath
         local dialogStatus = ctrlClass.dialogStatus
         local dialog, dialogcomp = res.ShowDialog(viewPath, "camera", dialogStatus.touchClose, dialogStatus.withShadow, dialogStatus.unblockRaycast, true, nil,
-                dialogStatus.noNeedSafeArea, dialogStatus.blurRadius, dialogStatus.iteration, dialogStatus.rtDownScaling, dialogStatus.blurTime)
+                dialogStatus.noNeedSafeArea, dialogStatus.shadowType)
         dialogInfo.view = dialogcomp.contentcomp
         dialogInfo.order = dialog:GetComponent(Canvas).sortingOrder
         dialogInfo.ctrl = ctrlClass.new(dialogInfo.view, unpack(args, 1, argc))
@@ -1169,7 +1188,7 @@ function res.ChangeGameObjectLayer(dialog, layer)
 end
 
 function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRaycast, withCtrl, overlaySortingOrder, noNeedSafeArea,
-                        blurRadius, iteration, rtDownScaling, blurTime, rate)
+                        shadowType)
     -- local loadingType = cache.getGlobalTempData("LoadingPrefabDialog")
     -- local loadingInfo = { dialog = {} }
     -- if not loadingType then
@@ -1203,15 +1222,15 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         -- dummycomp = res.GetLuaScript(dummydialog)
         
         if withShadow then
-            diagcomp:setShadow(true)
+            diagcomp:setShadow(true, shadowType)
             if res.NeedDialogCameraBlur() then
-                res.SetMainCameraBlur(true, blurRadius, iteration, rtDownScaling, blurTime, rate)
+                res.SetMainCameraBlur(true, shadowType)
             else
                 res.GetLuaScript(dummycanvas):enableShadow()
                 diagcomp:enableShadow()
             end
         else
-            diagcomp:setShadow(false)
+            diagcomp:setShadow(false, shadowType)
         end
         if noNeedSafeArea then
             diagcomp:SetSafeAreaEnabled(false)
@@ -1225,10 +1244,10 @@ function res.ShowDialog(content, renderMode, touchClose, withShadow, unblockRayc
         diagcomp = res.GetLuaScript(dialog)
         diagcomp.withCtrl = withCtrl
         if withShadow then
-            diagcomp:setShadow(true)
-            res.SetMainCameraBlur(true, blurRadius, iteration, rtDownScaling, blurTime, rate)
+            diagcomp:setShadow(true, shadowType)
+            res.SetMainCameraBlur(true, shadowType)
         else
-            diagcomp:setShadow(false)
+            diagcomp:setShadow(false, shadowType)
         end
     end
 
@@ -1303,7 +1322,7 @@ function res.ChangeCameraDialogToDialog(dialog)
 end
 
 function res.ChangeCameraDialogToDefault(dialog)
-    -- 把不显示的dialog放到SceneAndDialogCache层
+    -- 把不显示的dialog放到HideLayer层
     res.ChangeGameObjectLayer(dialog, 17)
 end
 
@@ -1318,7 +1337,7 @@ end
 
 -- 获取最上层的带有shadow的camera dialog及其上面的所有不带shadow的camera dialog，
 -- 并且不带shadow的camera dialog是按照order从小到大排好序的
--- withoutCurrent代表是否不包括当前最顶层CameraDialog
+-- withoutCurrent代表是否获取当前最顶层CameraDialog，true：获取第二层；false：获取第一层
 -- 这个方法应该只在顶层是带有shadow的camera dialog是调用才有意义
 function res.GetLastSCD(withoutCurrent)
     local canvases = clr.table(Object.FindObjectsOfType(Canvas))
@@ -1367,8 +1386,9 @@ function res.NeedDialogCameraBlur()
 end
 
 -- 设置由MainCamera渲染的UI界面模糊
-function res.SetMainCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time, rate)
-    UIResManager.SetCameraBlur(enabled, blurRadius, iteration, rtDownScaling, time, rate)
+function res.SetMainCameraBlur(enabled, shadowType)
+    local st = shadowType or res.shadowType.Black
+    UIResManager.SetCameraBlur(enabled, st.blurRadius, st.iteration, st.rtDownScaling, st.time, st.rate)
 end
 
 -- 目前只接受leve = 2的垃圾回收
