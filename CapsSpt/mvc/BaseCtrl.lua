@@ -7,6 +7,7 @@ BaseCtrl.dialogStatus = {
     withShadow = true,
     unblockRaycast = false,
     noNeedSafeArea = false,
+    shadowType = res.shadowType.Black,
 }
 
 BaseCtrl.withoutPop = false        -- true:当这个界面显示时，清除掉之前的ctrl的堆栈
