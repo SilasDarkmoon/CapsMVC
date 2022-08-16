@@ -19,12 +19,11 @@ public static class UIVoiceManager
         {
             category = "voice";
         }
-
         if (AudioMixerManager.GetPlayer(category) == null)
         {
             AudioMixerManager.CreatePlayer(category, false, mixerPath);
         }
-        AudioMixerManager.GetPlayer(category).PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop, pitch, isPlayAwake);
+        AudioMixerManager.GetPlayer(category).PlayAudioInstantly("Game/Audio/UI/" + file, (float)volume, loop, pitch);
     }
 
     public static void PlayScheduled(string voice_category, string file, float volume = -1f, float startTime = 0f, float endTime = 0f, bool loop = false, float pitch = 1)
@@ -34,13 +33,12 @@ public static class UIVoiceManager
             volume = UISoundVolume;
         }
         category = voice_category;
-
         if (AudioMixerManager.GetPlayer(category) == null)
         {
             AudioMixerManager.CreatePlayer(category, false, mixerPath);
         }
         var playTime = endTime - startTime;
-        AudioMixerManager.GetPlayer(category).PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch, isPlayAwake);
+        AudioMixerManager.GetPlayer(category).PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch);
     }
 
     public static void Stop()
@@ -54,7 +52,7 @@ public static class UIVoiceManager
 
     public static void IsPlayingAudio(bool isPlaying)
     {
-        string[] categorys = new string[] { "voice", "voice_music", "voice_ui" };
+        string[] categorys = StoryVoiceCategory.VoiceNameMap;
         for (int i=0; i< categorys.Length; i++)
         {
             var category = categorys[i];
@@ -75,9 +73,19 @@ public static class UIVoiceManager
         isPlayAwake = isAwake;
     }
 
+    public static void IsMuteVoice(string category, bool isActive)
+    {
+        AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
+
+        if (mixerPlayer != null)
+        {
+            mixerPlayer.audioSource.mute = isActive;
+        }
+    }
+
     public static void AudioMixerConfig(float pitch = 1)
     {
-        string[] categorys = new string[] { "voice", "voice_music", "voice_ui" };
+        string[] categorys = StoryVoiceCategory.VoiceNameMap;
         for (int i = 0; i < categorys.Length; i++)
         {
             var category = categorys[i];
