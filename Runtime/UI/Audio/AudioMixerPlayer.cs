@@ -8,7 +8,14 @@ public class AudioMixerPlayer : AudioPlayer
     private string audioPath;
     private float runTime;
     private float endTime;
-
+    public void PlayAudioInstantly(string path, float volume, bool loop = false, float pitch = 1, bool isPlayAwake = false)
+    {
+        StartCoroutine(PlayAudio(path, volume, loop, pitch, isPlayAwake));
+    }
+    public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1, bool isPlayAwake = false)
+    {
+        StartCoroutine(PlayAudioScheduled(path, volume, startTime, playTime, loop, pitch, isPlayAwake));
+    }
     public IEnumerator PlayAudio(string path, float volume, bool loop = false, float pitch = 1, bool isPlayAwake = false)
     {
         ClipVolume = volume;
@@ -21,7 +28,6 @@ public class AudioMixerPlayer : AudioPlayer
             ApplyVolume();
             audioSource.time = 0;
             audioSource.pitch = pitch;
-
             AudioMixerConfig(pitch);
             audioSource.Play();
             audioSource.loop = loop;
@@ -32,11 +38,6 @@ public class AudioMixerPlayer : AudioPlayer
         {
             PlatDependant.LogError("Audio clip not found, path :" + path);
         }
-    }
-
-    public void PlayAudioInstantly(string path, float volume, bool loop = false, float pitch = 1, bool isPlayAwake = false)
-    {
-        PlayAudio(path, volume, loop, pitch, isPlayAwake).MoveNext();
     }
 
     public void AudioMixerConfig(float pitch = 1)
@@ -87,12 +88,6 @@ public class AudioMixerPlayer : AudioPlayer
             }
         }
     }
-
-    public void PlayAudioScheduledInstantly(string path, float volume, float startTime, float playTime, bool loop = false, float pitch = 1, bool isPlayAwake = false)
-    {
-        PlayAudioScheduled(path, volume, startTime, playTime, loop, pitch, isPlayAwake).MoveNext();
-    }
-
     public void IsPlayingAudioClip(bool isPlaying)
     {
         if (audioSource != null)
@@ -120,7 +115,7 @@ public class AudioMixerPlayer : AudioPlayer
 
     private void OnDestroy()
     {
-        AudioManager.DestroyPlayer(this.Category);
+        AudioManager.DestroyPlayer(this.Category, gameObject);
         audioPath = null;
     }
 }

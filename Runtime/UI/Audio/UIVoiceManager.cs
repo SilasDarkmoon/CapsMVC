@@ -50,9 +50,8 @@ public static class UIVoiceManager
         }
     }
 
-    public static void IsPlayingAudio(bool isPlaying)
+    public static void IsPlayingAudio(bool isPlaying, string[] categorys)
     {
-        string[] categorys = StoryVoiceCategory.VoiceNameMap;
         for (int i=0; i< categorys.Length; i++)
         {
             var category = categorys[i];
@@ -83,9 +82,8 @@ public static class UIVoiceManager
         }
     }
 
-    public static void AudioMixerConfig(float pitch = 1)
+    public static void AudioMixerConfig(float pitch, string[] categorys)
     {
-        string[] categorys = StoryVoiceCategory.VoiceNameMap;
         for (int i = 0; i < categorys.Length; i++)
         {
             var category = categorys[i];

@@ -8,7 +8,7 @@ public class AudioPlayer : MonoBehaviour
     protected float clipVolume = 1f;
     protected float? globalVolume = 1f;
     protected string category;
-    protected AudioSource audioSource = null;
+    public AudioSource audioSource = null;
 
     public bool isPlaying
     {
