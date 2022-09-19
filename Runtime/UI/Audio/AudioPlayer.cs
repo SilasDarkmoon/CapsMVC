@@ -120,6 +120,22 @@ public class AudioPlayer : MonoBehaviour
         audioSource.volume = clipVolume * GlobalVolume * AudioManager.GetAudioVolume(category);
     }
 
+    public void Pause()
+    {
+        if (audioSource != null)
+        {
+            audioSource.Pause();
+        }
+    }
+
+    public void UnPause()
+    {
+        if (audioSource != null)
+        {
+            audioSource.UnPause();
+        }
+    }
+
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
