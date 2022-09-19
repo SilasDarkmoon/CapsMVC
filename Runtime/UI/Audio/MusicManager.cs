@@ -75,6 +75,20 @@ public static class MusicManager
         AudioManager.GetPlayer(category).Stop();
     }
 
+    public static void Pause()
+    {
+        isPlaying = false;
+        if (AudioManager.GetPlayer(category) == null) return;
+        AudioManager.GetPlayer(category).Pause();
+    }
+
+    public static void UnPause()
+    {
+        isPlaying = true;
+        if (AudioManager.GetPlayer(category) == null) return;
+        AudioManager.GetPlayer(category).UnPause();
+    }
+
     public static void DestroyPlayer()
     {
         Stop();
