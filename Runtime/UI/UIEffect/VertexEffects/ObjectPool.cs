@@ -43,4 +43,9 @@ public class ObjectPool<T> where T : new()
             m_ActionOnRelease(element);
         m_Stack.Push(element);
     }
+
+    public void Clear()
+    {
+        m_Stack?.Clear();
+    }
 }

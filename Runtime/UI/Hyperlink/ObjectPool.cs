@@ -54,5 +54,10 @@ namespace Hypertext
 
             stack.Push(element);
         }
+
+        public void Clear()
+        {
+            stack?.Clear();
+        }
     }
 }

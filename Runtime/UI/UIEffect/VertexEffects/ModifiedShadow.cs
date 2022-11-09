@@ -77,4 +77,9 @@ public class ModifiedShadow : Shadow
     {
     }
 #endif
+
+    protected override void OnDestroy()
+    {
+        ListPool<UIVertex>.Clear();
+    }
 }

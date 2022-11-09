@@ -83,5 +83,10 @@ namespace Hypertext
                 }
             }
         }
+
+        protected override void OnDestroy()
+        {
+            Clear();
+        }
     }
 }

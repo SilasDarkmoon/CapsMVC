@@ -374,5 +374,11 @@ namespace Hypertext
                 }
             }
         }
+
+        public void Clear()
+        {
+            spans?.Clear();
+            verticesPool?.Clear();
+        }
     }
 }

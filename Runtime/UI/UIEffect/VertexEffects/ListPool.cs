@@ -16,4 +16,12 @@ static class ListPool<T>
     {
         s_ListPool.Release(toRelease);
     }
+
+    public static void Clear()
+    {
+        if (s_ListPool != null)
+        {
+            s_ListPool.Clear();
+        }
+    }
 }
