@@ -49,6 +49,7 @@ function BaseCtrl:OnExitScene()
     for eventName, func in pairs(eventList) do
         require("EventSystem").RemoveEvent(eventName, self, func)
     end
+    self:stopAllCoroutines()
 end
 
 function BaseCtrl:GetStatusData()
