@@ -1,0 +1,21 @@
+{
+    "name": "PersistentConnectionRecorder",
+    "rootNamespace": "",
+    "references": [
+        "CapsMVC",
+        "CapsNetwork",
+        "ResManagerEntry",
+        "ResManager"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "MOD_CAPSNETWORK"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
