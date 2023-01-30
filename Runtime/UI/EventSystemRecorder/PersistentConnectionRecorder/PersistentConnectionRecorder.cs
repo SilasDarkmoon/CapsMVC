@@ -48,7 +48,13 @@ namespace Capstones.UnityEngineEx
                         // record
                         byte[] rdata = new byte[stream.Count];
                         stream.CopyTo(rdata, 0);
-                        RecordSaver.EnqueueRecordOfProgress("Net", rdata);
+                        string tag = reqobj.GetType().Name;
+                        if (reqobj is PredefinedMessages.Control)
+                        {
+                            var ctrl = (PredefinedMessages.Control)reqobj;
+                            tag = "Ctrl" + ctrl.Code;
+                        }
+                        RecordSaver.EnqueueRecordOfProgress("Net", tag, rdata);
                     }
                 }
             }

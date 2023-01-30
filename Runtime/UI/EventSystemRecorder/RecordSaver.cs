@@ -172,6 +172,10 @@ namespace Capstones.UnityEngineEx
         }
         public static void EnqueueRecordOfProgress(string type, object data)
         {
+            EnqueueRecordOfProgress(type, null, data);
+        }
+        public static void EnqueueRecordOfProgress(string type, string tag, object data)
+        {
             var inst = _Instance;
             if (inst != null)
             {
@@ -194,6 +198,7 @@ namespace Capstones.UnityEngineEx
                 {
                     ProgressIndex = pindex,
                     Time = ptime,
+                    Tag = tag,
                     Encoded = str,
                 });
             }

@@ -711,6 +711,7 @@ namespace Capstones.UnityEngineEx
         public int ProgressIndex;
         public float Time;
 
+        public string Tag;
         public string Encoded;
     }
 
