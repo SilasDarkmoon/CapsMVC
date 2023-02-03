@@ -706,13 +706,21 @@ namespace Capstones.UnityEngineEx
         }
     }
 
-    public class RawDataWithProgress
+    public class EncodedDataWithProgress
     {
         public int ProgressIndex;
         public float Time;
 
         public string Tag;
         public string Encoded;
+    }
+    public class RawDataWithProgress
+    {
+        public int ProgressIndex;
+        public float Time;
+
+        public string Tag;
+        public object Raw;
     }
 
 #if UNITY_INCLUDE_TESTS

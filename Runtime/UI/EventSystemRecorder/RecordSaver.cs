@@ -50,6 +50,32 @@ namespace Capstones.UnityEngineEx
                                     var dbuffer = (byte[])data;
                                     sw.WriteLine(Convert.ToBase64String(dbuffer));
                                 }
+                                else if (data is RawDataWithProgress)
+                                {
+                                    var rawwithprog = (RawDataWithProgress)data;
+                                    var realdata = rawwithprog.Raw;
+                                    string str = realdata as string;
+                                    if (str == null)
+                                    {
+                                        if (realdata is byte[])
+                                        {
+                                            var dbuffer = (byte[])realdata;
+                                            str = Convert.ToBase64String(dbuffer);
+                                        }
+                                        else
+                                        {
+                                            str = JsonUtility.ToJson(realdata);
+                                        }
+                                    }
+                                    var enc = new EncodedDataWithProgress()
+                                    {
+                                        ProgressIndex = rawwithprog.ProgressIndex,
+                                        Time = rawwithprog.Time,
+                                        Tag = rawwithprog.Tag,
+                                        Encoded = str,
+                                    };
+                                    sw.WriteLine(JsonUtility.ToJson(enc));
+                                }
                                 else
                                 {
                                     sw.WriteLine(JsonUtility.ToJson(data));
@@ -181,25 +207,32 @@ namespace Capstones.UnityEngineEx
             {
                 int pindex = EventSystemRecorder.ProgressIndex ?? 0;
                 float ptime = EventSystemRecorder.RealtimeInCurrentFrame - (EventSystemRecorder.ProgressStartTime ?? 0);
-                string str = data as string;
-                if (str == null)
-                {
-                    if (data is byte[])
-                    {
-                        var dbuffer = (byte[])data;
-                        str = Convert.ToBase64String(dbuffer);
-                    }
-                    else
-                    {
-                        str = JsonUtility.ToJson(data);
-                    }
-                }
+                //string str = data as string;
+                //if (str == null)
+                //{
+                //    if (data is byte[])
+                //    {
+                //        var dbuffer = (byte[])data;
+                //        str = Convert.ToBase64String(dbuffer);
+                //    }
+                //    else
+                //    {
+                //        str = JsonUtility.ToJson(data);
+                //    }
+                //}
+                //inst.EnqueueSavingData(type, new EncodedDataWithProgress()
+                //{
+                //    ProgressIndex = pindex,
+                //    Time = ptime,
+                //    Tag = tag,
+                //    Encoded = str,
+                //});
                 inst.EnqueueSavingData(type, new RawDataWithProgress()
                 {
                     ProgressIndex = pindex,
                     Time = ptime,
                     Tag = tag,
-                    Encoded = str,
+                    Raw = data,
                 });
             }
         }

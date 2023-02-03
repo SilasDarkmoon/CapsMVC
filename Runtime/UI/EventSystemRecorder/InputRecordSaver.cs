@@ -105,6 +105,98 @@ namespace Capstones.UnityEngineEx
             var filename = Path.Combine(ThreadSafeValues.LogPath, "rec/record.json");
             return LoadFile(filename);
         }
+        public static void LoadFileWithDel(string type, Action<string> DecodeRecord)
+        {
+            var filename = Path.Combine(ThreadSafeValues.LogPath, "rec/record.json");
+            LoadFileWithDel(filename, type, DecodeRecord);
+        }
+        public static void LoadFileWithDel(string path, string type, Action<string> DecodeRecord)
+        {
+            if (!PlatDependant.IsFileExist(path))
+            {
+                return;
+            }
+            using (var sr = PlatDependant.OpenReadText(path))
+            {
+                if (sr == null)
+                {
+                    return;
+                }
+                var starttoken = "-- StartOf" + type + " --";
+                var endtoken = "-- EndOf" + type + " --";
+                bool inframe = false;
+                string line = null;
+                StringBuilder sbframe = new StringBuilder();
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line == "-- StartOfInput --")
+                    {
+                        inframe = true;
+                        sbframe.Clear();
+                    }
+                    else if (line == "-- EndOfInput --")
+                    {
+                        inframe = false;
+                        if (sbframe.Length > 0)
+                        {
+                            try
+                            {
+                                DecodeRecord(sbframe.ToString());
+                            }
+                            catch (Exception e)
+                            {
+                                PlatDependant.LogError(e);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (inframe)
+                        {
+                            sbframe.AppendLine(line);
+                        }
+                    }
+                }
+            }
+        }
+        public static List<EncodedDataWithProgress> LoadFileEncoded(string type)
+        {
+            var filename = Path.Combine(ThreadSafeValues.LogPath, "rec/record.json");
+            return LoadFileEncoded(filename, type);
+        }
+        public static List<EncodedDataWithProgress> LoadFileEncoded(string path, string type)
+        {
+            var list = new List<EncodedDataWithProgress>();
+            LoadFileWithDel(path, type, jsonstr =>
+            {
+                EncodedDataWithProgress data = JsonUtility.FromJson<EncodedDataWithProgress>(jsonstr);
+                list.Add(data);
+            });
+            return list;
+        }
+        public static List<RawDataWithProgress> LoadFileBase64(string type)
+        {
+            var filename = Path.Combine(ThreadSafeValues.LogPath, "rec/record.json");
+            return LoadFileBase64(filename, type);
+        }
+        public static List<RawDataWithProgress> LoadFileBase64(string path, string type)
+        {
+            var list = new List<RawDataWithProgress>();
+            LoadFileWithDel(path, type, jsonstr =>
+            {
+                EncodedDataWithProgress data = JsonUtility.FromJson<EncodedDataWithProgress>(jsonstr);
+                var rdata = new RawDataWithProgress()
+                {
+                    ProgressIndex = data.ProgressIndex,
+                    Time = data.Time,
+                    Tag = data.Tag,
+                    Raw = Convert.FromBase64String(data.Encoded),
+                };
+                list.Add(rdata);
+            });
+            return list;
+        }
         #endregion
     }
 }

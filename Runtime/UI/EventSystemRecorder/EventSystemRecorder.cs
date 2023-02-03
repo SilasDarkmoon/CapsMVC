@@ -84,6 +84,14 @@ namespace Capstones.UnityEngineEx
             }
         }
 
+        public static void StartNextProgress()
+        {
+            if (_CurrentTimer != null)
+            {
+                _CurrentTimer.StartNextProgress();
+            }
+        }
+
         public static float RealtimeInCurrentFrame
         {
             get

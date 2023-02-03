@@ -169,7 +169,7 @@ namespace Capstones.UnityEngineEx
                             {
                                 try
                                 {
-                                    var wrapper = JsonUtility.FromJson<RawDataWithProgress>(sbframe.ToString());
+                                    var wrapper = JsonUtility.FromJson<EncodedDataWithProgress>(sbframe.ToString());
                                     if (endtoken == "-- EndOfNetCon --")
                                     {
                                         data.Add(new RecordedMessage()
