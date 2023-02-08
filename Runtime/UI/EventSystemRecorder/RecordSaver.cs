@@ -133,7 +133,7 @@ namespace Capstones.UnityEngineEx
         private string _FileName;
         public string FileName { get { return _FileName; } }
 
-        public RecordSaver(string filename)
+        public RecordSaver(string filename, bool additive)
         {
             var old = Interlocked.Exchange(ref _Instance, this);
             if (old != null)
@@ -143,8 +143,13 @@ namespace Capstones.UnityEngineEx
 
             filename = filename ?? "rec/record.json";
             _FileName = filename = Path.Combine(ThreadSafeValues.LogPath, filename);
+            if (!additive)
+            {
+                PlatDependant.DeleteFile(filename);
+            }
             TryStartSaveWork(filename);
         }
+        public RecordSaver(string filename) : this(filename, true) { }
         public RecordSaver() : this(null) { }
 
         private int Disposed = 0;
@@ -182,7 +187,7 @@ namespace Capstones.UnityEngineEx
         }
         public static void StartNew(string filename)
         {
-            new RecordSaver(filename);
+            new RecordSaver(filename, false);
         }
         public static void StartNew()
         {
