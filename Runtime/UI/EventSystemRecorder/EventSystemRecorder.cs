@@ -24,7 +24,18 @@ namespace Capstones.UnityEngineEx
             var es = EventSystem.current;
             if (es)
             {
-                es.currentInputModule.inputOverride = null;
+                if (es.currentInputModule)
+                {
+                    es.currentInputModule.inputOverride = null;
+                }
+                else
+                {
+                    var module = es.GetComponent<BaseInputModule>();
+                    if (module)
+                    {
+                        module.inputOverride = null;
+                    }
+                }
 
                 var saver = es.GetComponent<InputRecordSaver>();
                 if (saver)
