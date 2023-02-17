@@ -1024,6 +1024,7 @@ function res.PopSceneAsync(...)
     end
 end
 
+-- 保存当前界面的现实对象缓存
 function res.PopScene(...)
     if not CloseDialog() then
         return res.PopSceneWithCurrentScene(...)
@@ -1122,6 +1123,7 @@ function res.PopSceneWithoutCurrentAsync(...)
     return LoadPrefabSceneAsync(res.LoadType.Pop, ctrlPath, extra, unpack(args, 1, argc))
 end
 
+-- 不保存当前显示对象的缓存
 function res.PopSceneWithoutCurrent(...)
     local args = {...}
     local argc = select('#', ...)
