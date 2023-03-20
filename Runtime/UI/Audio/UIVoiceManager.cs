@@ -41,12 +41,31 @@ public static class UIVoiceManager
         AudioMixerManager.GetPlayer(category).PlayAudioScheduledInstantly("Game/Audio/UI/" + file, (float)volume, startTime, playTime, loop, pitch);
     }
 
-    public static void Stop()
+    public static void Stop(string category)
     {
         AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
         if (mixerPlayer != null)
         {
             mixerPlayer.Stop();
+        }
+    }
+
+    public static void ClearAudioClip(string[] categorys)
+    {
+        for (int i = 0; i < categorys.Length; i++)
+        {
+            var category = categorys[i];
+            AudioMixerPlayer mixerPlayer = AudioMixerManager.GetPlayer(category);
+            if (mixerPlayer != null)
+            {
+                mixerPlayer.Stop();
+                var audioSource = mixerPlayer.AudioSourceComponent;
+                if (audioSource != null)
+                {
+                    audioSource.time = 0;
+                    audioSource.clip = null;
+                }
+            }
         }
     }
 
