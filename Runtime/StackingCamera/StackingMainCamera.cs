@@ -175,6 +175,10 @@ public class StackingMainCamera : StackingCamera
             return _Instance;
         }
     }
+    public static bool HasInstance
+    {
+        get { return _Instance; }
+    }
 
     public static int MainCameraRendererIndex = -1;
     private static void CreateStackingMainCamera()
