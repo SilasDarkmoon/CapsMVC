@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Capstones.UnityEngineEx;
+using Capstones.UnityEngineEx.CoroutineTasks;
 
 [RequireComponent(typeof(AudioSource))]
 public class AudioPlayer : MonoBehaviour
@@ -86,10 +87,12 @@ public class AudioPlayer : MonoBehaviour
     public IEnumerator PlayAudio(string path, float volume, bool loop = false)
     {
         ClipVolume = volume;
-        var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
-        if (clip)
+        var audioClipAsync = ResManager.LoadResAsync(path, typeof(AudioClip));
+        yield return audioClipAsync;
+        var audioClip = audioClipAsync.Result as AudioClip;
+        if (audioClip != null)
         {
-            audioSource.clip = clip;
+            audioSource.clip = audioClip;
             ApplyVolume();
             audioSource.Play();
             audioSource.loop = loop;
