@@ -111,7 +111,7 @@ public static class MusicManager
             if (PlayList != null && PlayList.Count > 0)
             {
                 int playIndex = Random.Range(0, PlayList.Count);
-                yield return AudioManager.GetPlayer(category).PlayAudio(PlayList[playIndex], Volume);
+                yield return AudioManager.GetPlayer(category).PlayAudioBase(PlayList[playIndex], Volume);
             }
             yield return null;
         }

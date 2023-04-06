@@ -84,7 +84,7 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
-    public IEnumerator PlayAudio(string path, float volume, bool loop = false)
+    public IEnumerator PlayAudioBase(string path, float volume, bool loop = false)
     {
         ClipVolume = volume;
         var audioClipAsync = ResManager.LoadResAsync(path, typeof(AudioClip));
@@ -104,18 +104,33 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
-    public void PlayAudioInstantly(string path, float volume, bool loop = false)
+    public void PlayAudio(string path, float volume, bool loop = false, bool instantly = false)
     {
-        PlayAudio(path, volume, loop).MoveNext();
+        ClipVolume = volume;
+        if (instantly == true)
+        {
+            var audioClip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
+            if (audioClip != null)
+            {
+                audioSource.clip = audioClip;
+                ApplyVolume();
+                audioSource.Play();
+                audioSource.loop = loop;
+            }
+            else
+            {
+                PlatDependant.LogError("Instantly Audio clip not found, path :" + path);
+            }
+            return;
+        }
+        StartCoroutine(PlayAudioBase(path, volume, loop));
     }
 
     public void Stop()
     {
-        if (audioSource != null)
-        {
-            audioSource.Stop();
-            audioSource.clip = null;
-        }
+        if (audioSource == null) return;
+        audioSource.Stop();
+        audioSource.clip = null;
     }
 
     public void ApplyVolume()
@@ -125,25 +140,19 @@ public class AudioPlayer : MonoBehaviour
 
     public void Pause()
     {
-        if (audioSource != null)
-        {
-            audioSource.Pause();
-        }
+        if (audioSource == null) return;
+        audioSource.Pause();
     }
 
     public void UnPause()
     {
-        if (audioSource != null)
-        {
-            audioSource.UnPause();
-        }
+        if (audioSource == null) return;
+        audioSource.UnPause();
     }
-
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
     }
-
     private void OnDestroy()
     {
         AudioManager.DestroyPlayer(this.Category);
