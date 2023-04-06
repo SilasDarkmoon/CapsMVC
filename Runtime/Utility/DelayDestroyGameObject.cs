@@ -20,4 +20,9 @@ public class DelayDestroyGameObject : MonoBehaviour
         yield return new WaitForSecondsRealtime(duration);
         Destroy(this.gameObject);
     }
+
+    private void OnDisable()
+    {
+        Destroy(this.gameObject);
+    }
 }
