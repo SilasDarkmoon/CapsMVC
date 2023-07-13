@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Capstones.UnityEngineEx;
+using Capstones.UnityEngineEx.CoroutineTasks;
 
 [RequireComponent(typeof(AudioSource))]
 public class AudioMixerPlayer : AudioPlayer
@@ -20,11 +21,13 @@ public class AudioMixerPlayer : AudioPlayer
     {
         ClipVolume = volume;
         endTime = 0;
-        var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
-        if (clip)
+        //var clip = ResManager.LoadRes(path, typeof(AudioClip)) as AudioClip;
+        CoroutineWork work = ResManager.LoadResAsync(path, typeof(AudioClip));
+        yield return work;
+        if (work.Done)
         {
             audioPath = path;
-            audioSource.clip = clip;
+            audioSource.clip = work.Result as AudioClip;
             ApplyVolume();
             audioSource.time = 0;
             audioSource.pitch = pitch;
