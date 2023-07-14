@@ -26,6 +26,7 @@ public class AudioMixerPlayer : AudioPlayer
         yield return work;
         if (work.Done)
         {
+            yield return new WaitForSeconds(0.1f);
             audioPath = path;
             audioSource.clip = work.Result as AudioClip;
             ApplyVolume();
