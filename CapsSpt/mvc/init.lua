@@ -608,7 +608,13 @@ local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
         dialogInfo.order = dialog:GetComponent(Canvas).sortingOrder
         dialogInfo.ctrl = ctrlClass.new(dialogInfo.view, unpack(args, 1, argc))
         dialogInfo.ctrl.__loadType = loadType
+        if ENABLE_PROFILER_LUA_DEEP then
+            clr.beginsample("MVC-Control Refresh {0}", ctrlClass.__cname)
+        end
         dialogInfo.ctrl:Refresh(unpack(args, 1, argc))
+        if ENABLE_PROFILER_LUA_DEEP then
+            clr.endsample()
+        end
         res.GetLuaScript(dialog).OnExitScene = function ()
             if type(dialogInfo.ctrl.OnExitScene) == "function" then
                 dialogInfo.ctrl:OnExitScene()
@@ -623,7 +629,13 @@ local function LoadPrefabDialog(loadType, ctrlPath, order, ...)
             dialogInfo.order = order
             dialogInfo.view.dialog:setOrder(order)
             dialogInfo.ctrl.__loadType = loadType
+            if ENABLE_PROFILER_LUA_DEEP then
+                clr.beginsample("MVC-Control Refresh {0}", dialogInfo.ctrl.__cname)
+            end
             dialogInfo.ctrl:Refresh(unpack(args, 1, argc))
+            if ENABLE_PROFILER_LUA_DEEP then
+                clr.endsample()
+            end
 
             -- ResManager.UnpackSceneObj(cachedSceneInfo.obj,true)
             -- EnableCachedScene(cachedSceneInfo)
@@ -709,7 +721,13 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
 
             res.curSceneInfo.ctrl = ctrlClass.new(res.curSceneInfo.view, unpack(args, 1, argc))
             res.curSceneInfo.ctrl.__loadType = loadType
+            if ENABLE_PROFILER_LUA_DEEP then
+                clr.beginsample("MVC-Control Refresh {0}", ctrlClass.__cname)
+            end
             res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
+            if ENABLE_PROFILER_LUA_DEEP then
+                clr.endsample()
+            end
             CreateDialogs()
             res.SetUIAudioListener(ctrlClass.viewPath)
 
@@ -728,7 +746,13 @@ local function LoadPrefabScene(loadType, ctrlPath, dialogData, ...)
             res.curSceneInfo.ctrl.__loadType = loadType
             EnableCachedScene(cachedSceneInfo)
             res.curSceneInfo.view = cachedSceneInfo.view
+            if ENABLE_PROFILER_LUA_DEEP then
+                clr.beginsample("MVC-Control Refresh {0}", res.curSceneInfo.ctrl.__cname)
+            end
             res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
+            if ENABLE_PROFILER_LUA_DEEP then
+                clr.endsample()
+            end
 
             CreateDialogs()
             res.SetUIAudioListener(ctrlClass.viewPath)
@@ -792,7 +816,13 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     res.curSceneInfo.view = cache.removeGlobalTempData("MainManager")
                     res.curSceneInfo.ctrl = ctrlClass.new(res.curSceneInfo.view, unpack(args, 1, argc))
                     res.curSceneInfo.ctrl.__loadType = loadType
+                    if ENABLE_PROFILER_LUA_DEEP then
+                        clr.beginsample("MVC-Control Refresh {0}", ctrlClass.__cname)
+                    end
                     res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
+                    if ENABLE_PROFILER_LUA_DEEP then
+                        clr.endsample()
+                    end
                     waitHandle.ctrl = res.curSceneInfo.ctrl
                 else
                     local mainManager
@@ -806,7 +836,13 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                     res.curSceneInfo.view = mainManager
                     res.curSceneInfo.ctrl = ctrlClass.new(res.curSceneInfo.view, unpack(args, 1, argc))
                     res.curSceneInfo.ctrl.__loadType = loadType
+                    if ENABLE_PROFILER_LUA_DEEP then
+                        clr.beginsample("MVC-Control Refresh {0}", ctrlClass.__cname)
+                    end
                     res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
+                    if ENABLE_PROFILER_LUA_DEEP then
+                        clr.endsample()
+                    end
                     waitHandle.ctrl = res.curSceneInfo.ctrl
                 end
 
@@ -824,7 +860,13 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
                         res.curSceneInfo.view = res.GetLuaScript(obj)
                         res.curSceneInfo.ctrl = ctrlClass.new(res.curSceneInfo.view, unpack(args, 1, argc))
                         res.curSceneInfo.ctrl.__loadType = loadType
+                        if ENABLE_PROFILER_LUA_DEEP then
+                            clr.beginsample("MVC-Control Refresh {0}", ctrlClass.__cname)
+                        end
                         res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
+                        if ENABLE_PROFILER_LUA_DEEP then
+                            clr.endsample()
+                        end
                         waitHandle.ctrl = res.curSceneInfo.ctrl
                     end
                 end
@@ -856,7 +898,13 @@ local function LoadPrefabSceneAsync(loadType, ctrlPath, extra, ...)
             res.curSceneInfo.view = cachedSceneInfo.view
             res.curSceneInfo.ctrl = cachedSceneInfo.ctrl
             res.curSceneInfo.ctrl.__loadType = loadType
+            if ENABLE_PROFILER_LUA_DEEP then
+                clr.beginsample("MVC-Control Refresh {0}", res.curSceneInfo.ctrl.__cname)
+            end
             res.curSceneInfo.ctrl:Refresh(unpack(args, 1, argc))
+            if ENABLE_PROFILER_LUA_DEEP then
+                clr.endsample()
+            end
 
             CreateDialogs()
             waitHandle.done = true
