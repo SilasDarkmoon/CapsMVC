@@ -19,6 +19,13 @@ namespace UnityEditor.ShaderGraph
         public UnityEngine.Rendering.StencilOp StencilPass;
         public UnityEngine.Rendering.StencilOp StencilFail;
         public UnityEngine.Rendering.StencilOp StencilZFail;
+        public string StencilRefString;
+        public string StencilReadMaskString;
+        public string StencilWriteMaskString;
+        public string StencilCompString;
+        public string StencilPassString;
+        public string StencilFailString;
+        public string StencilZFailString;
 
         public bool OverrideCull;
         public UnityEngine.Rendering.CullMode Cull;
@@ -48,6 +55,7 @@ namespace UnityEditor.ShaderGraph
 
         public bool OverrideColorMask;
         public UnityEngine.Rendering.ColorWriteMask ColorMask;
+        public string ColorMaskString;
 
         public static string[] CompareFunctionStrings = new[]
         {
@@ -160,34 +168,87 @@ namespace UnityEditor.ShaderGraph
                 sb.AppendLine("Stencil");
                 sb.AppendLine("{");
                 sb.Append("    Ref ");
-                sb.AppendLine(StencilRef.ToString());
+                if (string.IsNullOrEmpty(StencilRefString))
+                {
+                    sb.AppendLine(StencilRef.ToString());
+                }
+                else
+                {
+                    sb.AppendLine(StencilRefString);
+                }
                 sb.Append("    ReadMask ");
-                sb.AppendLine(StencilReadMask.ToString());
+                if (string.IsNullOrEmpty(StencilReadMaskString))
+                {
+                    sb.AppendLine(StencilReadMask.ToString());
+                }
+                else
+                {
+                    sb.AppendLine(StencilReadMaskString);
+                }
                 sb.Append("    WriteMask ");
-                sb.AppendLine(StencilWriteMask.ToString());
-                var comp = GetCompareFunctionString(StencilComp);
-                if (comp != null)
+                if (string.IsNullOrEmpty(StencilWriteMaskString))
+                {
+                    sb.AppendLine(StencilWriteMask.ToString());
+                }
+                else
+                {
+                    sb.AppendLine(StencilWriteMaskString);
+                }
+                if (string.IsNullOrEmpty(StencilCompString))
+                {
+                    var comp = GetCompareFunctionString(StencilComp);
+                    if (comp != null)
+                    {
+                        sb.Append("    Comp ");
+                        sb.AppendLine(comp);
+                    }
+                }
+                else
                 {
                     sb.Append("    Comp ");
-                    sb.AppendLine(comp);
+                    sb.AppendLine(StencilCompString);
                 }
-                var op = GetStencilOpString(StencilPass);
-                if (op != null)
+                if (string.IsNullOrEmpty(StencilPassString))
+                {
+                    var op = GetStencilOpString(StencilPass);
+                    if (op != null)
+                    {
+                        sb.Append("    Pass ");
+                        sb.AppendLine(op);
+                    }
+                }
+                else
                 {
                     sb.Append("    Pass ");
-                    sb.AppendLine(op);
+                    sb.AppendLine(StencilPassString);
                 }
-                op = GetStencilOpString(StencilFail);
-                if (op != null)
+                if (string.IsNullOrEmpty(StencilFailString))
+                {
+                    var op = GetStencilOpString(StencilFail);
+                    if (op != null)
+                    {
+                        sb.Append("    Fail ");
+                        sb.AppendLine(op);
+                    }
+                }
+                else
                 {
                     sb.Append("    Fail ");
-                    sb.AppendLine(op);
+                    sb.AppendLine(StencilFailString);
                 }
-                op = GetStencilOpString(StencilZFail);
-                if (op != null)
+                if (string.IsNullOrEmpty(StencilZFailString))
+                {
+                    var op = GetStencilOpString(StencilZFail);
+                    if (op != null)
+                    {
+                        sb.Append("    ZFail ");
+                        sb.AppendLine(op);
+                    }
+                }
+                else
                 {
                     sb.Append("    ZFail ");
-                    sb.AppendLine(op);
+                    sb.AppendLine(StencilZFailString);
                 }
                 sb.AppendLine("}");
                 return sb.ToString();
@@ -236,28 +297,77 @@ namespace UnityEditor.ShaderGraph
             {
                 lines.Add("Stencil");
                 lines.Add("{");
-                lines.Add("    Ref " + StencilRef);
-                lines.Add("    ReadMask " + StencilReadMask);
-                lines.Add("    WriteMask " + StencilWriteMask);
-                var comp = GetCompareFunctionString(StencilComp);
-                if (comp != null)
+                if (string.IsNullOrEmpty(StencilRefString))
                 {
-                    lines.Add("    Comp " + comp);
+                    lines.Add("    Ref " + StencilRef);
                 }
-                var op = GetStencilOpString(StencilPass);
-                if (op != null)
+                else
                 {
-                    lines.Add("    Pass " + op);
+                    lines.Add("    Ref " + StencilRefString);
                 }
-                op = GetStencilOpString(StencilFail);
-                if (op != null)
+                if (string.IsNullOrEmpty(StencilReadMaskString))
                 {
-                    lines.Add("    Fail " + op);
+                    lines.Add("    ReadMask " + StencilReadMask);
                 }
-                op = GetStencilOpString(StencilZFail);
-                if (op != null)
+                else
                 {
-                    lines.Add("    ZFail " + op);
+                    lines.Add("    ReadMask " + StencilReadMaskString);
+                }
+                if (string.IsNullOrEmpty(StencilWriteMaskString))
+                {
+                    lines.Add("    WriteMask " + StencilWriteMask);
+                }
+                else
+                {
+                    lines.Add("    WriteMask " + StencilWriteMaskString);
+                }
+                if (string.IsNullOrEmpty(StencilCompString))
+                {
+                    var comp = GetCompareFunctionString(StencilComp);
+                    if (comp != null)
+                    {
+                        lines.Add("    Comp " + comp);
+                    }
+                }
+                else
+                {
+                    lines.Add("    Comp " + StencilCompString);
+                }
+                if (string.IsNullOrEmpty(StencilPassString))
+                {
+                    var op = GetStencilOpString(StencilPass);
+                    if (op != null)
+                    {
+                        lines.Add("    Pass " + op);
+                    }
+                }
+                else
+                {
+                    lines.Add("    Pass " + StencilPassString);
+                }
+                if (string.IsNullOrEmpty(StencilFailString))
+                {
+                    var op = GetStencilOpString(StencilFail);
+                    if (op != null)
+                    {
+                        lines.Add("    Fail " + op);
+                    }
+                }
+                else
+                {
+                    lines.Add("    Fail " + StencilFailString);
+                }
+                if (string.IsNullOrEmpty(StencilZFailString))
+                {
+                    var op = GetStencilOpString(StencilZFail);
+                    if (op != null)
+                    {
+                        lines.Add("    ZFail " + op);
+                    }
+                }
+                else
+                {
+                    lines.Add("    ZFail " + StencilZFailString);
                 }
                 lines.Add("}");
             }
@@ -355,7 +465,14 @@ namespace UnityEditor.ShaderGraph
         {
             if (OverrideColorMask)
             {
-                return "ColorMask " + GetColorMaskString(ColorMask);
+                if (string.IsNullOrEmpty(ColorMaskString))
+                {
+                    return "ColorMask " + GetColorMaskString(ColorMask);
+                }
+                else
+                {
+                    return "ColorMask " + ColorMaskString;
+                }
             }
             else
             {
@@ -391,8 +508,7 @@ namespace UnityEditor.ShaderGraph
             PropertyRow StencilRefRow = new PropertyRow(new Label("StencilRef"));
             StencilRefRow.Add(new MaskField(MaskChoices, StencilRef), field =>
             {
-            //field.value = StencilRef;
-            field.RegisterValueChangedCallback(valuechange =>
+                field.RegisterValueChangedCallback(valuechange =>
                 {
                     StencilRef = (byte)valuechange.newValue;
                     FireValueChanged();
@@ -400,11 +516,22 @@ namespace UnityEditor.ShaderGraph
             });
             StencilRefRow.SetEnabled(OverrideStencil);
 
+            PropertyRow StencilRefStringRow = new PropertyRow(new Label("StencilRefString"));
+            StencilRefStringRow.Add(new TextField(StencilRefString), field =>
+            {
+                field.RegisterValueChangedCallback(valuechange =>
+                {
+                    StencilRefString = valuechange.newValue;
+                    FireValueChanged();
+                });
+            });
+            StencilRefStringRow.SetEnabled(OverrideStencil);
+
+
             PropertyRow StencilReadMaskRow = new PropertyRow(new Label("StencilReadMask"));
             StencilReadMaskRow.Add(new MaskField(MaskChoices, StencilReadMask), field =>
             {
-            //field.value = StencilReadMask;
-            field.RegisterValueChangedCallback(valuechange =>
+                field.RegisterValueChangedCallback(valuechange =>
                 {
                     StencilReadMask = (byte)valuechange.newValue;
                     FireValueChanged();
@@ -412,11 +539,22 @@ namespace UnityEditor.ShaderGraph
             });
             StencilReadMaskRow.SetEnabled(OverrideStencil);
 
+            PropertyRow StencilReadMaskStringRow = new PropertyRow(new Label("StencilReadMaskString"));
+            StencilReadMaskStringRow.Add(new TextField(StencilReadMaskString), field =>
+            {
+                field.RegisterValueChangedCallback(valuechange =>
+                {
+                    StencilReadMaskString = valuechange.newValue;
+                    FireValueChanged();
+                });
+            });
+            StencilReadMaskStringRow.SetEnabled(OverrideStencil);
+
+
             PropertyRow StencilWriteMaskRow = new PropertyRow(new Label("StencilWriteMask"));
             StencilWriteMaskRow.Add(new MaskField(MaskChoices, StencilWriteMask), field =>
             {
-            //field.value = StencilWriteMask;
-            field.RegisterValueChangedCallback(valuechange =>
+                field.RegisterValueChangedCallback(valuechange =>
                 {
                     StencilWriteMask = (byte)valuechange.newValue;
                     FireValueChanged();
@@ -424,10 +562,21 @@ namespace UnityEditor.ShaderGraph
             });
             StencilWriteMaskRow.SetEnabled(OverrideStencil);
 
+            PropertyRow StencilWriteMaskStringRow = new PropertyRow(new Label("StencilWriteMaskString"));
+            StencilWriteMaskStringRow.Add(new TextField( StencilWriteMaskString), field =>
+            {
+                field.RegisterValueChangedCallback(valuechange =>
+                {
+                    StencilWriteMaskString = valuechange.newValue;
+                    FireValueChanged();
+                });
+            });
+            StencilWriteMaskStringRow.SetEnabled(OverrideStencil);
+
+
             PropertyRow StencilCompRow = new PropertyRow(new Label("StencilComp"));
             StencilCompRow.Add(new EnumField(StencilComp), field =>
             {
-                //field.value = StencilComp;
                 field.RegisterValueChangedCallback(valuechange =>
                 {
                     StencilComp = (UnityEngine.Rendering.CompareFunction)valuechange.newValue;
@@ -436,10 +585,21 @@ namespace UnityEditor.ShaderGraph
             });
             StencilCompRow.SetEnabled(OverrideStencil);
 
+            PropertyRow StencilCompStringRow = new PropertyRow(new Label("StencilCompString"));
+            StencilCompStringRow.Add(new TextField(StencilCompString), field =>
+            {
+                field.RegisterValueChangedCallback(valuechange =>
+                {
+                    StencilCompString = valuechange.newValue;
+                    FireValueChanged();
+                });
+            });
+            StencilCompStringRow.SetEnabled(OverrideStencil);
+
+
             PropertyRow StencilPassRow = new PropertyRow(new Label("StencilPass"));
             StencilPassRow.Add(new EnumField(StencilPass), field =>
             {
-                //field.value = StencilPass;
                 field.RegisterValueChangedCallback(valuechange =>
                 {
                     StencilPass = (UnityEngine.Rendering.StencilOp)valuechange.newValue;
@@ -448,10 +608,21 @@ namespace UnityEditor.ShaderGraph
             });
             StencilPassRow.SetEnabled(OverrideStencil);
 
+            PropertyRow StencilPassStringRow = new PropertyRow(new Label("StencilPassString"));
+            StencilPassStringRow.Add(new TextField(StencilPassString), field =>
+            {
+                field.RegisterValueChangedCallback(valuechange =>
+                {
+                    StencilPassString = valuechange.newValue;
+                    FireValueChanged();
+                });
+            });
+            StencilPassStringRow.SetEnabled(OverrideStencil);
+
+
             PropertyRow StencilFailRow = new PropertyRow(new Label("StencilFail"));
             StencilFailRow.Add(new EnumField(StencilFail), field =>
             {
-                //field.value = StencilFail;
                 field.RegisterValueChangedCallback(valuechange =>
                 {
                     StencilFail = (UnityEngine.Rendering.StencilOp)valuechange.newValue;
@@ -460,10 +631,21 @@ namespace UnityEditor.ShaderGraph
             });
             StencilFailRow.SetEnabled(OverrideStencil);
 
+            PropertyRow StencilFailStringRow = new PropertyRow(new Label("StencilFailString"));
+            StencilFailStringRow.Add(new TextField(StencilFailString), field =>
+            {
+                field.RegisterValueChangedCallback(valuechange =>
+                {
+                    StencilFailString = valuechange.newValue;
+                    FireValueChanged();
+                });
+            });
+            StencilFailStringRow.SetEnabled(OverrideStencil);
+
+
             PropertyRow StencilZFailRow = new PropertyRow(new Label("StencilZFail"));
             StencilZFailRow.Add(new EnumField(StencilZFail), field =>
             {
-                //field.value = StencilZFail;
                 field.RegisterValueChangedCallback(valuechange =>
                 {
                     StencilZFail = (UnityEngine.Rendering.StencilOp)valuechange.newValue;
@@ -471,6 +653,18 @@ namespace UnityEditor.ShaderGraph
                 });
             });
             StencilZFailRow.SetEnabled(OverrideStencil);
+
+            PropertyRow StencilZFailStringRow = new PropertyRow(new Label("StencilZFailString"));
+            StencilZFailStringRow.Add(new TextField(StencilZFailString), field =>
+            {
+                field.RegisterValueChangedCallback(valuechange =>
+                {
+                    StencilZFailString = valuechange.newValue;
+                    FireValueChanged();
+                });
+            });
+            StencilZFailStringRow.SetEnabled(OverrideStencil);
+
 
             PropertyRow OverrideStencilRow = new PropertyRow(new Label("OverrideStencil"));
             OverrideStencilRow.Add(new Toggle(), field =>
@@ -486,18 +680,32 @@ namespace UnityEditor.ShaderGraph
                     StencilPassRow.SetEnabled(OverrideStencil);
                     StencilFailRow.SetEnabled(OverrideStencil);
                     StencilZFailRow.SetEnabled(OverrideStencil);
+                    StencilRefStringRow.SetEnabled(OverrideStencil);
+                    StencilReadMaskStringRow.SetEnabled(OverrideStencil);
+                    StencilWriteMaskStringRow.SetEnabled(OverrideStencil);
+                    StencilCompStringRow.SetEnabled(OverrideStencil);
+                    StencilPassStringRow.SetEnabled(OverrideStencil);
+                    StencilFailStringRow.SetEnabled(OverrideStencil);
+                    StencilZFailStringRow.SetEnabled(OverrideStencil);
                     FireValueChanged();
                 });
             });
 
             ps.Add(OverrideStencilRow);
             ps.Add(StencilRefRow);
+            ps.Add(StencilRefStringRow);
             ps.Add(StencilReadMaskRow);
+            ps.Add(StencilReadMaskStringRow);
             ps.Add(StencilWriteMaskRow);
+            ps.Add(StencilWriteMaskStringRow);
             ps.Add(StencilCompRow);
+            ps.Add(StencilCompStringRow);
             ps.Add(StencilPassRow);
+            ps.Add(StencilPassStringRow);
             ps.Add(StencilFailRow);
+            ps.Add(StencilFailStringRow);
             ps.Add(StencilZFailRow);
+            ps.Add(StencilZFailStringRow);
             #endregion
 
             #region Cull
@@ -808,7 +1016,6 @@ namespace UnityEditor.ShaderGraph
             PropertyRow ColorMaskRow = new PropertyRow(new Label("ColorMask"));
             ColorMaskRow.Add(new EnumFlagsField(ColorMask), field =>
             {
-                //field.value = ColorMask;
                 field.RegisterValueChangedCallback(valuechange =>
                 {
                     ColorMask = (UnityEngine.Rendering.ColorWriteMask)valuechange.newValue;
@@ -816,6 +1023,17 @@ namespace UnityEditor.ShaderGraph
                 });
             });
             ColorMaskRow.SetEnabled(OverrideColorMask);
+
+            PropertyRow ColorMaskStringRow = new PropertyRow(new Label("ColorMaskString"));
+            ColorMaskStringRow.Add(new TextField(ColorMaskString), field =>
+            {
+                field.RegisterValueChangedCallback(valuechange =>
+                {
+                    ColorMaskString = valuechange.newValue;
+                    FireValueChanged();
+                });
+            });
+            ColorMaskStringRow.SetEnabled(OverrideColorMask);
 
             PropertyRow OverrideColorMaskRow = new PropertyRow(new Label("OverrideColorMask"));
             OverrideColorMaskRow.Add(new Toggle(), field =>
@@ -825,12 +1043,14 @@ namespace UnityEditor.ShaderGraph
                 {
                     OverrideColorMask = valuechange.newValue;
                     ColorMaskRow.SetEnabled(OverrideColorMask);
+                    ColorMaskStringRow.SetEnabled(OverrideColorMask);
                     FireValueChanged();
                 });
             });
 
             ps.Add(OverrideColorMaskRow);
             ps.Add(ColorMaskRow);
+            ps.Add(ColorMaskStringRow);
             #endregion
 
             return ps;
