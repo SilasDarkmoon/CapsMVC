@@ -118,6 +118,11 @@ public class VideoPlayerManager : MonoBehaviour, IPointerClickHandler
         videoPlayer.url = Application.streamingAssetsPath + "/" + path;
     }
 
+    public void SetVideoClip(VideoClip clip)
+    {
+        videoPlayer.clip = clip;
+    }
+
     public void SetCloseClickTrigger(bool close)
     {
         closeClick = close;
