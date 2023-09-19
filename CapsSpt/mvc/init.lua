@@ -266,7 +266,9 @@ local function SaveCurrentSceneInfo()
 
     if type(res.curSceneInfo) == "table" and res.curSceneInfo.ctrl then
         if type(res.curSceneInfo.ctrl.OnExitScene) == "function" then
-            res.curSceneInfo.ctrl:OnExitScene()
+            ppcall(function()
+                res.curSceneInfo.ctrl:OnExitScene()
+            end)
         end
     end
 
