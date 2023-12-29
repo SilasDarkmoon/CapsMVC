@@ -137,8 +137,10 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                 int passindex = 0;
                 foreach (var pass in sub.passes)
                 {
-                    if (passindex == 0)
-                    {
+                    if (passindex == 0
+						|| pass.descriptor.lightMode == "Universal2D"
+						|| pass.descriptor.lightMode == "UniversalForward")
+					{
                         var newpass = pass.descriptor;
                         newpass.renderStates = RenderState.ModifyRenderStateCollection(newpass.renderStates);
                         passes.Add(newpass, pass.fieldConditions);

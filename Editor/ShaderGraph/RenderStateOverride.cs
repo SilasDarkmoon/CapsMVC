@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Graphing.Util;
 using UnityEditor.ShaderGraph.Drawing;
@@ -35,8 +35,9 @@ namespace UnityEditor.ShaderGraph
 
         public bool OverrideZTest;
         public UnityEngine.Rendering.CompareFunction ZTest;
+		public string ZTestString;
 
-        public bool OverrideOffset;
+		public bool OverrideOffset;
         public float OffsetFactor;
         public float OffsetUnits;
 
@@ -435,15 +436,22 @@ namespace UnityEditor.ShaderGraph
         {
             if (OverrideZTest)
             {
-                var comp = GetCompareFunctionString(ZTest);
-                if (comp != null)
-                {
-                    return "ZTest " + comp;
-                }
-                else
-                {
-                    return null;
-                }
+				if (string.IsNullOrEmpty(ZTestString))
+				{
+					var comp = GetCompareFunctionString(ZTest);
+					if (comp != null)
+					{
+						return "ZTest " + comp;
+					}
+					else
+					{
+						return null;
+					}
+				}
+				else
+				{
+					return "ZTest " + ZTestString;
+				}
             }
             else
             {
@@ -517,7 +525,7 @@ namespace UnityEditor.ShaderGraph
             StencilRefRow.SetEnabled(OverrideStencil);
 
             PropertyRow StencilRefStringRow = new PropertyRow(new Label("StencilRefString"));
-            StencilRefStringRow.Add(new TextField(StencilRefString), field =>
+            StencilRefStringRow.Add(new TextField() { value = StencilRefString }, field =>
             {
                 field.RegisterValueChangedCallback(valuechange =>
                 {
@@ -540,7 +548,7 @@ namespace UnityEditor.ShaderGraph
             StencilReadMaskRow.SetEnabled(OverrideStencil);
 
             PropertyRow StencilReadMaskStringRow = new PropertyRow(new Label("StencilReadMaskString"));
-            StencilReadMaskStringRow.Add(new TextField(StencilReadMaskString), field =>
+            StencilReadMaskStringRow.Add(new TextField() { value = StencilReadMaskString }, field =>
             {
                 field.RegisterValueChangedCallback(valuechange =>
                 {
@@ -563,7 +571,7 @@ namespace UnityEditor.ShaderGraph
             StencilWriteMaskRow.SetEnabled(OverrideStencil);
 
             PropertyRow StencilWriteMaskStringRow = new PropertyRow(new Label("StencilWriteMaskString"));
-            StencilWriteMaskStringRow.Add(new TextField( StencilWriteMaskString), field =>
+            StencilWriteMaskStringRow.Add(new TextField() { value = StencilWriteMaskString }, field =>
             {
                 field.RegisterValueChangedCallback(valuechange =>
                 {
@@ -586,7 +594,7 @@ namespace UnityEditor.ShaderGraph
             StencilCompRow.SetEnabled(OverrideStencil);
 
             PropertyRow StencilCompStringRow = new PropertyRow(new Label("StencilCompString"));
-            StencilCompStringRow.Add(new TextField(StencilCompString), field =>
+            StencilCompStringRow.Add(new TextField() { value = StencilCompString }, field =>
             {
                 field.RegisterValueChangedCallback(valuechange =>
                 {
@@ -609,7 +617,7 @@ namespace UnityEditor.ShaderGraph
             StencilPassRow.SetEnabled(OverrideStencil);
 
             PropertyRow StencilPassStringRow = new PropertyRow(new Label("StencilPassString"));
-            StencilPassStringRow.Add(new TextField(StencilPassString), field =>
+            StencilPassStringRow.Add(new TextField() { value = StencilPassString }, field =>
             {
                 field.RegisterValueChangedCallback(valuechange =>
                 {
@@ -632,7 +640,7 @@ namespace UnityEditor.ShaderGraph
             StencilFailRow.SetEnabled(OverrideStencil);
 
             PropertyRow StencilFailStringRow = new PropertyRow(new Label("StencilFailString"));
-            StencilFailStringRow.Add(new TextField(StencilFailString), field =>
+            StencilFailStringRow.Add(new TextField() { value = StencilFailString }, field =>
             {
                 field.RegisterValueChangedCallback(valuechange =>
                 {
@@ -655,7 +663,7 @@ namespace UnityEditor.ShaderGraph
             StencilZFailRow.SetEnabled(OverrideStencil);
 
             PropertyRow StencilZFailStringRow = new PropertyRow(new Label("StencilZFailString"));
-            StencilZFailStringRow.Add(new TextField(StencilZFailString), field =>
+            StencilZFailStringRow.Add(new TextField() { value = StencilZFailString }, field =>
             {
                 field.RegisterValueChangedCallback(valuechange =>
                 {
@@ -779,7 +787,18 @@ namespace UnityEditor.ShaderGraph
             });
             ZTestRow.SetEnabled(OverrideZTest);
 
-            PropertyRow OverrideZTestRow = new PropertyRow(new Label("OverrideZTest"));
+			PropertyRow ZTestStringRow = new PropertyRow(new Label("ZTestString"));
+			ZTestStringRow.Add(new TextField() { value = ZTestString }, field =>
+			{
+				field.RegisterValueChangedCallback(valuechange =>
+				{
+					ZTestString = valuechange.newValue;
+					FireValueChanged();
+				});
+			});
+			ZTestStringRow.SetEnabled(OverrideZTest);
+			
+			PropertyRow OverrideZTestRow = new PropertyRow(new Label("OverrideZTest"));
             OverrideZTestRow.Add(new Toggle(), field =>
             {
                 field.value = OverrideZTest;
@@ -787,17 +806,19 @@ namespace UnityEditor.ShaderGraph
                 {
                     OverrideZTest = valuechange.newValue;
                     ZTestRow.SetEnabled(OverrideZTest);
+                    ZTestStringRow.SetEnabled(OverrideZTest);
                     FireValueChanged();
                 });
             });
 
             ps.Add(OverrideZTestRow);
             ps.Add(ZTestRow);
+            ps.Add(ZTestStringRow);
             #endregion
 
             #region Offset
             PropertyRow OffsetFactorRow = new PropertyRow(new Label("OffsetFactor"));
-            OffsetFactorRow.Add(new UnityEditor.UIElements.FloatField(), field =>
+            OffsetFactorRow.Add(new UnityEngine.UIElements.FloatField(), field =>
             {
                 field.value = OffsetFactor;
                 field.RegisterValueChangedCallback(valuechange =>
@@ -809,7 +830,7 @@ namespace UnityEditor.ShaderGraph
             OffsetFactorRow.SetEnabled(OverrideOffset);
 
             PropertyRow OffsetUnitsRow = new PropertyRow(new Label("OffsetUnits"));
-            OffsetUnitsRow.Add(new UnityEditor.UIElements.FloatField(), field =>
+            OffsetUnitsRow.Add(new UnityEngine.UIElements.FloatField(), field =>
             {
                 field.value = OffsetUnits;
                 field.RegisterValueChangedCallback(valuechange =>
@@ -1025,7 +1046,7 @@ namespace UnityEditor.ShaderGraph
             ColorMaskRow.SetEnabled(OverrideColorMask);
 
             PropertyRow ColorMaskStringRow = new PropertyRow(new Label("ColorMaskString"));
-            ColorMaskStringRow.Add(new TextField(ColorMaskString), field =>
+            ColorMaskStringRow.Add(new TextField() { value = ColorMaskString }, field =>
             {
                 field.RegisterValueChangedCallback(valuechange =>
                 {
